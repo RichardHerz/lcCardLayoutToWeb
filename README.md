@@ -17,7 +17,7 @@ Open stack (1) first in the LiveCode IDE. When stack (1) is opened, its openStac
 
 Stack (2) contains all of the LiveCode script in the project. It is saved as a script-only stack to enable code comparison between branches in GitHub.
 
-Card layouts are built in a card of stack (1). Clicking the development button "lcCardLayoutToWeb" in stack (1) saves the card layout to a folder with HTML and CSS files. All development controls in stack (2) are contained in one group. The user-given names of the development group and its controls contain the word "lcCardLayoutToWeb" so that they aren't exported to the HTML and CSS files.
+Card layouts are built in a card of stack (1). Clicking the development button with label "saveToWebPage" in stack (1) saves the card layout to a folder with HTML and CSS files. All development controls in stack (2) are contained in one group. The user-given names of the development group and its controls contain the word "lcCardLayoutToWeb" so that they aren't exported to the HTML and CSS files.
 
 WARNING: old web output versions are overwritten. Folders named "images" are not overwritten.
 
