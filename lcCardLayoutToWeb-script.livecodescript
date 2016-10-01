@@ -1,5 +1,5 @@
 ﻿script "lcCardLayoutToWeb-script"
--- initial development by Richard K. Herz, rich@reactorlab.net, September, 2016
+-- initial master github commit by Richard K. Herz, rich@reactorlab.net, September 30, 2016
 
 /* NOTES
 For the plot canvas to use with flot.js, which requires jquery.js
