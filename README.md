@@ -1,6 +1,8 @@
 # lcCardLayoutToWeb
 Design a card layout in LiveCode, then export the layout to HTML and CSS files. 
 
+This project is being built with the open-source, Community Edition of LiveCode. Get it at www.LiveCode.org
+
 For initial commit, each LiveCode (LC) control is referenced in CSS by id only. LC controls in initial commit include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
 
 No LiveCode script conversion.
