@@ -35,25 +35,27 @@ local oaCSSprops
 -----------------------------------------------
 
 on openCard
-   put the name of this card into tName
+   put the name of the current card of stack "lcCardLayoutToWeb-stack" into tName
    if tName contains "card id" & space then
-      put "card" && the number of this card into tName
+      put "card" && the number of the current card of stack "lcCardLayoutToWeb-stack" into tName
    end if
    replace quote with empty in tName
-   put tName into field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack"
+   if there is a field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" then
+      put tName into field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack"
+   end if
 end openCard
 
 -----------------------------------------------
 
 on saveToWebPage
-
+   
    -- answer "enter saveToWebPage"
-
+   
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
-
+   
    ---------- START INPUT DATA ------------
-
+   
    -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
    constant kWebOutputFolder = "web output"
    -- images should be added to LiveCode stack only BY REFERENCE
@@ -68,7 +70,7 @@ on saveToWebPage
    --      used to increase and decrease indents
    --      not only makes html look nice but text editors use indents to fold/unfold sections
    constant kIndentSpaces = 3
-
+   
    -- SET ARRAY WITH CONVERSION BETWEEN LIVECODE AND CSS PROPERTIES
    -- keys of local array oaCSSprops are LiveCode properties
    -- values are equivalent CSS properties
@@ -89,13 +91,13 @@ on saveToWebPage
    -- put "margin" into oaCSSprops["margins"] -- LC is pixel value; CSS px
    put "background-color" into oaCSSprops["backColor"]
    -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
-
+   
    ---------- END INPUT DATA ------------
-
+   
    -- Controls with short name containing "lcCardLayoutToWeb"
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
-
+   
    -- uses function fHandleGroup
    -- uses function fHandleImage
    -- uses function fHandleStandardButton
@@ -107,7 +109,7 @@ on saveToWebPage
    -- uses function fIDname
    -- uses function fReturnCSSprops
    -- uses local array oaCSSprops
-
+   
    -- indents not only makes html look nice but text editors use indents to fold/unfold sections
    repeat kIndentSpaces times
       put space after tOneIndent
@@ -115,15 +117,19 @@ on saveToWebPage
    put empty into tIndent -- indent for HTML
    put empty into tCSS -- holds CSS being built up
    put empty into tHTML -- holds HTML being built up
-
+   
    -- create output folders
    put the long name of this stack into tStack
    replace quote with empty in tStack
    delete the first word of tStack
    set the itemDelimiter to "/"
    delete the last item of tStack
-   put the number of this card into tCardNum
-   put field "lcCardLayoutToWeb card name" into tName
+   put the number of the current card of stack "lcCardLayoutToWeb-stack" into tCardNum
+   if there is a field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" then
+      put field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" into tName
+   else
+      put "card" && tCardNum into tName
+   end if
    put kWebOutputFolder & space & tName into tOutputFolderName
    put tStack & "/" & tOutputFolderName into tOutputFolderPath -- also used at end this handler
    if there is a folder tOutputFolderPath then
@@ -157,17 +163,17 @@ on saveToWebPage
    else
       create folder tImagesFolderPath
    end if
-
+   
    -- reset the itemDelimiter to default, which is comma
    set the itemDelimiter to comma
-
+   
    -- start building the html
    put "<!doctype html>" &cr& "<html>" &cr& "<head>" & cr into tHTML
    put "<!-- load style sheets for this lab  -->" &cr into tHTML
    put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & cr after tHTML
    -- need to add links for javascript files
    put "</head>" &cr& "<body>" & cr after tHTML
-
+   
    -- start building the css
    -- input
    put "input {" & cr after tCSS
@@ -190,8 +196,10 @@ on saveToWebPage
    put "p {" & cr after tCSS
    put space & "display: block;" & cr after tCSS
    put space &  "text-align: left;" & cr after tCSS
-   if the hilite of button "lcCardLayoutToWeb outlines" is true then
-      put space & "border-style: dotted;" & cr after tCSS
+   if there is a button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" then
+      if the hilite of button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" is true then
+         put space & "border-style: dotted;" & cr after tCSS
+      end if
    end if
    put "}" & cr &cr after tCSS -- finish css for p, locked field
    -- label
@@ -209,66 +217,66 @@ on saveToWebPage
    put space & "display: block;" & cr after tCSS
    put space &  "position: absolute;" & cr after tCSS
    put "}" & cr & cr after tCSS -- finish css for select
-
+   
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
    -- in which they appear, no matter in what time order they were added to card.
    -- So LiveCode does a lot of the work.
    -- Have do some work ourselves to find when a group ends,
    -- which is when reference to current group does not appear in next control
-
+   
    -- For css position: absolute; you need top and left to be relative to the parent group.
    -- The top and left of a nested group needs to be relative to its parent group, and
    -- the contents of the nested group need to be relative to the nested group.
-
+   
    -- tGrpList is list of active groups
    put empty into tGrpList
    -- tGrpLocList is list of left,top coordinates of active groups
    put empty into tGrpLocList
-
+   
    repeat with tControlNumber = 1 to the number of controls
-
+      
       if the short name of control tControlNumber contains "lcCardLayoutToWeb" then
          -- skip these development controls
          next repeat
       end if
-
+      
       put the id of control tControlNumber into tControl_ID
       put the long name of control tControlNumber into tControlLongName
       -- warning: need id of control as main identifier because long name of control with a given
       -- name does not include the id and so could have confusion with two similar
       -- controls with same given name, e.g., Field, since they
       -- have the same long name and only the first long name would return correct ID for css ID's
-
+      
       put word 1 of tControlLongName into tType
-
+      
       -- lists of current groups and locations are in variables
       -- tGrpList and tGrpLocList, which are added to in
       -- function fHandleGroup
-
+      
       -- when a group terminates, its group name in the
       -- last line of tGrpList will disappear from next control's long name
       -- when that happens, write </div> and delete last line from tGrpList
       -- groups can be nested, so repeat checking if have reached end of a
       -- group because other groups might end there
-
+      
       -- warning: do not have two nested groups with same short name
-
+      
       put true into tFlagEndGrp
       repeat while tFlagEndGrp is true
-
+         
          -- at start of each repeat, assume have NOT reached end of group
          -- if find below that have reached end of group, then flag set to true
          -- so repeat will check for end of another group at same place
          put false into tFlagEndGrp
-
+         
          if tGrpList is empty then
             put empty into tGrpCurrent
          else
             -- these "current" variables are used below in functions for group, button, field, etc.s
             put the last line of tGrpList into tGrpCurrent
          end if
-
+         
          if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
             -- have reached end of a group
             put true into tFlagEndGrp
@@ -288,13 +296,13 @@ on saveToWebPage
             get fIDname(ttempID)
             put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & cr into tNewLine
             put tNewLine after tHTML
-
+            
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
-
+         
       end repeat -- end of: repeat while tFlagEndGrp is true
-
+      
       -- now handle the element in this new line
-
+      
       if tType = "group" then
          -- do nothing here
       else
@@ -307,7 +315,7 @@ on saveToWebPage
             put the last line of tGrpLocList into tGrpLoc
          end if
       end if
-
+      
       switch tType
          case "group"
             -- start of a group
@@ -372,7 +380,7 @@ on saveToWebPage
             put "*********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber & cr after tHTML
       end switch
    end repeat
-
+   
    -- at the end of all controls
    -- BUT, if there are lines in tGrpList, then that means
    -- you need to end divs with </div> for each line
@@ -394,14 +402,14 @@ on saveToWebPage
       put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & cr into tNewLine
       put tNewLine after tHTML
    end repeat
-
+   
    -- at end so no need to empty group lists but do so in case add stuff later
    put empty into tGrpList
    put empty into tGrpLocList
-
+   
    -- finish building the html
    put "</body>" &cr& "</html>" & cr after tHTML
-
+   
    -- write output to files
    -- write html
    put tOutputFolderPath & "/index.html" into tHtmlFilePath
@@ -412,7 +420,7 @@ on saveToWebPage
    open file tCssFilePath for text write
    write tCSS to file tCssFilePath
    close file tCssFilePath
-
+   
 end saveToWebPage
 
 -----------------------------------------------
@@ -493,10 +501,12 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList
                      put "none" into tValue
                   end if
                   -- let development button override for groups and fields only
-                  if the hilite of button "lcCardLayoutToWeb outlines" is true then
-                     put word 1 of the long name of control id tControl_ID into tType
-                     if tType is "group" or tType is "field" then
-                        put "dotted" into tValue
+                  if there is a button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" then
+                     if the hilite of button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" is true then
+                        put word 1 of the long name of control id tControl_ID into tType
+                        if tType is "group" or tType is "field" then
+                           put "dotted" into tValue
+                        end if
                      end if
                   end if
                   break
@@ -683,6 +693,7 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
       -- vertical scrollbar when height > width
       -- default in html and css is horizontal, so need to do something special to get vertical
       -- xxx need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
+      -- xxx rotate appears to work in Google browser on Andoid phone
       -- xxx there are a variety of techniques
       -- xxx see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
       -- xxx also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
@@ -830,6 +841,7 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- end of html for label tag
    -- now write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
+   -- xxx in google browser on Android phone, label appears on top of button
    put "#" & fIDname(tControl_ID) & "_LABEL" && "{" & cr after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
@@ -975,6 +987,7 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- end of html for label tag
    -- now write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
+   -- xxx in google browser on Android phone, label appears on top of button
    put "#" & fIDname(tControl_ID) & "_LABEL" && "{" & cr after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
