@@ -25,7 +25,9 @@ WARNING: old web output versions are overwritten. Folders named "images" are not
 
 Output folder names include the user-given name of the card or, if no given name, the number of the card. 
 
-Image files should be placed in the output folder in a folder "images" and then added to the card in stack (2) BY REFERENCE only. 
+Image files should be placed in a folder "images" in the output folder and then added to the card in stack (2) BY REFERENCE only. 
+
+The minimum requirement for stack (1) is that it have the stack name "lcCardLayoutToWeb-stack". It may optionally have an openStack command that puts stack (2) in use. It may optionally have development controls, e.g., in a shared background group. The names of the development group(s) and control(s) must all contain the word "lcCardLayoutToWeb" among the words of their names in order for them to not be saved to HTML and CSS. One of the optional development controls could be a button that sends the command "saveToWebPage" to stack (2), which is the command that saves the card layout in stack (1) to HTML and CSS files. The copy of stack (1) in the github distribution has a field named "lcCardLayoutToWeb card name" to display the card name and a checkbox named "lcCardLayoutToWeb outlines" to specify whether or not dotted borders be added to all groups (div's) and locked fields (p's) in the web copy. Those specific names are referenced in the script of stack (2) but their existence is checked before they are accessed.
 
 For responsive design, include controls that you want to move upon screen-size changes into groups. Make a copy of the original web output, move the groups, make new output to get the new left,top locations of the moved divs, then add an @media section to the original css file with the new div locations.
 
