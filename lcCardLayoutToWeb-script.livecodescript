@@ -35,15 +35,17 @@ local oaCSSprops
 -----------------------------------------------
    
 on openCard
-   set the defaultStack to "lcCardLayoutToWeb-stack"
-   put the name of the current card into tName
-   if tName contains "card id" & space then
-      put "card" && the number of the current card into tName
+   if the short name of the topStack is "lcCardLayoutToWeb-stack" then
+      if there is a field "lcCardLayoutToWeb card name" then
+         put the name of the current card into tName
+         if tName contains "card id" & space then
+            put "card" && the number of the current card into tName
+         end if
+         replace quote with empty in tName
+         put tName into field "lcCardLayoutToWeb card name"
+      end if
    end if
-   replace quote with empty in tName
-   if there is a field "lcCardLayoutToWeb card name" then
-      put tName into field "lcCardLayoutToWeb card name"
-   end if
+   pass openCard
 end openCard
 
 -----------------------------------------------
