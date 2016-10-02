@@ -33,26 +33,27 @@ local oaCSSprops
 -- xxx why use local? why not just add to input arguments of functions?
 
 -----------------------------------------------
-
+   
 on openCard
-   put the name of the current card of stack "lcCardLayoutToWeb-stack" into tName
+   set the defaultStack to "lcCardLayoutToWeb-stack"
+   put the name of the current card into tName
    if tName contains "card id" & space then
-      put "card" && the number of the current card of stack "lcCardLayoutToWeb-stack" into tName
+      put "card" && the number of the current card into tName
    end if
    replace quote with empty in tName
-   if there is a field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" then
-      put tName into field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack"
+   if there is a field "lcCardLayoutToWeb card name" then
+      put tName into field "lcCardLayoutToWeb card name"
    end if
 end openCard
 
 -----------------------------------------------
 
 on saveToWebPage
-   
-   -- answer "enter saveToWebPage"
-   
+     
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
+   
+   set the defaultStack to "lcCardLayoutToWeb-stack"
    
    ---------- START INPUT DATA ------------
    
@@ -124,9 +125,9 @@ on saveToWebPage
    delete the first word of tStack
    set the itemDelimiter to "/"
    delete the last item of tStack
-   put the number of the current card of stack "lcCardLayoutToWeb-stack" into tCardNum
-   if there is a field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" then
-      put field "lcCardLayoutToWeb card name" of stack "lcCardLayoutToWeb-stack" into tName
+   put the number of the current card into tCardNum
+   if there is a field "lcCardLayoutToWeb card name" then
+      put field "lcCardLayoutToWeb card name" into tName
    else
       put "card" && tCardNum into tName
    end if
@@ -196,8 +197,8 @@ on saveToWebPage
    put "p {" & cr after tCSS
    put space & "display: block;" & cr after tCSS
    put space &  "text-align: left;" & cr after tCSS
-   if there is a button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" then
-      if the hilite of button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" is true then
+   if there is a button "lcCardLayoutToWeb outlines" then
+      if the hilite of button "lcCardLayoutToWeb outlines" is true then
          put space & "border-style: dotted;" & cr after tCSS
       end if
    end if
@@ -501,8 +502,8 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList
                      put "none" into tValue
                   end if
                   -- let development button override for groups and fields only
-                  if there is a button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" then
-                     if the hilite of button "lcCardLayoutToWeb outlines" of stack "lcCardLayoutToWeb-stack" is true then
+                  if there is a button "lcCardLayoutToWeb outlines" then
+                     if the hilite of button "lcCardLayoutToWeb outlines" is true then
                         put word 1 of the long name of control id tControl_ID into tType
                         if tType is "group" or tType is "field" then
                            put "dotted" into tValue
