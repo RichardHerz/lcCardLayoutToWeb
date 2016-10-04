@@ -27,13 +27,12 @@ http://learn.shayhowe.com/advanced-html-css/complex-selectors/
 
 -----------------------------------------------
 
--- oaCSSprops used in most functions, keys = LC properties, values = CSS properties
--- initialized in command saveToWebPage
+-- this didn't seem to work when not local
+-- and supplied in function arguments...
 local oaCSSprops
--- xxx why use local? why not just add to input arguments of functions?
 
 -----------------------------------------------
-   
+
 on openCard
    if the short name of the topStack is "lcCardLayoutToWeb-stack" then
       if there is a field "lcCardLayoutToWeb card name" then
@@ -75,7 +74,7 @@ on saveToWebPage
    constant kIndentSpaces = 3
    
    -- SET ARRAY WITH CONVERSION BETWEEN LIVECODE AND CSS PROPERTIES
-   -- keys of local array oaCSSprops are LiveCode properties
+   -- keys of array oaCSSprops are LiveCode properties
    -- values are equivalent CSS properties
    -- put value into oaCSSprops["key"]
    -- SOME DEACTIVATED BY COMMENT BELOW
@@ -111,7 +110,6 @@ on saveToWebPage
    -- uses function fHandleScrollbar
    -- uses function fIDname
    -- uses function fReturnCSSprops
-   -- uses local array oaCSSprops
    
    -- indents not only makes html look nice but text editors use indents to fold/unfold sections
    repeat kIndentSpaces times
@@ -430,7 +428,6 @@ end saveToWebPage
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList
    -- groups and some controls use this, other controls are special
-   -- uses local array oaCSSprops
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
@@ -463,7 +460,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList
    put the height of control id tControl_ID into tHt
    put space & "width:" && tWd & "px;" & cr after tCSS
    put space & "height:" && tHt & "px;" & cr after tCSS
-   put the keys of oaCSSprops into tHitList  -- oaCSSprops is local to this stack script
+   put the keys of oaCSSprops into tHitList
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList
    repeat for each line tKey in tKeyList
@@ -473,7 +470,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList
             -- probably could set up this value correspondence in
             -- array(s) but use switch for now
             -- WARNING: some properties listed below have been deactivated
-            -- by comments at top of script at specification of oaCSSprops local array
+            -- by comments at top of script at specification of oaCSSprops array
             switch tKey
                case "opaque"
                   -- LC true or false; CSS 1 or 0
@@ -812,47 +809,38 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    replace quote with empty in tRadioGroupName
    replace space with "_" in tRadioGroupName
    -- tRadioGroupName is used below in html for both the html button and the button label
-   put tIndent & "<input type=" & quote & "radio" & quote into tHTML
-   -- "name" attribute of all radio buttons in same group must be same name
-   -- in order for them to work, so use the group / div name
-   put space & "id=" & quote & fIDname(tControl_ID) & quote after tHTML
+   put fIDname(tControl_ID) into tIDname
+   put the short name of control id tControl_ID into tRadioButtonName
+   -- write html for label tag
+   put tIndent & "<label" into tHTML
+   put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
    put space & "name=" & quote & tRadioGroupName & quote after tHTML
-   -- tRadioValue is used below in html for both the html button and the button label
-   put the short name of control id tControl_ID into tRadioValue
-   replace quote with empty in tRadioValue
-   put space & "value=" & quote & tRadioValue & quote after tHTML
+   put ">" & cr after tHTML
+   -- end of html for <label> NEED TO END WITH </label> BELOW
+   -- write html for input tag
+   put tIndent & tIndent & "<input type=" & quote & "radio" & quote after tHTML
+   put space & "id=" & quote & tIDname & quote after tHTML
+   put space & "name=" & quote & tRadioGroupName & quote after tHTML
    if the hilite of control id tControl_ID is true then
-      put space & "checked>" & cr after tHTML
-   else
-      put ">" & cr after tHTML
+      put space & "checked" after tHTML
    end if
+   put ">" & cr after tHTML
    -- end of html for input tag
-   -- write css for inut tag
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
-   put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
-   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList) after tCSS
-   -- conclude css
-   put "}" & cr & cr after tCSS
-   -- end of css for input tag
-   -- now write html for label tag
-   -- tRadioGroupName is built above
-   put tIndent & "<label for=" & quote & tRadioGroupName & quote after tHTML
-   put space & "id=" & quote & fIDname(tControl_ID) & "_LABEL" & quote & ">" after tHTML
-   -- tRadioValue is built above
-   put tRadioValue after tHTML
-   put "</label>" & cr after tHTML
-   -- end of html for label tag
-   -- now write css for label tag
+   -- write html for span tag with radio button name
+   put tIndent & tIndent & "<span" after tHTML
+   put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
+   put tRadioButtonName after tHTML
+   put "</span>" & cr after tHTML
+   -- end html for span tag with checkbox name
+   -- write html for end of label tag
+   put tIndent & "</label>" & cr after tHTML
+   -- end of html
+   -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
-   -- xxx in google browser on Android phone, label appears on top of button
-   put "#" & fIDname(tControl_ID) & "_LABEL" && "{" & cr after tCSS
+   put "#" & tIDname & "_LABEL" && "{" & cr into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
-   -- SHIFT LABEL TO RIGHT
-   add 26 to tLeft
    put item 2 of tRect into tTop
-   -- SHIFT LABEL DOWN
-   add 6 to tTop
    if  tGrpLoc is empty then
       -- element not in a group
       -- position is relative to left, top of page
@@ -865,13 +853,17 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put space & "left:" && tLeft & "px;" & cr after tCSS
    put space & "top:" && tTop & "px;" & cr after tCSS
-   put the width of control id tControl_ID into tWd
-   put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & cr after tCSS
-   put space & "height:" && tHt & "px;" & cr after tCSS
    -- conclude css
    put "}" & cr & cr after tCSS
    -- end of css for label tag
+   -- DO NOT seem to need css for input (radio button) tag
+   -- write css for span tag
+   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & cr after tCSS
+   put space & "margin-left: 22px;" & cr after tCSS
+   put space & "line-height: 22px;" & cr after tCSS
+   -- conclude css
+   put "}" & cr & cr after tCSS
+   -- end css for span tag
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
@@ -957,48 +949,36 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- tGrp = for example, "of group 1045" or empty
    -- tGrpLoc = for example, "237,49" or empty
    -- returns associative array with ["html"] and ["css"] contents
-   put the short name of control id tControl_ID into tCheckBoxName
-   replace quote with empty in tCheckBoxName
-   replace space with "_" in tCheckBoxName
-   put tCheckBoxName into tCheckBoxValue
-   put tIndent & "<input type=" & quote & "checkbox" & quote into tHTML
    put fIDname(tControl_ID) into tIDname
+   put the short name of control id tControl_ID into tCheckBoxName
+   -- write html for label tag
+   put tIndent & "<label" into tHTML
+   put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
+   put ">" & cr after tHTML
+   -- end of html for <label> NEED TO END WITH </label> BELOW
+   -- write html for input tag
+   put tIndent & tIndent & "<input type=" & quote & "checkbox" & quote after tHTML
    put space & "id=" & quote & tIDname & quote after tHTML
-   put space & "name=" & quote & tCheckBoxName & quote after tHTML
-   put space & "value=" & quote & tCheckBoxValue & quote after tHTML
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
    put ">" & cr after tHTML
    -- end of html for input tag
-   -- write css for input tag
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
-   put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
-   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList) after tCSS
-   -- conclude css
-   put "}" & cr & cr after tCSS
-   -- end of css for input tag
-   -- now write html for label tag
-   --    <label for="male">Male</label>
-   put tIndent & "<label for=" & quote & tCheckBoxName & quote after tHTML
-   put space & "id=" & quote & fIDname(tControl_ID) & "_LABEL" & quote after tHTML
-   put the short name of control id tControl_ID into tCheckBoxValue
-   replace quote with empty in tCheckBoxValue
-   replace space with "_" in tCheckBoxValue
-   put ">" after tHTML
-   put tCheckBoxValue & "</label>" & cr after tHTML
-   -- end of html for label tag
-   -- now write css for label tag
+   -- write html for span tag with checkbox name
+   put tIndent & tIndent & "<span" after tHTML
+   put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
+   put tCheckBoxName after tHTML
+   put "</span>" & cr after tHTML
+   -- end html for span tag with checkbox name
+   -- write html for end of label tag
+   put tIndent & "</label>" & cr after tHTML
+   -- end of html
+   -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
-   -- xxx in google browser on Android phone, label appears on top of button
-   put "#" & fIDname(tControl_ID) & "_LABEL" && "{" & cr after tCSS
+   put "#" & tIDname & "_LABEL" && "{" & cr into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
-   -- SHIFT LABEL TO RIGHT
-   add 26 to tLeft
    put item 2 of tRect into tTop
-   -- SHIFT LABEL DOWN
-   add 6 to tTop
    if  tGrpLoc is empty then
       -- element not in a group
       -- position is relative to left, top of page
@@ -1011,13 +991,17 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put space & "left:" && tLeft & "px;" & cr after tCSS
    put space & "top:" && tTop & "px;" & cr after tCSS
-   put the width of control id tControl_ID into tWd
-   put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & cr after tCSS
-   put space & "height:" && tHt & "px;" & cr after tCSS
    -- conclude css
    put "}" & cr & cr after tCSS
    -- end of css for label tag
+   -- DO NOT seem to need css for input (checkbox) tag
+   -- write css for span tag
+   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & cr after tCSS
+   put space & "margin-left: 22px;" & cr after tCSS
+   put space & "line-height: 18px;" & cr after tCSS
+   -- conclude css
+   put "}" & cr & cr after tCSS
+   -- end css for span tag
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
