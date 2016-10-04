@@ -169,8 +169,8 @@ on saveToWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   put "<!doctype html>" &cr& "<html>" &cr& "<head>" & cr into tHTML
-   put "<!-- load style sheets for this lab  -->" &cr into tHTML
+   put "<!doctype html>" &cr& "<html>" &cr& "<head>" & cr after tHTML
+   put "<!-- load style sheets for this lab  -->" &cr after tHTML
    put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & cr after tHTML
    -- need to add links for javascript files
    put "</head>" &cr& "<body>" & cr after tHTML
