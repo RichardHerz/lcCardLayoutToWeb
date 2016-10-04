@@ -5,9 +5,9 @@ This project is being built with the open-source, Community Edition of LiveCode.
 
 Contributors are welcome. You need to use the LiveCode IDE in order to use this project or to contribute to development of this project. 
 
-For the master version in the initial commit, at least, each LiveCode control is referenced in CSS by id only. LiveCode controls in initial commit include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
+Each LiveCode control is referenced in CSS by id only. LiveCode controls include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
 
-There is no LiveCode script conversion in the master version in the initial commit, at least.
+There is no LiveCode script conversion.
 
 My use of this project is to develop web apps that are interactive simulations of physical systems. Examples of web apps built with this project are posted at http://reactorlab.net/resources/web-app-experiments/ (Richard Herz)
 
@@ -15,11 +15,11 @@ HOW TO USE:
 
 Two stacks are used together: (1) a regular LiveCode stack "lcCardLayoutToWeb-stack.livecode" and (2) a script-only stack "lcCardLayoutToWeb-script.livecodescript"
 
-Open stack (1) first in the LiveCode IDE. When stack (1) is opened, its openStack command places stack (2) in use.  
+Open stack (1) first in the LiveCode IDE. When stack (1) in the distribution is opened, its openStack command places stack (2) in use.  
 
 Stack (2) contains all of the LiveCode script in the project. It is saved as a script-only stack to enable code comparison between branches in GitHub.
 
-Card layouts are built in a card of stack (1). Clicking the development button with label "saveToWebPage" in stack (1) saves the card layout to a folder with HTML and CSS files. All development controls in stack (2) are contained in one group. The user-given names of the development group and its controls contain the word "lcCardLayoutToWeb" so that they aren't exported to the HTML and CSS files.
+Card layouts are built in a card of stack (1). Clicking the development button with label "saveToWebPage" in stack (1) in the distribution saves the card layout to a folder with HTML and CSS files. All development controls in stack (2) are contained in one group. The user-given names of the development group and its controls contain the word "lcCardLayoutToWeb" so that they aren't exported to the HTML and CSS files.
 
 WARNING: old web output versions are overwritten. Folders named "images" are not overwritten.
 
