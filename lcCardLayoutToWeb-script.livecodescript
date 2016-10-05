@@ -659,9 +659,10 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    put the endValue of control id tControl_ID into tEndValue
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put the style of control id tControl_ID into tStyle
+   put the pageInc of control id tControl_ID into tStep
    put space & "min=" & quote & tStartValue & quote after tHTML
    put space & "max=" & quote & tEndValue & quote after tHTML
-   put space & "step=1" after tHTML -- xxx or e.g., (tEndValue-tStartValue)/100 ??
+   put space & "step=" & quote & tStep & quote after tHTML
    put space & "value=" & quote & tThumbPosition & quote after tHTML
    put ">" & cr after tHTML
    -- end html
