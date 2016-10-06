@@ -8,14 +8,15 @@ see this example from Web App 3, where css specified width of 430px and height o
 <div id="plotCanvas" class="plotcanvas plotcanvas-1"></div>
 
 For responsive web page, to rearrange some groups/divisions
-for smaller screens, add an example like this to bottom of CSS:
+for smaller screens, add an example like this to bottom of CSS,
+making sure ID numbers _#### match original elements above
+(and found max-width: didn't work with this script):
 
-@media(max-width: 640px) {
-.container_controller-1 {
-top: 802px; <<< ORIGINALLY 273px
-left: 97px;    <<< ORIGINALLY 427px
-}
-}
+@media (orientation: portrait) {
+  #div_simulation_3_frame_1154 {
+    width: 620px;
+    height: 940px;
+  }
 
 I ADDED LIGHT BLUE VERTICAL LINE TO PAGE AT 640px AS MOBILE LAYOUT GUIDE
 
