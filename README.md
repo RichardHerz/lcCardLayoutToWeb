@@ -1,5 +1,9 @@
 # lcCardLayoutToWeb
-Design a card layout in LiveCode, then export the layout to HTML and CSS files. 
+Design a card layout in LiveCode, then export the layout to HTML and CSS files 
+
+Project code name "parakeet"
+
+![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161006a.png)
 
 This project is being built with the open-source, Community Edition of LiveCode. Get it at www.LiveCode.org.
 
