@@ -1,5 +1,5 @@
 # lcCardLayoutToWeb
-Design a card layout in LiveCode, then export the layout to HTML and CSS files 
+Design a card layout in LiveCode, then export the layout to HTML and CSS files
 
 Project code name "parakeet"
 
@@ -11,9 +11,9 @@ Contributors are welcome. You need to use the LiveCode IDE in order to use this 
 
 Each LiveCode control is referenced in CSS by id only. LiveCode controls include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
 
-There is no LiveCode script conversion.
+The project is not intended to build full-featured web pages. There is no LiveCode script conversion.
 
-My use of this project is to develop web apps that are interactive simulations of physical systems. Examples of web apps built with this project are posted at http://reactorlab.net/resources/web-app-experiments/ (Richard Herz)
+My use of this project is to develop web apps that are interactive simulations of physical systems. Examples of web apps built with this project are posted at http://reactorlab.net/resources/web-app-experiments/ (Richard Herz).
 
 HOW TO USE: 
 
