@@ -45,7 +45,7 @@ end openCard
 -----------------------------------------------
 
 on saveToWebPage
-     
+   
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
    
@@ -164,11 +164,11 @@ on saveToWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   put "<!doctype html>" &cr& "<html>" &cr& "<head>" & cr after tHTML
-   put "<!-- load style sheets for this lab  -->" &cr after tHTML
+   put "<!doctype html>" & cr & "<html>" & cr & "<head>" & cr after tHTML
+   put "<!-- load style sheets for this lab  -->" & cr after tHTML
    put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & cr after tHTML
    -- need to add links for javascript files
-   put "</head>" &cr& "<body>" & cr after tHTML
+   put "</head>" & cr & "<body>" & cr after tHTML
    
    -- start building the css
    -- input
@@ -183,8 +183,8 @@ on saveToWebPage
    put "}" & cr & cr after tCSS -- finish css for input, button
    -- WARNING: write notice NOT to make general div style since
    -- interferes with plotting by flot.js
-   put "/* do NOT write general style for div since interferes" &cr  after tCSS
-   put "    with plotting by jquery.flot.js */" &cr&cr after tCSS
+   put "/* do NOT write general style for div since interferes" & cr  after tCSS
+   put "    with plotting by jquery.flot.js */" & cr & cr after tCSS
    -- for UNlocked INPUT field, html already adds outline
    -- locked field = <p>
    -- do NOT put position: absolute here because bad for other text added later to HTML
@@ -197,7 +197,7 @@ on saveToWebPage
          put space & "border-style: dotted;" & cr after tCSS
       end if
    end if
-   put "}" & cr &cr after tCSS -- finish css for p, locked field
+   put "}" & cr & cr after tCSS -- finish css for p, locked field
    -- label
    put "label {" & cr after tCSS
    put space & "display: block;" & cr after tCSS
@@ -372,7 +372,7 @@ on saveToWebPage
             put tResult["css"] after tCSS
             break
          default
-            answer "unknown control, id, long name = " & cr & tControl_ID &cr& the long name of control tControlNumber
+            answer "unknown control, id, long name = " & cr & tControl_ID & cr & the long name of control tControlNumber
             put "*********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber & cr after tHTML
       end switch
    end repeat
@@ -404,11 +404,20 @@ on saveToWebPage
    put empty into tGrpLocList
    
    -- finish building the html
-   put "</body>" &cr& "</html>" & cr after tHTML
+   put "</body>" & cr & "</html>" & cr after tHTML
    
    -- write output to files
-   -- write html
-   put tOutputFolderPath & "/index.html" into tHtmlFilePath
+   -- when developing on a Mac, the following options for "open for write" do different things
+   --      open for "write" with no option on Mac writes CR line endings as carraige returns
+   --      open for "text write" on Mac writes CR line endings as carraige returns
+   --      open for "binary write" on Mac writes CR line endings as line feeds
+   -- viewing html source in browser with line endings as carriage returns
+   -- shows lines broken OK in Mac Safari and Firefox, but NOT Mac Chrome (lines run together), 
+   -- source lines all broken OK on Win 7 IE Explorer, Chrome and Firefox
+   -- all tested browsers work OK with line feed endings
+   -- on Mac, Atom text editor distinguishes CR and LF when showing invisibles, TextWrangler does not 
+  -- write html
+    put tOutputFolderPath & "/index.html" into tHtmlFilePath
    open file tHtmlFilePath for text write
    write tHTML to file tHtmlFilePath
    close file tHtmlFilePath
@@ -428,7 +437,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
    if word 1 of the long name of control id tControl_ID is "group" then
-      -- answer "group, tGrpLocList = " & word 1 of the long name of control id tControl_ID &cr& the short name of control id tControl_ID & cr& tGrpLocList -- xxx
+      -- answer "group, tGrpLocList = " & word 1 of the long name of control id tControl_ID & cr & the short name of control id tControl_ID & cr& tGrpLocList -- xxx
       -- handle group position
       if tGrpLocList is not empty then
          put the last line of tGrpLocList into tGrpLocCurrent
@@ -437,7 +446,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    else
       -- not a group, handle position
-      -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID &cr& the short name of control id tControl_ID & cr& tGrpLoc -- xxx
+      -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID & cr & the short name of control id tControl_ID & cr& tGrpLoc -- xxx
       if tGrpLoc is empty then
          -- element not in a group
          -- position is relative to left, top of page
