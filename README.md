@@ -37,3 +37,20 @@ For responsive design, include controls that you want to move upon screen-size c
 
 Another method is to clone the card and move the divs in the clone. However, when you clone a card, the control id numbers will differ between the clone copies. LiveCode control id's are unique within a stack. Therefore, you need to make sure the css id's in the @media section agree with the id's of those divs in the rest of the original css file.
 
+------------
+HOW TO CREATE EMPTY GROUP FOR PLOT CANVAS 
+
+BETTER WAY: Add one button the size of the group and add the word "lcCardLayoutToWeb" to the button name, then select and group the button and name the group. *OR* define two opposing corners of what will be empty group by two buttons and add the word "lcCardLayoutToWeb" to each of their names. Then select both and group them. Then select group and name it as desired. When save to web, the button(s) will not appear in the output. 
+
+OLD WAY & WARNING: Lock location of empty group or it will go to very small size when you stop editing. Add a button to the card, select it, group it, adjust size of group and lock the location. Then can delete the button to leave empty group.
+
+ALSO CONSIDER adding two small buttons to fix two opposing corners of the group and leave them there so can leave group position unlocked so group doesn't collapse. Maybe name them special, e.g., use lcCardLayoutToWeb, so that they don't get translated to HTML-CSS output.
+
+------------
+MORE WARNINGS TO USER
+
+Responsive design, @media: >> BETTER TO KEEP SAME CARD BUT RENAME IT AND HAVE FOLDERS NAMED AFTER CURRENT CARD NAME >> If clone a card in the stack to reposition controls for smaller width screens, realize that the CONTROL ID NUMBERS CHANGE and, thus, the CSS ID -#### CHANGE. So just make sure to change the -#### in the @media section to match those above and in the html. 
+
+In order to add images to the LC card, you first have to create a parent folder for that card, then add an images folder, then put the image in the folder, then create a NEW REFERENCED CONTROL only, with reference to image file located in folder tImagesFolder = kImagesFolder. 
+------------
+
