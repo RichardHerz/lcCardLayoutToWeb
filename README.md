@@ -52,5 +52,7 @@ MORE WARNINGS TO USER
 Responsive design, @media: >> BETTER TO KEEP SAME CARD BUT RENAME IT AND HAVE FOLDERS NAMED AFTER CURRENT CARD NAME >> If clone a card in the stack to reposition controls for smaller width screens, realize that the CONTROL ID NUMBERS CHANGE and, thus, the CSS ID -#### CHANGE. So just make sure to change the -#### in the @media section to match those above and in the html. 
 
 In order to add images to the LC card, you first have to create a parent folder for that card, then add an images folder, then put the image in the folder, then create a NEW REFERENCED CONTROL only, with reference to image file located in folder tImagesFolder = kImagesFolder. 
-------------
+
+------------ 
+
 
