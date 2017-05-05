@@ -1,29 +1,51 @@
 ﻿script "lcCardLayoutToWeb-script"
--- initial development by Richard K. Herz, rich@reactorlab.net, September, 2016
+/*
+Design, text, images and code by Richard K. Herz, 2017
+Copyrights held by Richard K. Herz
+Licensed for use under the GNU General Public License v3.0
+https://www.gnu.org/licenses/gpl-3.0.en.html
+*/
 
-/* NOTES
-For the plot canvas to use with flot.js, which requires jquery.js
-see this example from Web App 3, where css specified width of 430px and height of 248px
+/* 
+WARNING - output files for same LiveCard card will be written over each time saveToWebPage runs, 
+so save copies of the output files you want to keep
 
-<div id="plotCanvas" class="plotcanvas plotcanvas-1"></div>
+WARNING - use LF line endings when constructing text and write to file with file opened for binary write,
+so that you can view source in all browsers with lines broken and line endings
+*/
 
-For responsive web page, to rearrange some groups/divisions
-for smaller screens, add an example like this to bottom of CSS,
-making sure ID numbers _#### match original elements above
+/*
+WARNING - RESPONSIVE DESIGN
+BETTER TO KEEP SAME CARD BUT RENAME IT AND HAVE FOLDERS NAMED AFTER CURRENT CARD NAME 
+>> If clone a card in the stack to reposition controls for smaller width screens, realize that 
+the CONTROL ID NUMBERS CHANGE and, thus, the CSS ID -#### CHANGE. So just make sure to change
+the -#### in the @media section to match those above and in the html. 
+
+For responsive web page, to rearrange some groups/divisions for smaller screens, add an example like this 
+to bottom of CSS, making sure ID numbers _#### match original elements above
 (and found max-width: didn't work with this script):
 
 @media (orientation: portrait) {
-  #div_simulation_3_frame_1154 {
-    width: 620px;
-    height: 940px;
-  }
+#div_simulation_3_frame_1154 {
+width: 620px;
+height: 940px;
+}
 
 I ADDED LIGHT BLUE VERTICAL LINE TO PAGE AT 640px AS MOBILE LAYOUT GUIDE
+*/
 
-GOOD LINKS FOR CSS
-http://learn.shayhowe.com/
-http://learn.shayhowe.com/advanced-html-css/
-http://learn.shayhowe.com/advanced-html-css/complex-selectors/
+/* 
+HOW TO CREATE EMPTY GROUP FOR A PLOT CANVAS 
+
+BEST WAY: Add one button the size of the group and add the word "lcCardLayoutToWeb" to the button name, 
+then select and group the button and name the group. When saved to web, the button will not appear in the output. 
+
+ALTERNATIVE is to add two small buttons to fix two opposing corners of the group. 
+Add the word "lcCardLayoutToWeb" to the button names.When saved to web, the buttons will not appear in the output. 
+
+OLD WAY & WARNING: Lock location of EMPTY group or it will go to very small size when you stop editing. 
+Empty group made by adding a button to the card, select it, group it, adjust size of group and lock the location. 
+Then can delete the button to leave empty group.
 */
 
 -----------------------------------------------
@@ -164,55 +186,55 @@ on saveToWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   put "<!doctype html>" & cr & "<html>" & cr & "<head>" & cr after tHTML
-   put "<!-- load style sheets for this lab  -->" & cr after tHTML
-   put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & cr after tHTML
+   put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
+   put "<!-- load style sheets for this lab  -->" & LF after tHTML
+   put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & LF after tHTML
    -- need to add links for javascript files
-   put "</head>" & cr & "<body>" & cr after tHTML
+   put "</head>" & LF & "<body>" & LF after tHTML
    
    -- start building the css
    -- input
-   put "input {" & cr after tCSS
-   put space & "display: block;" & cr after tCSS
-   put space &  "position: absolute;" & cr after tCSS
-   put space &  "text-align: left;" & cr after tCSS
-   put "}" & cr & cr after tCSS -- finish css for input
+   put "input {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put space &  "text-align: left;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for input
    -- override "text-align: left;" for input type="button"
-   put "input, button {" & cr after tCSS
-   put space &  "text-align: center;" & cr after tCSS
-   put "}" & cr & cr after tCSS -- finish css for input, button
+   put "input, button {" & LF after tCSS
+   put space &  "text-align: center;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for input, button
    -- WARNING: write notice NOT to make general div style since
    -- interferes with plotting by flot.js
-   put "/* do NOT write general style for div since interferes" & cr  after tCSS
-   put "    with plotting by jquery.flot.js */" & cr & cr after tCSS
+   put "/* do NOT write general style for div since interferes" & LF  after tCSS
+   put "    with plotting by jquery.flot.js */" & LF & LF after tCSS
    -- for UNlocked INPUT field, html already adds outline
    -- locked field = <p>
    -- do NOT put position: absolute here because bad for other text added later to HTML
    -- need position: absolute only for fields laid out by LC
-   put "p {" & cr after tCSS
-   put space & "display: block;" & cr after tCSS
-   put space &  "text-align: left;" & cr after tCSS
+   put "p {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "text-align: left;" & LF after tCSS
    if there is a button "lcCardLayoutToWeb outlines" then
       if the hilite of button "lcCardLayoutToWeb outlines" is true then
-         put space & "border-style: dotted;" & cr after tCSS
+         put space & "border-style: dotted;" & LF after tCSS
       end if
    end if
-   put "}" & cr & cr after tCSS -- finish css for p, locked field
+   put "}" & LF & LF after tCSS -- finish css for p, locked field
    -- label
-   put "label {" & cr after tCSS
-   put space & "display: block;" & cr after tCSS
-   put space &  "position: absolute;" & cr after tCSS
-   put "}" & cr & cr after tCSS -- finish css for label
+   put "label {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for label
    -- img
-   put "img {" & cr after tCSS
-   put space & "display: block;" & cr after tCSS
-   put space &  "position: absolute;" & cr after tCSS
-   put "}" & cr & cr after tCSS -- finish css for img
+   put "img {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for img
    -- select (menu buttons)
-   put "select {" & cr after tCSS
-   put space & "display: block;" & cr after tCSS
-   put space &  "position: absolute;" & cr after tCSS
-   put "}" & cr & cr after tCSS -- finish css for select
+   put "select {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for select
    
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
@@ -290,7 +312,7 @@ on saveToWebPage
             put the long name of ttemp into ttemp
             put the id of ttemp into ttempID
             get fIDname(ttempID)
-            put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & cr into tNewLine
+            put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
             put tNewLine after tHTML
             
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
@@ -372,8 +394,8 @@ on saveToWebPage
             put tResult["css"] after tCSS
             break
          default
-            answer "unknown control, id, long name = " & cr & tControl_ID & cr & the long name of control tControlNumber
-            put "*********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber & cr after tHTML
+            answer "unknown control, id, long name = " & LF & tControl_ID & LF & the long name of control tControlNumber
+            put "*********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber & LF after tHTML
       end switch
    end repeat
    
@@ -395,7 +417,7 @@ on saveToWebPage
       put the long name of ttemp into ttemp
       put the id of ttemp into ttempID
       get fIDname(ttempID)
-      put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & cr into tNewLine
+      put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
    
@@ -404,25 +426,26 @@ on saveToWebPage
    put empty into tGrpLocList
    
    -- finish building the html
-   put "</body>" & cr & "</html>" & cr after tHTML
+   put "</body>" & LF & "</html>" & LF after tHTML
    
-   -- write output to files
+   -- WARNING: write output to files with BINARY WRITE and use all LF in CSS & HTML construction above
+   -- ALL TESTED BROWSERS SHOW SOURCE OK WITH ALL line feed LF line endings
    -- when developing on a Mac, the following options for "open for write" do different things
-   --      open for "write" with no option on Mac writes CR line endings as carraige returns
-   --      open for "text write" on Mac writes CR line endings as carraige returns
-   --      open for "binary write" on Mac writes CR line endings as line feeds
-   -- viewing html source in browser with line endings as carriage returns
+   --      open for "write" with no option on Mac writes CR & LF line endings as CR, carraige returns
+   --      open for "text write" on Mac writes CR & LF line endings as CR, carraige returns
+   --      open for "binary write" on Mac writes CR & LF line endings as LF, line feeds
+   -- viewing html source in browser with line endings as CR carriage returns
    -- shows lines broken OK in Mac Safari and Firefox, but NOT Mac Chrome (lines run together), 
    -- source lines all broken OK on Win 7 IE Explorer, Chrome and Firefox
    -- all tested browsers work OK with line feed endings
-   -- on Mac, Atom text editor distinguishes CR and LF when showing invisibles, TextWrangler does not 
-  -- write html
-    put tOutputFolderPath & "/index.html" into tHtmlFilePath
-   open file tHtmlFilePath for text write
+   --
+   -- write html text with binary write
+   put tOutputFolderPath & "/index.html" into tHtmlFilePath
+   open file tHtmlFilePath for binary write
    write tHTML to file tHtmlFilePath
    close file tHtmlFilePath
-   -- write css
-   open file tCssFilePath for text write
+   -- write css text with binary write
+   open file tCssFilePath for binary write
    write tCSS to file tCssFilePath
    close file tCssFilePath
    
@@ -437,7 +460,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
    if word 1 of the long name of control id tControl_ID is "group" then
-      -- answer "group, tGrpLocList = " & word 1 of the long name of control id tControl_ID & cr & the short name of control id tControl_ID & cr& tGrpLocList -- xxx
+      -- answer "group, tGrpLocList = " & word 1 of the long name of control id tControl_ID & LF & the short name of control id tControl_ID & LF& tGrpLocList -- xxx
       -- handle group position
       if tGrpLocList is not empty then
          put the last line of tGrpLocList into tGrpLocCurrent
@@ -446,7 +469,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    else
       -- not a group, handle position
-      -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID & cr & the short name of control id tControl_ID & cr& tGrpLoc -- xxx
+      -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID & LF & the short name of control id tControl_ID & LF& tGrpLoc -- xxx
       if tGrpLoc is empty then
          -- element not in a group
          -- position is relative to left, top of page
@@ -458,12 +481,12 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
          subtract item 2 of tGrpLoc from tTop
       end if
    end if
-   put space & "left:" && tLeft & "px;" & cr after tCSS
-   put space & "top:" && tTop & "px;" & cr after tCSS
+   put space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & "top:" && tTop & "px;" & LF after tCSS
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & cr after tCSS
-   put space & "height:" && tHt & "px;" & cr after tCSS
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the keys of aCSSprops into tHitList
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList
@@ -537,7 +560,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                default
                   put empty into tValue
             end switch
-            put space & aCSSprops[tKey] & ":" && tValue & ";" & cr after tCSS
+            put space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
          end if
       end if
    end repeat
@@ -629,14 +652,14 @@ function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put tIndent & "<img" after tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
-   put space & "src=" & quote & tImagesFolder & "/" & the short name of control id tControl_ID & quote & ">" & cr after tHTML
+   put space & "src=" & quote & tImagesFolder & "/" & the short name of control id tControl_ID & quote & ">" & LF after tHTML
    -- end of html
     -- write css
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- finally return the result
    put tHTML into tResult["html"]
@@ -674,11 +697,11 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    put space & "max=" & quote & tEndValue & quote after tHTML
    put space & "step=" & quote & tStep & quote after tHTML
    put space & "value=" & quote & tThumbPosition & quote after tHTML
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end html
    -- write css
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -709,7 +732,7 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
       put tHt into tOldHt
       put tOldWd into tHt
       put tOldHt into tWd
-      put space & "transform: rotate(270deg);" & cr after tCSS
+      put space & "transform: rotate(270deg);" & LF after tCSS
       -- now need to modify positioning left and top
       -- as if you rotate original vertical about roughly its
       -- center to horizontal, make those left, top the new left, top
@@ -719,12 +742,12 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
       add tOldHt/2 to tTop
       subtract tOldWd/2 from tTop
    end if
-   put space & "left:" && tLeft & "px;" & cr after tCSS
-   put space & "top:" && tTop & "px;" & cr after tCSS
-   put space & "width:" && tWd & "px;" & cr after tCSS
-   put space & "height:" && tHt & "px;" & cr after tCSS
+   put space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & "top:" && tTop & "px;" & LF after tCSS
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- finally return the result
    put tHTML into tResult["html"]
@@ -744,18 +767,18 @@ function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    put tIndent & "<div" after tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end of html
    -- write css
-   put "#" & fIDname(tControl_ID) && "{" & cr after tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & "display: block;" & cr after tCSS
-   put space &  "position: absolute;" & cr after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
    put empty into tGrpLoc -- used in fReturnCSSprops for non group controls, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- now add to list of group names to handle nested groups
    -- WARNING - do not use fIDname - MUST use format of LiveCode long names
@@ -765,11 +788,11 @@ function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
       put word 3 of the long name of control id tControl_ID into t3
       -- reference in long names will be, e.g., of group id 3333
       put "of group" && t2 && t3 into tGrpRef
-      put tGrpRef & cr after tGrpList -- record start of group
+      put tGrpRef & LF after tGrpList -- record start of group
    else
       -- group has given name
       put "of group" && t2 into tGrpRef
-      put tGrpRef & cr after tGrpList -- record start of group
+      put tGrpRef & LF after tGrpList -- record start of group
    end if
    -- increase indent if not top-level group
    if tGrpList is empty then
@@ -785,7 +808,7 @@ function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into item 1 of tGrpLoc
    put item 2 of tRect into item 2 of tGrpLoc
-   put tGrpLoc & cr after tGrpLocList
+   put tGrpLoc & LF after tGrpLocList
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
@@ -819,7 +842,7 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put tIndent & "<label" into tHTML
    put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
    put space & "name=" & quote & tRadioGroupName & quote after tHTML
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end of html for <label> NEED TO END WITH </label> BELOW
    -- write html for input tag
    put tIndent & tIndent & "<input type=" & quote & "radio" & quote after tHTML
@@ -828,20 +851,20 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with radio button name
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
    put tRadioButtonName after tHTML
-   put "</span>" & cr after tHTML
+   put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
-   put tIndent & "</label>" & cr after tHTML
+   put tIndent & "</label>" & LF after tHTML
    -- end of html
    -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
-   put "#" & tIDname & "_LABEL" && "{" & cr into tCSS
+   put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -855,18 +878,18 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
       subtract item 1 of tGrpLoc from tLeft
       subtract item 2 of tGrpLoc from tTop
    end if
-   put space & "left:" && tLeft & "px;" & cr after tCSS
-   put space & "top:" && tTop & "px;" & cr after tCSS
+   put space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & "top:" && tTop & "px;" & LF after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css for label tag
    -- DO NOT seem to need css for input (radio button) tag
    -- write css for span tag
-   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & cr after tCSS
-   put space & "margin-left: 22px;" & cr after tCSS
-   put space & "line-height: 22px;" & cr after tCSS
+   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
+   put space & "margin-left: 22px;" & LF after tCSS
+   put space & "line-height: 22px;" & LF after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end css for span tag
    -- finally return the result
    put tHTML into tResult["html"]
@@ -893,14 +916,14 @@ function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
    put ">" after tHTML
-   put "</input>" & cr after tHTML
+   put "</input>" & LF after tHTML
    -- end html
    -- write css
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- finally return the result
    put tHTML into tResult["html"]
@@ -921,22 +944,22 @@ function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- now need to enter menu options
    put the text of control id tControl_ID into tOptions
    repeat for each line tOpt in tOptions
       -- add double indents so text editors can fold/unfold select
       put tIndent & tIndent & "<option value=" after tHTML
-      put quote & tOpt & quote & ">" & tOpt & "</option>" & cr after tHTML
+      put quote & tOpt & quote & ">" & tOpt & "</option>" & LF after tHTML
    end repeat
-   put tIndent & "</select>" & cr after tHTML
+   put tIndent & "</select>" & LF after tHTML
    -- end html
    -- write css
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- finally return the result
    put tHTML into tResult["html"]
@@ -957,7 +980,7 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- write html for label tag
    put tIndent & "<label" into tHTML
    put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end of html for <label> NEED TO END WITH </label> BELOW
    -- write html for input tag
    put tIndent & tIndent & "<input type=" & quote & "checkbox" & quote after tHTML
@@ -965,20 +988,20 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
-   put ">" & cr after tHTML
+   put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with checkbox name
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
    put tCheckBoxName after tHTML
-   put "</span>" & cr after tHTML
+   put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
-   put tIndent & "</label>" & cr after tHTML
+   put tIndent & "</label>" & LF after tHTML
    -- end of html
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    -- write css for label tag
-   put "#" & tIDname & "_LABEL" && "{" & cr into tCSS
+   put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -992,18 +1015,18 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
       subtract item 1 of tGrpLoc from tLeft
       subtract item 2 of tGrpLoc from tTop
    end if
-   put space & "left:" && tLeft & "px;" & cr after tCSS
-   put space & "top:" && tTop & "px;" & cr after tCSS
+   put space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & "top:" && tTop & "px;" & LF after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css for label tag
    -- DO NOT seem to need css for input (checkbox) tag
    -- write css for span tag
-   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & cr after tCSS
-   put space & "margin-left: 22px;" & cr after tCSS
-   put space & "line-height: 18px;" & cr after tCSS
+   put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
+   put space & "margin-left: 22px;" & LF after tCSS
+   put space & "line-height: 18px;" & LF after tCSS
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end css for span tag
    -- finally return the result
    put tHTML into tResult["html"]
@@ -1050,12 +1073,12 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
       -- use double indents on the rest of the <br> so text editor can fold/unfold <p>
       -- but do this after delete first <br>
       replace "<br>" with tIndent & tIndent & "<br>" in tTempText
-      put cr & tTempText after tHTML
+      put LF & tTempText after tHTML
    end if
-   put cr & tIndent & "</" & tFieldType & ">" & cr after tHTML
+   put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
    -- write css
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
-   put "#" & fIDname(tControl_ID) && "{" & cr into tCSS
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1076,19 +1099,19 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    -- need position: absolute here but not for general <p>
    -- because that messes up text added to HTML later
-   put space &  "position: absolute;" & cr after tCSS
-   put space & "left:" && tLeft & "px;" & cr after tCSS
-   put space & "top:" && tTop & "px;" & cr after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & "top:" && tTop & "px;" & LF after tCSS
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & cr after tCSS
-   put space & "height:" && tHt & "px;" & cr after tCSS
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the textAlign of control id tControl_ID into tTextAlign
    if tTextAlign is not "left" then
-      put space & "text-align:" & space & tTextAlign & ";" & cr after tCSS
+      put space & "text-align:" & space & tTextAlign & ";" & LF after tCSS
    end if
    -- conclude css
-   put "}" & cr & cr after tCSS
+   put "}" & LF & LF after tCSS
    -- end of css
    -- finally return the result
    put tHTML into tResult["html"]
