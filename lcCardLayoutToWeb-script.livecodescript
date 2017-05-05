@@ -11,7 +11,7 @@ WARNING - output files for same LiveCard card will be written over each time sav
 so save copies of the output files you want to keep
 
 WARNING - use LF line endings when constructing text and write to file with file opened for binary write,
-so that you can view source in all browsers with lines broken and line endings
+so that you can view source in all browsers with lines broken at line endings
 */
 
 /*
