@@ -1,4 +1,4 @@
-﻿script "maker"
+﻿script "maker-script"
 function fGetNextTag startChar
    
    return "huh?"

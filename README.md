@@ -3,7 +3,7 @@ Design a card layout in LiveCode, then export the layout to HTML and CSS files
 
 Project code name "parakeet"
 
-_*New under construction*_ - we are working on going from html and css files to a LiveCode card layout - stacks maker and makeIt are development stacks.
+_**New, under construction**_ - we are working on going from html and css files to a LiveCode card layout - stacks maker-stack and maker-script are development stacks.
 
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 
