@@ -3,13 +3,13 @@ Design a card layout in LiveCode, then export the layout to HTML and CSS files
 
 Project code name "parakeet"
 
+_*New under construction*_ - we are working on going from html and css files to a LiveCode card layout - stacks maker and makeIt are development stacks.
+
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 
 This project is being built with the open-source, Community Edition of LiveCode. Get it at www.LiveCode.org.
 
 Contributors are welcome. You need to use the LiveCode IDE, version 8 or higher, in order to use this software. 
-
-*New* - we are working on going from html and css files to a LiveCode card layout - stacks maker and makeIt are development stacks.
 
 Each LiveCode control is referenced in CSS by id only, thus cascading is limited. LiveCode controls include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
 
@@ -56,7 +56,7 @@ Then can delete the button to leave empty group.
 WARNING - RESPONSIVE DESIGN
 
 BETTER TO KEEP SAME CARD BUT RENAME IT AND HAVE FOLDERS NAMED AFTER CURRENT CARD NAME 
->> If clone a card in the stack to reposition controls for smaller width screens, realize that 
+ - If clone a card in the stack to reposition controls for smaller width screens, realize that 
 the CONTROL ID NUMBERS CHANGE and, thus, the CSS ID -#### CHANGE. So just make sure to change
 the -#### in the @media section to match those above and in the html. 
 
