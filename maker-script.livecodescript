@@ -58,7 +58,7 @@ on importWebPage
       put "file:" before tCssFile
       put url tCssFile into oCssFileData
    end if
-   
+      
    makeLiveCodeCard
    
 end importWebPage
@@ -71,32 +71,34 @@ on makeLiveCodeCard
    -- is called by command importWebPage
    
    -- get list of all tags in html data
-   put empty into tEscapeChar
+   put "!" into tEscapeChar
    put 0 into tSkipChar
    put empty into tTagList
    put empty into tNextCharList
-   put 0 into tCounter
-   repeat while tCounter < 100
-      add 1 to tCounter
-      put offset("<",oHtmlFileData,tSkipChar) into tNextTagChar
-      if tNextTagChar is empty then exit repeat
-      add tNextTagChar to tSkipChar
-      -- xxx HAVING TROUBLE WITH <!-- NOT FINDING THE !
-      put char tSkipChar + 1 of oHtmlFileData into tNextChar
-      if tEscapeChar is empty then put tNextChar into tEscapeChar -- assume first is !
-      put tNextChar & LF after tNextCharList
+   -- WARNING: answer command will format as HTML if include <> in output!
+   -- xxx put 0 into tCounter
+   repeat -- xxx while tCounter < 1000
+      -- xxx add 1 to tCounter
+      put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
+      if tNextTagStart is 0 then exit repeat
+      add tNextTagStart to tSkipChar
+      put tSkipChar into tNextTagStart
+      put char tNextTagStart + 1 of oHtmlFileData into tNextChar
+      put offset(">",oHtmlFileData,tSkipChar) into tNextTagEnd
+      add tNextTagEnd to tSkipChar
+      put tSkipChar into tNextTagEnd
       if tNextChar is tEscapeChar or tNextChar is "/" then 
          -- ignore this tag
+         put "ignore: " &  tNextChar & LF after tTagList
+         put "ignore: " & tNextChar & LF after tNextCharList
       else
-         put tSkipChar into tNextTagChar
-         put offset(space,oHtmlFileData,tSkipChar) into tNextSpaceChar
-         add tNextSpaceChar to tSkipChar
-         put tSkipChar into tNextSpaceChar
-         put char tNextTagChar to tNextSpaceChar of oHtmlFileData into tNextTag
-         put tNextTag & LF after tTagList
+         put char tNextTagStart+1 to tSkipChar-1 of oHtmlFileData into tNextTagText
+         put tNextTagText & LF after tTagList
+         put tNextChar & LF after tNextCharList
       end if -- end if tNextChar is "!" or tNextChar is "/"  
    end repeat
-   answer tTagList && the number of lines of tTagList
+   -- WARNING: answer command will format as HTML if include <> in output!
+   answer "tTagList = " & LF & tTagList & LF & the number of lines of tTagList
    answer "tNextCharList = " & LF & tNextCharList
    
 end makeLiveCodeCard
