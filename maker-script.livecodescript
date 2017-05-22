@@ -10,6 +10,38 @@ local oHtmlFileData
 local oCssFileData 
 
 -----------------------------
+/*
+APPROACH
+work on one type of control at a time
+write function that generates the LC control and sets its properties
+SAVE FOR WRITE AT OUTPUT 
+all text in html file before <body>
+where to save, maybe in custom prop of a button whose name includes the save to web kill word?
+then write </body></html> at end of output
+TAGS TO HANDLE 
+div = group 
+img = image
+p = locked field 
+input with no type = unlocked field
+select = menu button
+input with type="button" = button
+input with type="range" = slider
+label > input type="checkbox" > span = checkbox
+label > input type="radio" > span = radio button (will be several inside one div/group)
+ALL TAGS TO HANDLE WILL HAVE id ATTRIBUTE 
+search css for the id and parse to set properties of LC control
+HANDLE OTHER ATTRIBUTES control by control
+FORMATTING AND ANCHOR TAGS IN FIELDS
+save to write out later in case LC htmlText can't handle
+also set as the htmlText of the field in LC card
+HOW TO HANDLE ONCLICK AND ONCHANGE ATTRIBUTES?
+maybe set as custom props of the LC controls, then handle in save to web?
+HOW TO HANDLE COMMENTS?
+maybe save as custom prop of previous or next LC control, then handle in save to web?
+or maybe each as custom prop of a button created for each in order handled, whose
+names include save to web kill word? - can just put these in same place on card and pile them up...
+*/
+-----------------------------
 
 on importWebPage
    
@@ -76,9 +108,7 @@ on makeLiveCodeCard
    put empty into tTagList
    put empty into tNextCharList
    -- WARNING: answer command will format as HTML if include <> in output!
-   -- xxx put 0 into tCounter
-   repeat -- xxx while tCounter < 1000
-      -- xxx add 1 to tCounter
+   repeat
       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
