@@ -9,6 +9,11 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 local oHtmlFileData
 local oCssFileData 
 
+constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+constant kCommentStart = "<!--"
+constant kCommentEnd = "-->"
+constant kTagEndStart = "</"
+
 -----------------------------
 /*
 APPROACH
@@ -84,13 +89,17 @@ on importWebPage
    if tHmtlFile is not empty then
       put "file:" before tHtmlFile
       put url tHtmlFile into oHtmlFileData
+   else
+      exit to top
    end if
    
    if tCssFile is not empty then
       put "file:" before tCssFile
       put url tCssFile into oCssFileData
+   else
+      exit to top
    end if
-      
+   
    makeLiveCodeCard
    
 end importWebPage
@@ -100,36 +109,116 @@ end importWebPage
 on makeLiveCodeCard
    
    -- uses local variables oHtmlFileData & oCssFileData 
+   -- uses constant kKillWord
    -- is called by command importWebPage
    
-   -- get list of all tags in html data
-   put "!" into tEscapeChar
-   put 0 into tSkipChar
-   put empty into tTagList
-   put empty into tNextCharList
-   -- WARNING: answer command will format as HTML if include <> in output!
-   repeat
-      put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
-      if tNextTagStart is 0 then exit repeat
-      add tNextTagStart to tSkipChar
-      put tSkipChar into tNextTagStart
-      put char tNextTagStart + 1 of oHtmlFileData into tNextChar
-      put offset(">",oHtmlFileData,tSkipChar) into tNextTagEnd
-      add tNextTagEnd to tSkipChar
-      put tSkipChar into tNextTagEnd
-      if tNextChar is tEscapeChar or tNextChar is "/" then 
-         -- ignore this tag
-         put "ignore: " &  tNextChar & LF after tTagList
-         put "ignore: " & tNextChar & LF after tNextCharList
-      else
-         put char tNextTagStart+1 to tSkipChar-1 of oHtmlFileData into tNextTagText
-         put tNextTagText & LF after tTagList
-         put tNextChar & LF after tNextCharList
-      end if -- end if tNextChar is "!" or tNextChar is "/"  
-   end repeat
-   -- WARNING: answer command will format as HTML if include <> in output!
-   answer "tTagList = " & LF & tTagList & LF & the number of lines of tTagList
-   answer "tNextCharList = " & LF & tNextCharList
+   -- get all data above <body>
+   
+   put offset("<body>",oHtmlFileData) into tBodyStartChar
+   put char 1 to tBodyStartChar-1 of oHtmlFileData into tHeaderData
+   put tHeaderData into field 1
+   put "header" && kKillWord into tNewControl
+   create button tNewControl
+   set the label of button tNewControl to "header"
+   set the cHtmlData of button tNewControl to tHeaderData 
+   
+   put tBodyStartChar into tSkipChar
+   add 5 to tSkipChar
+   
+   -- get <p> tags = locked fields 
+   
+   put offset("<p",oHtmlFileData,tSkipChar) into tPstartChar
+   add tSkipChar to tPstartChar
+   put tPstartChar into tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   add tSkipChar to tPendChar 
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
+   put tPid into field 1
+   
+   put "field_" & tPid into tField
+   create field tField
+   
+   -- get css info
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tPid,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData after field 1
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         repeat 3 times -- delete px;
+            delete the last char of tPix
+         end repeat
+         switch tProp
+            case "width"
+               set the width of field tField to tPix
+               break
+            case "height"
+               set the height of field tField to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+         end switch
+      end repeat
+   end if
+   
+   -- do this after setting width and height since setting those changes topLeft
+   set the topLeft of field tField to tTopLeft
+   
+ 
+   
+   --    -- OLD: get list of all tags in html data
+   
+   --    put 0 into tSkipChar
+   --    put empty into tTagList
+   --    put empty into tNextCharList
+   --    -- WARNING: answer command will format as HTML if include <> in output!
+   --    repeat
+   --       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
+   --       if tNextTagStart is 0 then exit repeat
+   --       add tNextTagStart to tSkipChar
+   --       put tSkipChar into tNextTagStart
+   --       put char tNextTagStart + 1 of oHtmlFileData into tNextChar
+   --       put offset(">",oHtmlFileData,tSkipChar) into tNextTagEnd
+   --       add tNextTagEnd to tSkipChar
+   --       put tSkipChar into tNextTagEnd
+   --       if tNextChar is tEscapeChar or tNextChar is "/" then 
+   --          -- ignore this tag
+   --          put "ignore: " &  tNextChar & LF after tTagList
+   --          put "ignore: " & tNextChar & LF after tNextCharList
+   --       else
+   --          put char tNextTagStart+1 to tSkipChar-1 of oHtmlFileData into tNextTagText
+   --          put tNextTagText & LF after tTagList
+   --          put tNextChar & LF after tNextCharList
+   --       end if -- end if tNextChar is "!" or tNextChar is "/"  
+   --    end repeat
+   --    -- WARNING: answer command will format as HTML if include <> in output!
+   --    answer "tTagList = " & LF & tTagList & LF & the number of lines of tTagList
+   --    answer "tNextCharList = " & LF & tNextCharList
    
 end makeLiveCodeCard
 
