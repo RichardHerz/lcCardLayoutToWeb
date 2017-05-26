@@ -27,8 +27,8 @@ TAGS TO HANDLE
 div = group 
 img = image
 p = locked field 
-input with no type = unlocked field
 select = menu button
+input with no type = unlocked field
 input with type="button" = button
 input with type="range" = slider
 label > input type="checkbox" > span = checkbox
@@ -123,13 +123,56 @@ on makeLiveCodeCard
    set the cHtmlData of button tNewControl to tHeaderData 
    
    put tBodyStartChar into tSkipChar
-   add 5 to tSkipChar
+   add 5 to tSkipChar -- set to end <body>
    
-   -- get <p> tags = locked fields 
+   repeat
+      put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
+      if tNextTagStart is 0 then exit repeat
+      add tNextTagStart to tSkipChar
+      put tSkipChar into tNextTagStart
+      put offset(space,oHtmlFileData,tSkipChar) into tNextSpace
+      add tNextSpace to tSkipChar
+      put tSkipChar into tNextSpace
+      put char tNextTagStart+1 to tNextSpace-1 of oHtmlFileData into tTagName
+      switch tTagName
+         case "div"
+            -- handle div = group
+            break
+         case "img"
+            -- handle img
+            break
+         case "p"
+            -- handle p = locked field
+            put fHandlePtag(tSkipChar) into tSkipChar
+            break
+         case "select"
+            -- handle select = menu button
+            break
+         case "input"
+            -- handle input that are not inside <label tags
+            -- 3 types: none = unlocked input field, button = button, range = slider
+            break
+         case "label"
+            -- handle label
+            -- need to look for <input inside
+            -- two input types: checkbox, radio button
+            -- <label <input followed by <span
+            break
+         default
+            -- ignore
+      end switch
+      
+   end repeat
    
-   put offset("<p",oHtmlFileData,tSkipChar) into tPstartChar
-   add tSkipChar to tPstartChar
-   put tPstartChar into tSkipChar
+end makeLiveCodeCard
+
+----------------------------- 
+
+function fHandlePtag tSkipChar
+   -- <p> tag = locked field
+   -- input argument tSkipChar points to space after <p
+   -- need to return updated tSkipChar
+   
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
    put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
@@ -163,15 +206,27 @@ on makeLiveCodeCard
    
    if tCssData is not empty then
       -- assume top and bottom lines don't have data but the other lines do
+      
       set the itemDelimiter to colon
       repeat for each line n in tCssData
          if n contains "#" then next repeat
          if n contains "}" then exit repeat
          put word 1 of item 1 of n into tProp -- so don't get spaces
          put item 2 of n into tPix
-         repeat 3 times -- delete px;
-            delete the last char of tPix
-         end repeat
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
          switch tProp
             case "width"
                set the width of field tField to tPix
@@ -180,11 +235,13 @@ on makeLiveCodeCard
                set the height of field tField to tPix
                break
             case "left"
+               -- xxx need to account for relative position if inside a div = group!
                set the itemDelimiter to comma
                put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
                break
             case "top"
+               -- xxx need to account for relative position if inside a div = group!
                set the itemDelimiter to comma
                put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
@@ -194,43 +251,5 @@ on makeLiveCodeCard
    end if
    -- do this after setting width and height since setting those changes topLeft
    set the topLeft of field tField to tTopLeft
-   
-   
-   
-   --    -- OLD: get list of all tags in html data
-   
-   --    put 0 into tSkipChar
-   --    put empty into tTagList
-   --    put empty into tNextCharList
-   --    -- WARNING: answer command will format as HTML if include <> in output!
-   --    repeat
-   --       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
-   --       if tNextTagStart is 0 then exit repeat
-   --       add tNextTagStart to tSkipChar
-   --       put tSkipChar into tNextTagStart
-   --       put char tNextTagStart + 1 of oHtmlFileData into tNextChar
-   --       put offset(">",oHtmlFileData,tSkipChar) into tNextTagEnd
-   --       add tNextTagEnd to tSkipChar
-   --       put tSkipChar into tNextTagEnd
-   --       if tNextChar is tEscapeChar or tNextChar is "/" then 
-   --          -- ignore this tag
-   --          put "ignore: " &  tNextChar & LF after tTagList
-   --          put "ignore: " & tNextChar & LF after tNextCharList
-   --       else
-   --          put char tNextTagStart+1 to tSkipChar-1 of oHtmlFileData into tNextTagText
-   --          put tNextTagText & LF after tTagList
-   --          put tNextChar & LF after tNextCharList
-   --       end if -- end if tNextChar is "!" or tNextChar is "/"  
-   --    end repeat
-   --    -- WARNING: answer command will format as HTML if include <> in output!
-   --    answer "tTagList = " & LF & tTagList & LF & the number of lines of tTagList
-   --    answer "tNextCharList = " & LF & tNextCharList
-   
-end makeLiveCodeCard
-
------------------------------ 
-
-function fGetNextTag startChar
-   
-   return "huh?"
-end fGetNextTag
+   return tSkipChar
+end fHandlePtag
