@@ -137,13 +137,19 @@ on makeLiveCodeCard
       switch tTagName
          case "div"
             -- handle div = group
+            put fMakeDivTag(tSkipChar) into tSkipChar
+            break
+         case "/div>" 
+            -- assumes </div> has blank space at end
+            -- handle end of div
+            put fMakeDivEnd(tSkipChar) into tSkipChar
             break
          case "img"
             -- handle img
             break
          case "p"
             -- handle p = locked field
-            put fHandlePtag(tSkipChar) into tSkipChar
+            put fMakePTag(tSkipChar) into tSkipChar
             break
          case "select"
             -- handle select = menu button
@@ -168,10 +174,44 @@ end makeLiveCodeCard
 
 ----------------------------- 
 
-function fHandlePtag tSkipChar
-   -- <p> tag = locked field
-   -- input argument tSkipChar points to space after <p
+function fMakeDivTag tSkipChar
+   -- <div> = group
+   -- input argument tSkipChar points to space char after <div
    -- need to return updated tSkipChar
+   
+   -- THIS NEEDS TO
+   --   input list of groups and group topLefts
+   --   add to these lists
+   --   create a new empty group if possible
+   --   return the updated list of groups and group topLefts
+   
+   return tSkipChar
+end fMakeDivTag
+
+----------------------------- 
+
+function fMakeDivEnd tSkipChar
+   -- input argument tSkipChar points to space char after </div>
+   -- need to return updated tSkipChar
+   
+   -- THIS NEEDS TO
+   --   input list of groups and group topLefts
+   --   delete last group from these lists
+   --   return the updated list of groups and group topLefts
+   
+   return tSkipChar
+end fMakeDivEnd
+   -----------------------------
+   
+function fMakePTag tSkipChar
+   -- <p> tag = locked field
+   -- input argument tSkipChar points to space char after <p
+   -- need to return updated tSkipChar
+   
+   -- THIS NEEDS TO
+   --   input topLeft coordinates of the divs/groups 
+   --   in which this <p> resides
+   --   and also the list in order of the names of the divs in which it resides
    
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
@@ -182,9 +222,9 @@ function fHandlePtag tSkipChar
    subtract 1 from tIDendChar -- step back before quote
    add tIDstartChar to tIDendChar
    put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
-   put tPid into field 1
+   put tPid into field 1 -- development field
    
-   put "field_" & tPid into tField
+   put tPid into tField -- will use both tPid and tField below
    create field tField
    
    -- get <p> tag (locked field) contents
@@ -201,7 +241,7 @@ function fHandlePtag tSkipChar
       put offset("}",oCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData after field 1
+      put LF & tCssData after field 1 -- development field
    end if
    
    if tCssData is not empty then
@@ -252,4 +292,4 @@ function fHandlePtag tSkipChar
    -- do this after setting width and height since setting those changes topLeft
    set the topLeft of field tField to tTopLeft
    return tSkipChar
-end fHandlePtag
+end fMakePTag
