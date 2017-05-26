@@ -144,6 +144,13 @@ on makeLiveCodeCard
    put "field_" & tPid into tField
    create field tField
    
+   -- get <p> tag (locked field) contents
+   -- tPendChar is at ">" of <p> tag 
+   put offset("</p",oHtmlFileData,tPendChar) into tPendTagChar
+   add tPendChar to tPendTagChar
+   put char tPendChar+1 to tPendTagChar-1 of oHtmlFileData into tPcontents
+   set the htmlText of field tField to tPcontents
+   
    -- get css info
    put empty into tCssData
    if oCssFileData is not empty then
@@ -185,11 +192,10 @@ on makeLiveCodeCard
          end switch
       end repeat
    end if
-   
    -- do this after setting width and height since setting those changes topLeft
    set the topLeft of field tField to tTopLeft
    
- 
+   
    
    --    -- OLD: get list of all tags in html data
    
