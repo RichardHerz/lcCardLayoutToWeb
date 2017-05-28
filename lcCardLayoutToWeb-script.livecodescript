@@ -117,14 +117,14 @@ on saveToWebPage
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
    
-   -- uses function fHandleGroup
-   -- uses function fHandleImage
-   -- uses function fHandleStandardButton
-   -- uses function fHandleRadioButton
-   -- uses function fHandleCheckBox
-   -- uses function fHandleMenuButton
-   -- uses function fHandleField
-   -- uses function fHandleScrollbar
+   -- uses function fExportGroup
+   -- uses function fExportImage
+   -- uses function fExportStandardButton
+   -- uses function fExportRadioButton
+   -- uses function fExportCheckBox
+   -- uses function fExportMenuButton
+   -- uses function fExportField
+   -- uses function fExportScrollBar
    -- uses function fIDname
    -- uses function fReturnCSSprops
    
@@ -262,7 +262,7 @@ on saveToWebPage
       put the id of control tControlNumber into tControl_ID
       put the long name of control tControlNumber into tControlLongName
       -- warning: need id of control as main identifier because long name of control with a given
-      -- name does not include the id and so could have confusion with two similar
+      -- name does not include the id and so could have con fusion with two similar
       -- controls with same given name, e.g., Field, since they
       -- have the same long name and only the first long name would return correct ID for css ID's
       
@@ -270,7 +270,7 @@ on saveToWebPage
       
       -- lists of current groups and locations are in variables
       -- tGrpList and tGrpLocList, which are added to in
-      -- function fHandleGroup
+      -- function fExportGroup
       
       -- when a group terminates, its group name in the
       -- last line of tGrpList will disappear from next control's long name
@@ -337,9 +337,9 @@ on saveToWebPage
       switch tType
          case "group"
             -- start of a group
-            get fHandleGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
+           get fExportGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
             put it into tResult
-            -- also get other items modified by fHandleGroup
+            -- also get other items modified byfExportGroup
             put tResult["tGrpList"] into tGrpList
             put tResult["tGrpLocList"] into tGrpLocList
             put tResult["tIndent"] into tIndent
@@ -353,19 +353,19 @@ on saveToWebPage
             -- get the html for this style of button
             switch tStyle
                case "standard"
-                  get fHandleStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                 get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                case "radiobutton"
-                  get fHandleRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
+                 get fExportRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "checkbox"
-                  get fHandleCheckBox(tControl_ID, tGrp, tGrpLoc, tIndent)
+                  get fExportCheckBox(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "menu"
-                  get fHandleMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                 get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                  get fHandleStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                 get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
             end switch
             -- put the button result after tHTML and tCSS
             put it into tResult
@@ -373,21 +373,21 @@ on saveToWebPage
             put tResult["css"] after tCSS
             break
          case "field"
-            get fHandleField(tControl_ID, tGrp, tGrpLoc,tIndent)
+           get fExportField(tControl_ID, tGrp, tGrpLoc,tIndent)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "image"
-            get fHandleImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
+           get fExportImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "scrollbar"
-            get fHandleScrollbar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
+           get fExportScrollBar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
@@ -644,7 +644,7 @@ end fIDname
 
 -----------------------------------------------
 
-function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSprops
+function fExportImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- images should be added to LiveCode stack as a NEW REFERENCED CONTROL only
@@ -665,11 +665,11 @@ function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleImage
+end fExportImage
 
 -----------------------------------------------
 
-function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    put the style of control id tControl_ID into tStyle
    -- LiveCode styles of scrollbars are: progress, scale, scrollbar
@@ -753,11 +753,11 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleScrollbar
+end fExportScrollBar
 
 -----------------------------------------------
 
-function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
+function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- these inputs are not modified: tControl_ID, tOneIndent
@@ -817,10 +817,10 @@ function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    put tGrpLocList into tResult["tGrpLocList"]
    put tIndent into tResult["tIndent"]
    return tResult
-end fHandleGroup
+end fExportGroup
 -----------------------------------------------
 
-function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -895,16 +895,16 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleRadioButton
+end fExportRadioButton
 
 -----------------------------------------------
 
-function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fIDname
    -- uses function fReturnCSSprops
    -- There are different types of buttons
    -- The types you click to run a script are Javascript input type="button"
-   -- This function is for the types you click to run a script
+   -- This function is for the type you click to run a script
    -- <input type="button" value="button label">
    put "button" into tType
    put tIndent & "<input type=" & quote & tType & quote into tHTML
@@ -929,11 +929,11 @@ function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleStandardButton
+end fExportStandardButton
 
 -----------------------------------------------
 
-function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+function fExportMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    put tIndent & "<select" into tHTML
@@ -965,11 +965,11 @@ function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleMenuButton
+end fExportMenuButton
 
 -----------------------------------------------
 
-function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -1032,11 +1032,11 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleCheckBox
+end fExportCheckBox
 
 -----------------------------------------------
 
-function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -1117,6 +1117,6 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleField
+end fExportField
 
 -----------------------------------------------

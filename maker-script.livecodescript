@@ -48,7 +48,7 @@ names include save to web kill word? - can just put these in same place on card 
 */
 -----------------------------
 
-on importWebPage
+on makeWebPage
    
    -- uses local variables oHtmlFileData & oCssFileData 
    -- uses command makeLiveCodeCard
@@ -102,7 +102,7 @@ on importWebPage
    
    makeLiveCodeCard
    
-end importWebPage
+end makeWebPage
 
 -----------------------------
 
@@ -136,30 +136,30 @@ on makeLiveCodeCard
       put char tNextTagStart+1 to tNextSpace-1 of oHtmlFileData into tTagName
       switch tTagName
          case "div"
-            -- handle div = group
-            put fMakeDivTag(tSkipChar) into tSkipChar
+            -- import div = group
+            put fImportGroupStart(tSkipChar) into tSkipChar
             break
          case "/div>" 
             -- assumes </div> has blank space at end
-            -- handle end of div
-            put fMakeDivEnd(tSkipChar) into tSkipChar
+            -- import end of div = end of group
+            put fImportGroupEnd(tSkipChar) into tSkipChar
             break
          case "img"
-            -- handle img
+            -- import img = image
             break
          case "p"
-            -- handle p = locked field
-            put fMakePTag(tSkipChar) into tSkipChar
+            -- import p = locked field
+            put fImportLockedField(tSkipChar) into tSkipChar
             break
          case "select"
-            -- handle select = menu button
+            -- import select = menu button
             break
          case "input"
-            -- handle input that are not inside <label tags
-            -- 3 types: none = unlocked input field, button = button, range = slider
+            -- import input that are not inside <label tags
+            -- 3 types: none = unlocked field, button = button, range = slider
             break
          case "label"
-            -- handle label
+            -- import label
             -- need to look for <input inside
             -- two input types: checkbox, radio button
             -- <label <input followed by <span
@@ -174,7 +174,17 @@ end makeLiveCodeCard
 
 ----------------------------- 
 
-function fMakeDivTag tSkipChar
+-- VARIABLES USED IN *EXPORT* OF GROUPS
+-- tGrpList 
+-- tGrpCurrent 
+-- tGrpLocList =  list of left,top coordinates of active groups
+-- tFlagEndGrp
+--
+-- groups without given names. e.g., = of group id 3333 
+-- groups with a given name, e.g., = of group "myGroup" 
+-- div id's will have id number at end in both cases
+
+function fImportGroupStart tSkipChar
    -- <div> = group
    -- input argument tSkipChar points to space char after <div
    -- need to return updated tSkipChar
@@ -186,11 +196,11 @@ function fMakeDivTag tSkipChar
    --   return the updated list of groups and group topLefts
    
    return tSkipChar
-end fMakeDivTag
+end fImportGroupStart
 
 ----------------------------- 
 
-function fMakeDivEnd tSkipChar
+function fImportGroupEnd tSkipChar
    -- input argument tSkipChar points to space char after </div>
    -- need to return updated tSkipChar
    
@@ -200,10 +210,10 @@ function fMakeDivEnd tSkipChar
    --   return the updated list of groups and group topLefts
    
    return tSkipChar
-end fMakeDivEnd
-   -----------------------------
-   
-function fMakePTag tSkipChar
+end fImportGroupEnd
+-----------------------------
+
+function fImportLockedField tSkipChar
    -- <p> tag = locked field
    -- input argument tSkipChar points to space char after <p
    -- need to return updated tSkipChar
@@ -292,4 +302,4 @@ function fMakePTag tSkipChar
    -- do this after setting width and height since setting those changes topLeft
    set the topLeft of field tField to tTopLeft
    return tSkipChar
-end fMakePTag
+end fImportLockedField
