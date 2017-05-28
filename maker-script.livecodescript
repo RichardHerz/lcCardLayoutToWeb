@@ -227,6 +227,11 @@ function fImportGroupStart tSkipChar
    --   create a new empty group if possible
    --   return the updated list of groups and group topLefts
    
+   -- Naming for example
+   -- group "simulation frame" ends up as <div id="div_simulation_frame_1128">
+   -- may want to keep original _1128 by revising export rather than use a new id if can't set
+   -- so that orig javascript still works
+   
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
