@@ -262,7 +262,7 @@ on saveToWebPage
       put the id of control tControlNumber into tControl_ID
       put the long name of control tControlNumber into tControlLongName
       -- warning: need id of control as main identifier because long name of control with a given
-      -- name does not include the id and so could have con fusion with two similar
+      -- name does not include the id and so could have confusion with two similar
       -- controls with same given name, e.g., Field, since they
       -- have the same long name and only the first long name would return correct ID for css ID's
       
