@@ -339,7 +339,7 @@ on saveToWebPage
             -- start of a group
            get fExportGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
             put it into tResult
-            -- also get other items modified byfExportGroup
+            -- also get other items modified by fExportGroup
             put tResult["tGrpList"] into tGrpList
             put tResult["tGrpLocList"] into tGrpLocList
             put tResult["tIndent"] into tIndent
