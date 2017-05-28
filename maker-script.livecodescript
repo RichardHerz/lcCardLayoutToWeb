@@ -142,50 +142,53 @@ on makeLiveCodeCard
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
-      
-      -- char which can occur after <tag or </tag: > or space before ID
-      -- char which can occur after </tag>: space or < or LF 
-      
-      -- am I only interested in tags with this:  <tag id="...
-      
-      put offset(space,oHtmlFileData,tSkipChar) into tNextSpace
-      add tNextSpace to tSkipChar
-      put tSkipChar into tNextSpace
-      put char tNextTagStart+1 to tNextSpace-1 of oHtmlFileData into tTagName
-      switch tTagName
-         case "div"
-            -- import div = group
-            put fImportGroupStart(tSkipChar) into tSkipChar
-            break
-         case "/div>" 
-            -- assumes </div> has blank space at end
-            -- import end of div = end of group
+      -- char which can occur after <tag is ">" or space & "id="
+      -- char which can occur after </tagName> is space or < or LF 
+      -- am I only interested in tags with this:  <tagName id="...
+      put offset(space & "id=",oHtmlFileData,tSkipChar) into tNextIDchar
+      -- but could be <tag id= down the line...
+      -- make sure it's not past end this tag
+      put offset(">",oHtmlFileData,tSkipChar) into tNextEndChar
+      if tNextEndChar < tNextIDchar then
+         -- not a tag with id
+         -- check for </div>
+         if offset("/div>",oHtmlFileData,tSkipChar) = 1 then -- tSkipChar points to < of </div>
             put fImportGroupEnd(tSkipChar) into tSkipChar
-            break
-         case "img"
-            -- import img = image
-            break
-         case "p"
-            -- import p = locked field
-            put fImportLockedField(tSkipChar) into tSkipChar
-            break
-         case "select"
-            -- import select = menu button
-            break
-         case "input"
-            -- import input that are not inside <label tags
-            -- 3 types: none = unlocked field, button = button, range = slider
-            break
-         case "label"
-            -- import label
-            -- need to look for <input inside
-            -- two input types: checkbox, radio button
-            -- <label <input followed by <span
-            break
-         default
-            -- ignore
-      end switch
-      
+         end if
+      else
+         -- tag with id
+         add tNextIDchar to tSkipChar -- points to space of space & id=
+         put tSkipChar into tNextIDchar
+         put char tNextTagStart + 1 to tNextIDchar - 1 of oHtmlFileData into tTagName
+         switch tTagName
+            case "div"
+               -- import div = group
+               put fImportGroupStart(tSkipChar) into tSkipChar
+               break
+            case "img"
+               -- import img = image
+               break
+            case "p"
+               -- import p = locked field
+               put fImportLockedField(tSkipChar) into tSkipChar
+               break
+            case "select"
+               -- import select = menu button
+               break
+            case "input"
+               -- import input that are not inside <label tags
+               -- 3 types: none = unlocked field, button = button, range = slider
+               break
+            case "label"
+               -- import label
+               -- need to look for <input inside
+               -- two input types: checkbox, radio button
+               -- <label <input followed by <span
+               break
+            default
+               -- ignore
+         end switch
+      end if
    end repeat
    
 end makeLiveCodeCard
@@ -238,16 +241,15 @@ function fImportGroupStart tSkipChar
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    -- xxx problems if "#" & tPid mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
    put empty into tCssData
    if oCssFileData is not empty then
       put offset("#" & tPid,oCssFileData) into tStartChar
       put offset("}",oCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData after field 1 -- development field
+      put LF & tCssData & LF after field 1 -- development field
    end if
-   
-   
    
    return tSkipChar
 end fImportGroupStart
@@ -255,16 +257,21 @@ end fImportGroupStart
 ----------------------------- 
 
 function fImportGroupEnd tSkipChar
-   -- input argument tSkipChar points to space char after </div>
+   -- input argument tSkipChar points to < of </div>
    -- need to return updated tSkipChar
+   -- char which can occur after </div> is space or < or LF 
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
    --   delete last group from these lists
    --   return the updated list of groups and group topLefts
    
+   -- xxx before write function, get tSkipChar off this </div>
+   add 5 to tSkipChar
+   
    return tSkipChar
 end fImportGroupEnd
+
 -----------------------------
 
 function fImportLockedField tSkipChar
@@ -280,7 +287,6 @@ function fImportLockedField tSkipChar
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
-   put tPendChar into tSkipChar -- zzz new
    put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
    add tSkipChar to tIDstartChar -- char at i of id=
    add 4 to tIDstartChar -- char just inside " of id="
@@ -294,23 +300,22 @@ function fImportLockedField tSkipChar
    create field tField
    
    -- get <p> tag (locked field) contents
-   -- tPendChar is at ">" of <p> tag 
-   -- zzz new change tPendChar to tSkipChar
-   put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar -- tSkipChar = tPendChar 
-   add tSkipChar to tPendTagChar    -- zzz new change tPendChar to tSkipChar
-   put tPendTagChar into tSkipChar -- zzz new
+   put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar
+   add tSkipChar to tPendTagChar
+   put tPendTagChar into tSkipChar
    put char tPendChar+1 to tPendTagChar-1 of oHtmlFileData into tPcontents
    set the htmlText of field tField to tPcontents
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    -- xxx problems if "#" & tPid mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
    put empty into tCssData
    if oCssFileData is not empty then
       put offset("#" & tPid,oCssFileData) into tStartChar
       put offset("}",oCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData after field 1 -- development field
+      put LF & tCssData & LF after field 1 -- development field
    end if
    
    if tCssData is not empty then

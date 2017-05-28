@@ -32,6 +32,22 @@
 
 </head>
 
+dev00
+#dev00 {
+ display: block;
+ position: absolute;
+ word-wrap: break-word;
+ left: 40px;
+ top: 170px;
+ width: 100px;
+ height: 50px;
+ text-align: left;
+ font-size: 14px;
+ visibility: visible;
+ border-width: 0px;
+ border-style: outset;
+}
+
 dev01
 #dev01 {
  display: block;
@@ -47,6 +63,7 @@ dev01
  border-width: 0px;
  border-style: outset;
 }
+
 dev02
 #dev02 {
  display: block;
@@ -62,6 +79,7 @@ top: 910px;
  border-width: 0px;
  border-style: outset;
 }
+
 dev03
 #dev03 {
  display: block;
@@ -77,6 +95,7 @@ top: 1020px;
  border-width: 0px;
  border-style: outset;
 }
+
 dev04
 #dev04 {
  display: block;
@@ -92,6 +111,7 @@ top: 1170px;
  border-width: 0px;
  border-style: outset;
 }
+
 field_Field_0_1173
 #field_Field_0_1173 {
  font-size: 14px;
@@ -101,6 +121,7 @@ field_Field_0_1173
  width: 780px;
  height: 24px;
 }
+
 div_simulation_frame_1174
 #div_simulation_frame_1174 {
  display: block;
@@ -114,19 +135,18 @@ div_simulation_frame_1174
  border-style: outset;
  opacity: 1;
 }
-div_simulation_frame_1174
-#div_simulation_frame_1174 {
- display: block;
+
+field_Field_1_1176
+#field_Field_1_1176 {
+ font-size: 14px;
+ /* line-height: 100%; */
  position: absolute;
- left: 13px;
- top: 52px;
- width: 801px;
- height: 830px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
+ left: 6px;
+ top: -10px;
+ width: 780px;
+ height: 114px;
 }
+
 field_Field_1a_1176a
 #field_Field_1a_1176a {
  font-size: 14px;
@@ -137,6 +157,7 @@ field_Field_1a_1176a
  width: 600px;
  height: 200px;
 }
+
 div_RADIO_group_Model
 #div_RADIO_group_Model {
  display: block;
@@ -150,19 +171,7 @@ div_RADIO_group_Model
  border-style: outset;
  opacity: 1;
 }
-div_RADIO_group_Model
-#div_RADIO_group_Model {
- display: block;
- position: absolute;
- left: 32px;
- top: 77px;
- width: 250px;
- height: 58px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
-}
+
 div_plotCanvasInlet_1195
 #div_plotCanvasInlet_1195 {
  display: block;
@@ -177,6 +186,7 @@ top: 181px;
  border-style: none;
  opacity: 1;
 }
+
 div_plotCanvasOutlet_1196
 #div_plotCanvasOutlet_1196 {
  display: block;
@@ -191,6 +201,7 @@ top: 575px;
  border-style: none;
  opacity: 1;
 }
+
 div_plotCanvasSurface_1189
 #div_plotCanvasSurface_1189 {
  display: block;
@@ -205,6 +216,7 @@ top: 442px;
  border-style: none;
  opacity: 1;
 }
+
 div_plotCanvasGas_1192
 #div_plotCanvasGas_1192 {
  display: block;
@@ -219,6 +231,16 @@ top: 313px;
  border-style: none;
  opacity: 1;
 }
+
+field_setCmax_label_1198
+#field_setCmax_label_1198 {
+ position: absolute;
+ left: 21px;
+top: calc(var(--shift) + 143px);
+ width: 181px;
+ height: 23px;
+}
+
 field_setCmax_value_1199
 #field_setCmax_value_1199 {
  position: absolute;
@@ -228,13 +250,16 @@ top: calc(var(--shift) + 143px);
  height: 21px;
  text-align: center;
 }
-range_setCmax_slider_1200
-#range_setCmax_slider_1200 {
- left: 26px;
-top: calc(var(--shift) + 183px);
- width: 249px;
- height: 24px;
+
+field_enterKflow_label_1201
+#field_enterKflow_label_1201 {
+ position: absolute;
+ left: 21px;
+ top: calc(var(--shift) + 363px);
+ width: 198px;
+ height: 25px;
 }
+
 field_enterKads_label_1202
 #field_enterKads_label_1202 {
  position: absolute;
@@ -243,24 +268,25 @@ top: calc(var(--shift) + 429px);
  width: 198px;
  height: 25px;
 }
-input_field_enterKflow_1203
-#input_field_enterKflow_1203 {
+
+field_enterKdiff_label_1205
+#field_enterKdiff_label_1205 {
  position: absolute;
- left: 225px;
-top: calc(var(--shift) + 376px);
- width: 68px;
- height: 21px;
- text-align: center;
+ left: 21px;
+top: calc(var(--shift) + 396px);
+ width: 198px;
+ height: 25px;
 }
-input_field_enterKdiff_1206
-#input_field_enterKdiff_1206 {
+
+field_enterThieleMod_label_1207
+#field_enterThieleMod_label_1207 {
  position: absolute;
- left: 225px;
-top: calc(var(--shift) + 410px);
- width: 68px;
- height: 21px;
- text-align: center;
+ left: 21px;
+top: calc(var(--shift) + 463px);
+ width: 198px;
+ height: 25px;
 }
+
 field_enterAlpha_label_1208
 #field_enterAlpha_label_1208 {
  position: absolute;
@@ -269,24 +295,16 @@ field_enterAlpha_label_1208
  width: 198px;
  height: 25px;
 }
-input_field_enterThieleMod_1209
-#input_field_enterThieleMod_1209 {
+
+field_enterBscale_label_1211
+#field_enterBscale_label_1211 {
  position: absolute;
- left: 225px;
- top: calc(var(--shift) + 476px);
- width: 68px;
- height: 21px;
- text-align: center;
+ left: 21px;
+ top: calc(var(--shift) + 558px);
+ width: 198px;
+ height: 25px;
 }
-input_field_enterBscale_1212
-#input_field_enterBscale_1212 {
- position: absolute;
- left: 225px;
- top: calc(var(--shift) + 572px);
- width: 68px;
- height: 21px;
- text-align: center;
-}
+
 div_RADIO_group_1213
 #div_RADIO_group_1213 {
  display: block;
@@ -300,24 +318,34 @@ div_RADIO_group_1213
  border-style: outset;
  opacity: 1;
 }
-input_field_enterDuty_1218
-#input_field_enterDuty_1218 {
+
+field_enterCyclePeriod_label_1217
+#field_enterCyclePeriod_label_1217 {
  position: absolute;
- left: 264px;
- top: calc(var(--shift) + 337px);
- width: 68px;
- height: 21px;
- text-align: center;
+ left: 59px;
+top: calc(var(--shift) + 288px);
+ width: 198px;
+ height: 25px;
 }
-input_field_enterCyclePeriod_1220
-#input_field_enterCyclePeriod_1220 {
+
+field_enterDuty_label_1219
+#field_enterDuty_label_1219 {
  position: absolute;
- left: 264px;
- top: calc(var(--shift) + 303px);
- width: 68px;
- height: 21px;
- text-align: center;
+ left: 59px;
+ top: calc(var(--shift) + 321px);
+ width: 198px;
+ height: 25px;
 }
+
+field_Krxn_label_1222
+#field_Krxn_label_1222 {
+ position: absolute;
+ left: 86px;
+top: calc(var(--shift) + 496px);
+ width: 75px;
+ height: 21px;
+}
+
 field_Krxn_1223
 #field_Krxn_1223 {
  font-family: "Arial", sans-serif;
@@ -329,6 +357,7 @@ top: calc(var(--shift) + 503px);
  height: 21px;
  text-align: center;
 }
+
 field_profile_label_gas_1226
 #field_profile_label_gas_1226 {
  position: absolute;
@@ -337,6 +366,7 @@ top: calc(var(--shift) + 249px);
  width: 112px;
  height: 120px;
 }
+
 field_profile_label_surface_1227
 #field_profile_label_surface_1227 {
  position: absolute;
@@ -345,6 +375,7 @@ top: calc(var(--shift) + 376px);
  width: 112px;
  height: 120px;
 }
+
 field_reactor_label_1228
 #field_reactor_label_1228 {
  position: absolute;
@@ -358,6 +389,7 @@ field_reactor_label_1228
  width: 37px;
  height: 243px;
  }
+
 field_outlet_arrow_field_1229
 #field_outlet_arrow_field_1229 {
  position: absolute;
@@ -367,6 +399,7 @@ top: calc(var(--shift) + 489px);
  height: 21px;
  text-align: center;
 }
+
 field_inlet_arrow_field_1230
 #field_inlet_arrow_field_1230 {
  position: absolute;
@@ -376,6 +409,7 @@ top: calc(var(--shift) + 228px);
  height: 17px;
  text-align: center;
 }
+
 field_aveRate_label_1236
 #field_aveRate_label_1236 {
  position: absolute;
@@ -384,6 +418,7 @@ top: calc(var(--shift) + 720px);
  width: 332px;
  height: 25px;
 }
+
 field_aveRate_1237
 #field_aveRate_1237 {
  position: absolute;
@@ -393,6 +428,7 @@ top: calc(var(--shift) + 720px);
  height: 21px;
  text-align: center;
 }
+
 field_aveConversion_1238
 #field_aveConversion_1238 {
  position: absolute;
@@ -402,6 +438,7 @@ top: calc(var(--shift) + 720px);
  height: 21px;
  text-align: center;
 }
+
 field_aveConverion_label_1239
 #field_aveConverion_label_1239 {
  position: absolute;
@@ -410,6 +447,7 @@ top: calc(var(--shift) + 720px);
  width: 198px;
  height: 25px;
 }
+
 field_spaceTimeTop_label_1240
 #field_spaceTimeTop_label_1240 {
  position: absolute;
@@ -418,6 +456,7 @@ top: calc(var(--shift) + 628px);
  width: 240px;
  height: 25px;
 }
+
 field_spaceTimeMiddle_label_1241
 #field_spaceTimeMiddle_label_1241 {
  position: absolute;
@@ -427,6 +466,7 @@ field_spaceTimeMiddle_label_1241
  height: 25px;
  color: blue;
 }
+
 field_spaceTimeBtm_label_1242
 #field_spaceTimeBtm_label_1242 {
  position: absolute;
@@ -434,15 +474,4 @@ field_spaceTimeBtm_label_1242
  top: calc(var(--shift) + 695px);
  width: 198px;
  height: 25px;
-}
-canvas_rate
-#canvas_rate {
-  position: absolute;
-top: calc(var(--shift) + 700px);
-  left: 392px;
-  width: 414px;
-  height: 80px;
-  border-style: solid;
-  border-color: black;
-  border-width: 0px;
 }
