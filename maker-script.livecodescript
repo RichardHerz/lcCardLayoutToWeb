@@ -8,6 +8,8 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 
 local oHtmlFileData
 local oCssFileData 
+local oGrpList
+local oGrpLocList
 
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 constant kCommentStart = "<!--"
@@ -48,7 +50,7 @@ names include save to web kill word? - can just put these in same place on card 
 */
 -----------------------------
 
-on makeWebPage
+on importWebPage
    
    -- uses local variables oHtmlFileData & oCssFileData 
    -- uses command makeLiveCodeCard
@@ -102,7 +104,7 @@ on makeWebPage
    
    makeLiveCodeCard
    
-end makeWebPage
+end importWebPage
 
 -----------------------------
 
@@ -112,11 +114,13 @@ on makeLiveCodeCard
    -- uses constant kKillWord
    -- is called by command importWebPage
    
+   put empty into field 1 -- development field
+   
    -- get all data above <body>
    
    put offset("<body>",oHtmlFileData) into tBodyStartChar
    put char 1 to tBodyStartChar-1 of oHtmlFileData into tHeaderData
-   put tHeaderData into field 1
+   put LF & tHeaderData after field 1
    put "header" && kKillWord into tNewControl
    create button tNewControl
    set the label of button tNewControl to "header"
@@ -125,11 +129,25 @@ on makeLiveCodeCard
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end <body>
    
+   -- xxx problems occur when, inside comments in html or css,
+   -- xxx tags and id's are mentioned
+   -- xxx maybe set a flag when start of comment detected and
+   -- xxx ignore all until end of comment detected...
+   -- xxx may need to read all css file in at once and reject comments
+   -- xxx when getting properties
+   -- xxx and probably should save comments somehow?
+   
    repeat
       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
+      
+      -- char which can occur after <tag or </tag: > or space before ID
+      -- char which can occur after </tag>: space or < or LF 
+      
+      -- am I only interested in tags with this:  <tag id="...
+      
       put offset(space,oHtmlFileData,tSkipChar) into tNextSpace
       add tNextSpace to tSkipChar
       put tSkipChar into tNextSpace
@@ -180,9 +198,20 @@ end makeLiveCodeCard
 -- tGrpLocList =  list of left,top coordinates of active groups
 -- tFlagEndGrp
 --
--- groups without given names. e.g., = of group id 3333 
--- groups with a given name, e.g., = of group "myGroup" 
+-- in tGrpList, groups without given names. e.g., = of group id 3333 
+-- in tGrpList, groups with a given name, e.g., = of group "myGroup" 
 -- div id's will have id number at end in both cases
+--
+-- EXAMPLE of working with groups
+-- create button "b1"
+-- group button "b1"
+-- set the name of it to "g1"
+-- start editing group "g1"
+-- create button "b2"
+-- create button "b3" 
+-- group button "b2" and button "b3"
+-- set the name of it to "g2"
+-- stop editing
 
 function fImportGroupStart tSkipChar
    -- <div> = group
@@ -194,6 +223,31 @@ function fImportGroupStart tSkipChar
    --   add to these lists
    --   create a new empty group if possible
    --   return the updated list of groups and group topLefts
+   
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   add tSkipChar to tPendChar 
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
+   put LF & tPid after field 1 -- development field
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tPid mentioned in a comment!
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tPid,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData after field 1 -- development field
+   end if
+   
+   
    
    return tSkipChar
 end fImportGroupStart
@@ -223,8 +277,10 @@ function fImportLockedField tSkipChar
    --   in which this <p> resides
    --   and also the list in order of the names of the divs in which it resides
    
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
+   put tPendChar into tSkipChar -- zzz new
    put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
    add tSkipChar to tIDstartChar -- char at i of id=
    add 4 to tIDstartChar -- char just inside " of id="
@@ -232,19 +288,22 @@ function fImportLockedField tSkipChar
    subtract 1 from tIDendChar -- step back before quote
    add tIDstartChar to tIDendChar
    put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
-   put tPid into field 1 -- development field
+   put LF & tPid after field 1 -- development field
    
    put tPid into tField -- will use both tPid and tField below
    create field tField
    
    -- get <p> tag (locked field) contents
    -- tPendChar is at ">" of <p> tag 
-   put offset("</p",oHtmlFileData,tPendChar) into tPendTagChar
-   add tPendChar to tPendTagChar
+   -- zzz new change tPendChar to tSkipChar
+   put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar -- tSkipChar = tPendChar 
+   add tSkipChar to tPendTagChar    -- zzz new change tPendChar to tSkipChar
+   put tPendTagChar into tSkipChar -- zzz new
    put char tPendChar+1 to tPendTagChar-1 of oHtmlFileData into tPcontents
    set the htmlText of field tField to tPcontents
    
-   -- get css info
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tPid mentioned in a comment!
    put empty into tCssData
    if oCssFileData is not empty then
       put offset("#" & tPid,oCssFileData) into tStartChar
@@ -276,6 +335,11 @@ function fImportLockedField tSkipChar
                delete the last char of tPix
             end repeat
          end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
          
          switch tProp
             case "width"
