@@ -241,20 +241,86 @@ function fImportGroupStart tSkipChar
    put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
    subtract 1 from tIDendChar -- step back before quote
    add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
-   put LF & tPid after field 1 -- development field
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & tID after field 1 -- development field
+   
+   -- tID example is div_simulation_frame_1128
+   put tID into tIDname -- tIDname will have spaces, keep tID for CSS
+   replace "_" with space in tIDname
+   delete word 1 of tIDname -- delete div
+   put "of group" && quote & tIDname & quote & LF after oGrpList
+   -- get topLeft of group below for oGrpLocList
+   
+   create group tIDname
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tPid mentioned in a comment!
+   -- xxx problems if "#" & tID mentioned in a comment!
    -- DO NOT USE tSkipChar for CSS
    put empty into tCssData
    if oCssFileData is not empty then
-      put offset("#" & tPid,oCssFileData) into tStartChar
+      put offset("#" & tID,oCssFileData) into tStartChar
       put offset("}",oCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of oCssFileData into tCssData
       put LF & tCssData & LF after field 1 -- development field
    end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         switch tProp
+            case "width"
+               set the width of group tIDname to tPix
+               break
+            case "height"
+               set the height of group tIDname to tPix
+               break
+            case "left"
+               -- xxx need to account for relative position if inside a div = group!
+               set the itemDelimiter to comma
+               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+            case "top"
+               -- xxx need to account for relative position if inside a div = group!
+               set the itemDelimiter to comma
+               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   set the topLeft of group tIDname to tTopLeft
+   
+   put tTopLeft & LF after oGrpLocList
+   
+   start editing group tIDname
    
    return tSkipChar
 end fImportGroupStart
@@ -270,6 +336,15 @@ function fImportGroupEnd tSkipChar
    --   input list of groups and group topLefts
    --   delete last group from these lists
    --   return the updated list of groups and group topLefts
+   
+   -- stop editing group tIDname
+   
+   -- get rid of any empty lines due to LF at end
+   if the last line of oGrpList is empty then delete the last line of oGrpList
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList
+   -- delete the last line with info about group
+   delete the last line of oGrpList
+   delete the last line of oGrpLocList
    
    -- xxx before write function, get tSkipChar off this </div>
    add 5 to tSkipChar
@@ -298,10 +373,10 @@ function fImportLockedField tSkipChar
    put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
    subtract 1 from tIDendChar -- step back before quote
    add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tPid
-   put LF & tPid after field 1 -- development field
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & tID after field 1 -- development field
    
-   put tPid into tField -- will use both tPid and tField below
+   put tID into tField -- will use both tID and tField below
    create field tField
    
    -- get <p> tag (locked field) contents
@@ -312,11 +387,11 @@ function fImportLockedField tSkipChar
    set the htmlText of field tField to tPcontents
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tPid mentioned in a comment!
+   -- xxx problems if "#" & tID mentioned in a comment!
    -- DO NOT USE tSkipChar for CSS
    put empty into tCssData
    if oCssFileData is not empty then
-      put offset("#" & tPid,oCssFileData) into tStartChar
+      put offset("#" & tID,oCssFileData) into tStartChar
       put offset("}",oCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of oCssFileData into tCssData
