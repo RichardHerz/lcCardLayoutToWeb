@@ -248,7 +248,8 @@ function fImportGroupStart tSkipChar
    put tID into tIDname -- tIDname will have spaces, keep tID for CSS
    replace "_" with space in tIDname
    delete word 1 of tIDname -- delete div
-   put "of group" && quote & tIDname & quote & LF after oGrpList
+   --    put "of group" && quote & tIDname & quote & LF after oGrpList
+   put tIDname & LF after oGrpList
    -- get topLeft of group below for oGrpLocList
    
    create group tIDname
@@ -318,6 +319,9 @@ function fImportGroupStart tSkipChar
    -- do this after setting width and height since setting those changes topLeft
    set the topLeft of group tIDname to tTopLeft
    
+   -- XXX CHANGE TO STORE CUMMULATIVE locations
+   -- xxx add these locs to locs from line above, if any
+   -- xxx then a new control just has to get locs from last line in group list
    put tTopLeft & LF after oGrpLocList
    
    start editing group tIDname
@@ -337,14 +341,22 @@ function fImportGroupEnd tSkipChar
    --   delete last group from these lists
    --   return the updated list of groups and group topLefts
    
-   -- stop editing group tIDname
-   
    -- get rid of any empty lines due to LF at end
    if the last line of oGrpList is empty then delete the last line of oGrpList
    if the last line of oGrpLocList is empty then delete the last line of oGrpLocList
+   -- get name of the last group
+   put the last line of oGrpList into tGrpName
    -- delete the last line with info about group
    delete the last line of oGrpList
    delete the last line of oGrpLocList
+   
+   if oGrpList is empty then
+      -- ending top level group
+      -- when not in a group in a group, can't use group name when stopping
+      stop editing
+   else
+      stop editing group tGrpName
+   end if
    
    -- xxx before write function, get tSkipChar off this </div>
    add 5 to tSkipChar
