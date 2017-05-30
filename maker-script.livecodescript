@@ -474,6 +474,8 @@ function fImportLockedField tSkipChar
          --             delete the last char of tPix
          --          end repeat
          
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+
          switch tProp
             case "width"
                set the width of field tField to tPix
@@ -482,13 +484,13 @@ function fImportLockedField tSkipChar
                set the height of field tField to tPix
                break
             case "left"
-               -- xxx need to account for relative position if inside a div = group!
-               set the itemDelimiter to comma
+                set the itemDelimiter to comma
                put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
                break
             case "top"
-               -- xxx need to account for relative position if inside a div = group!
+               -- xxx EXPORT subtracts a constant (16) from top before writing <p> to CSS, reverse here
+               add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
                set the itemDelimiter to comma
                put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
@@ -501,7 +503,7 @@ function fImportLockedField tSkipChar
    if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
    if the last line of oGrpLocList is not empty then
       put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg -- xxx
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
       set the itemDelimiter to comma
       add item 1 of tLast to item 1 of tTopLeft
       add item 2 of tLast to item 2 of tTopLeft
