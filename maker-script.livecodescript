@@ -115,6 +115,8 @@ on makeLiveCodeCard
    -- is called by command importWebPage
    
    put empty into field 1 -- development field
+   put empty into oGrpList
+   put empty into oGrpLocList
    
    -- get all data above <body>
    
@@ -217,6 +219,7 @@ end makeLiveCodeCard
 -- stop editing
 
 function fImportGroupStart tSkipChar
+   put LF & "enter fImportGroupStart" & LF after field 1
    -- <div> = group
    -- input argument tSkipChar points to space char after <div
    -- need to return updated tSkipChar
@@ -248,10 +251,10 @@ function fImportGroupStart tSkipChar
    put tID into tIDname -- tIDname will have spaces, keep tID for CSS
    replace "_" with space in tIDname
    delete word 1 of tIDname -- delete div
-   --    put "of group" && quote & tIDname & quote & LF after oGrpList
    put tIDname & LF after oGrpList
    -- get topLeft of group below for oGrpLocList
    
+   put LF & "JUST BEFORE create group " & tIDname & LF after field 1
    create group tIDname
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
@@ -317,14 +320,31 @@ function fImportGroupStart tSkipChar
       end repeat
    end if
    -- do this after setting width and height since setting those changes topLeft
+   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" & LF after field 1
+   put "group tIDname = " & tIDname & LF after field 1
+   put "tTopLeft = " & tTopLeft & LF after field 1
    set the topLeft of group tIDname to tTopLeft
+   set the lockLoc of group tIDname to true -- otherwise will "shrink to fit" contents, which are none at this point
    
-   -- XXX CHANGE TO STORE CUMMULATIVE locations
-   -- xxx add these locs to locs from line above, if any
-   -- xxx then a new control just has to get locs from last line in group list
+   set the showBorder of group tIDname to true -- xxx so can see it in development
+   
+   -- STORE CUMMULATIVE locations in oGrpLocList
+   -- add these locs to locs from line above, if any
+   -- then a new control just has to get locs from last line in group list
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put "tLast = last line of oGrpLocList = " & the last line of oGrpLocList & LF after field 1
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
    put tTopLeft & LF after oGrpLocList
+   put LF & "oGrpLocList = " & LF & oGrpLocList & LF after field 1
    
-   start editing group tIDname
+   --    put LF & "JUST BEFORE start editing group" && tIDname & LF after field 1
+   --    start editing group tIDname
+   --    put LF & "JUST AFTER start editing group" && tIDname & LF after field 1
    
    return tSkipChar
 end fImportGroupStart
@@ -332,6 +352,7 @@ end fImportGroupStart
 ----------------------------- 
 
 function fImportGroupEnd tSkipChar
+   put LF & "enter fImportGroupEnd" & LF after field 1
    -- input argument tSkipChar points to < of </div>
    -- need to return updated tSkipChar
    -- char which can occur after </div> is space or < or LF 
@@ -342,23 +363,26 @@ function fImportGroupEnd tSkipChar
    --   return the updated list of groups and group topLefts
    
    -- get rid of any empty lines due to LF at end
-   if the last line of oGrpList is empty then delete the last line of oGrpList
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList
+   if the last line of oGrpList is empty then delete the last line of oGrpList -- in case of LF and empty line
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
    -- get name of the last group
    put the last line of oGrpList into tGrpName
+   
    -- delete the last line with info about group
    delete the last line of oGrpList
    delete the last line of oGrpLocList
    
-   if oGrpList is empty then
-      -- ending top level group
-      -- when not in a group in a group, can't use group name when stopping
-      stop editing
-   else
-      stop editing group tGrpName
-   end if
+   --    if oGrpList is empty then
+   --       -- ending top level group
+   --       -- when not in a group in a group, can't use group name when stopping
+   --       stop editing
+   --       put LF & "stop editing" & LF after field 1
+   --    else
+   --       stop editing group tGrpName
+   --       put LF & "stop editing group" && tGrpName & LF after field 1
+   --    end if
    
-   -- xxx before write function, get tSkipChar off this </div>
+   -- get tSkipChar off this </div>
    add 5 to tSkipChar
    
    return tSkipChar
@@ -367,6 +391,7 @@ end fImportGroupEnd
 -----------------------------
 
 function fImportLockedField tSkipChar
+   put LF & "enter fImportLockedField" & LF after field 1
    -- <p> tag = locked field
    -- input argument tSkipChar points to space char after <p
    -- need to return updated tSkipChar
@@ -389,7 +414,12 @@ function fImportLockedField tSkipChar
    put LF & tID after field 1 -- development field
    
    put tID into tField -- will use both tID and tField below
+   -- "field" added in export, others added later might not have it
+   replace "_" with space in tField
+   if word 1 of tField is "field" then delete word 1 of tField 
+   put LF & "JUST BEFORE CREATE FIELD tField = " & tField & LF after field 1
    create field tField
+   put LF & "JUST AFTER CREATE FIELD tField = " & tField & LF after field 1
    
    -- get <p> tag (locked field) contents
    put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar
@@ -461,6 +491,19 @@ function fImportLockedField tSkipChar
       end repeat
    end if
    -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after field 1 -- xxx
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "JUST BEFORE set the topLeft of field tField to tTopLeft" & LF after field 1
+   put "tField = " & tField && ";" && "tTopLeft = " & tTopLeft & LF after field 1
+   
    set the topLeft of field tField to tTopLeft
    return tSkipChar
 end fImportLockedField
