@@ -171,19 +171,23 @@ on makeLiveCodeCard
                -- import div = group
                put fImportGroupStart(tSkipChar) into tSkipChar
                break
-            case "img"
-               -- import img = image
-               break
             case "p"
                -- import p = locked field
                put fImportLockedField(tSkipChar) into tSkipChar
                break
+            case "img"
+               -- import img = image
+               -- has attribute src
+               break
             case "select"
                -- import select = menu button
+               -- has attribute value
+               -- has tags <option with attribute value and tag content of text before </option> before </select>
                break
             case "input"
                -- import input that are not inside <label tags
                -- 3 types: none = unlocked field, button = button, range = slider
+               put fImportInputTag(tSkipChar) into tSkipChar
                break
             case "label"
                -- import label
@@ -475,7 +479,7 @@ function fImportLockedField tSkipChar
          --          end repeat
          
          -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-
+         
          switch tProp
             case "width"
                set the width of field tField to tPix
@@ -484,7 +488,7 @@ function fImportLockedField tSkipChar
                set the height of field tField to tPix
                break
             case "left"
-                set the itemDelimiter to comma
+               set the itemDelimiter to comma
                put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
                break
@@ -494,6 +498,9 @@ function fImportLockedField tSkipChar
                set the itemDelimiter to comma
                put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
                set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of field tField to tPix
                break
          end switch
       end repeat
@@ -515,3 +522,24 @@ function fImportLockedField tSkipChar
    set the topLeft of field tField to tTopLeft
    return tSkipChar
 end fImportLockedField
+
+---------------------------------
+
+function fImportInputTag tSkipChar
+   -- import input that are not inside <label tags
+   -- 3 types: none = unlocked field, button = button, range = slider
+   -- EXAMPLE OF NONE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
+   -- EXAMPLE OF BUTTON: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
+   -- EXAMPLE OF RANGE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
+   --                                               oninput = "puCatalystLayer.updateUIparams()"></input>
+   -- STRATEGY
+   -- find >, then find type and check if it is before >
+   -- if no type before > then call fImportUnlockedField
+   -- otherwise get type and call fImportButton or fImportScrollbar
+   -- ATTRIBUTES CAN BE IN ANY ORDER
+   -- finally, return as tSkipChar end if </input>
+   
+   add 6 to tSkipChar -- temporary
+   
+   return tSkipChar
+end fImportInputTag

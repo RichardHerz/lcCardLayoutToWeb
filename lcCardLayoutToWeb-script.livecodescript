@@ -698,6 +698,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put space & "step=" & quote & tStep & quote after tHTML
    put space & "value=" & quote & tThumbPosition & quote after tHTML
    put ">" & LF after tHTML
+   put tIndent & "</input>" & LF after tHTML
    -- end html
    -- write css
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
