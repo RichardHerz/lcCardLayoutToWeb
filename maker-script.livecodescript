@@ -526,20 +526,74 @@ end fImportLockedField
 ---------------------------------
 
 function fImportInputTag tSkipChar
-   -- import input that are not inside <label tags
-   -- 3 types: none = unlocked field, button = button, range = slider
-   -- EXAMPLE OF NONE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
-   -- EXAMPLE OF BUTTON: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
-   -- EXAMPLE OF RANGE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
-   --                                               oninput = "puCatalystLayer.updateUIparams()"></input>
-   -- STRATEGY
-   -- find >, then find type and check if it is before >
-   -- if no type before > then call fImportUnlockedField
-   -- otherwise get type and call fImportButton or fImportScrollbar
-   -- ATTRIBUTES CAN BE IN ANY ORDER
-   -- finally, return as tSkipChar end if </input>
+   -- tSkipChar points to < of <input
+   -- imports <input that is not inside <label tags
+   -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
    
-   add 6 to tSkipChar -- temporary
-   
+   -- get type attribute if any - if no type then input for unlocked field
+   put offset("type",oHtmlFileData,tSkipChar) into tTypeChar
+   add tSkipChar to tTypeChar
+   put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+   add tSkipChar to tEndChar -- tEndChar put into tSkipChar at end this function
+   if tTypeChar > tEndChar then
+      -- input tag does not have a type attribute
+      -- so input tag is for an unlocked field
+      get fImportUnlockedField(tSkipChar)
+      -- don't do anything with return, update tSkipChar below
+   else
+      -- input tag has a type attribute
+      -- check what type attribute is
+      put offset(quote,oHtmlFileData,tTypeChar) into tFirstQuote
+      add tSkipChar to tFirstQuote
+      put offset(quote,oHtmlFileData,tFirstQuote) into tSecondQuote
+      add tSkipChar to tSecondQuote
+      put char tFirstQuote+1 to tSecondQuote-1 of oHtmlFileData into tType
+      switch tType
+         case "button"
+            get fImportButton(tSkipChar)
+            -- don't do anything with return, update tSkipChar below
+            break
+         case "range"
+            get fImportScrollbar(tSkipChar)
+            -- don't do anything with return, update tSkipChar below
+            break
+         default
+            -- put LF & "at parent input tag but no known type found" & LF after msg
+      end switch
+   end if
+   put tEndChar into tSkipChar -- tEndChar for > found above
    return tSkipChar
 end fImportInputTag
+
+-------------------------------
+
+function fImportUnlockedField tSkipChar
+   -- tSkipChar points to < of parent <input
+   -- called by function fImportInputTag
+   -- EXAMPLE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
+   
+   return empty -- do not return tSkipChar
+end fImportUnlockedField
+
+-------------------------------
+
+function fImportButton tSkipChar
+   -- tSkipChar points to < of parent <input
+   -- called by function fImportInputTag
+   -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
+   
+   return empty -- do not return tSkipChar
+end fImportButton
+
+------------------------------- 
+
+function fImportScrollbar tSkipChar
+   -- tSkipChar points to < of parent <input
+   -- called by function fImportInputTag
+   -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
+   --                          oninput = "puCatalystLayer.updateUIparams()"></input>
+   
+   return empty -- do not return tSkipChar
+end fImportScrollbar
+
+-------------------------------
