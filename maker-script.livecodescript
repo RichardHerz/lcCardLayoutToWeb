@@ -535,7 +535,7 @@ function fImportInputTag tSkipChar
    add tSkipChar to tTypeChar
    put offset(">",oHtmlFileData,tSkipChar) into tEndChar
    add tSkipChar to tEndChar -- tEndChar put into tSkipChar at end this function
-   if tTypeChar > tEndChar then
+   if tTypeChar > tEndChar or tTypeChar = 0 then -- tTypeChar = 0 if no more types in file
       -- input tag does not have a type attribute
       -- so input tag is for an unlocked field
       get fImportUnlockedField(tSkipChar)
