@@ -148,24 +148,36 @@ on makeLiveCodeCard
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
-      -- char which can occur after <tag is ">" or space & "id="
-      -- char which can occur after </tagName> is space or < or LF 
-      -- am I only interested in tags with this:  <tagName id="...
-      put offset(space & "id=",oHtmlFileData,tSkipChar) into tNextIDchar
-      -- but could be <tag id= down the line...
+      -- be careful, attributes can be in any order!
+      if offset("!--",oHtmlFileData,tSkipChar) = 1 then 
+         -- tSkipChar points to < of <!-- comment
+         put LF & "comment found" & LF after msg
+         add one to tSkipChar
+         next repeat
+      end if
+      if offset("/div>",oHtmlFileData,tSkipChar) = 1 then 
+         -- tSkipChar points to < of </div>
+         put LF & "just before call fImportGroupEnd" & LF after msg
+         put fImportGroupEnd(tSkipChar) into tSkipChar
+         next repeat
+      end if
+      if offset("/",oHtmlFileData,tSkipChar) = 1 then 
+         -- tSkipChar points to < of </tag
+         -- these are usually handled in tag functions but get for </body> and </html>
+         add 1 to tSkipChar -- get off this
+         next repeat
+      end if
+      put offset(space,oHtmlFileData,tSkipChar) into tNextSpaceChar
+      -- but could be <tag> and space down the line...
       -- make sure it's not past end this tag
       put offset(">",oHtmlFileData,tSkipChar) into tNextEndChar
-      if tNextEndChar < tNextIDchar then
-         -- not a tag with id
-         -- check for </div>
-         if offset("/div>",oHtmlFileData,tSkipChar) = 1 then -- tSkipChar points to < of </div>
-            put fImportGroupEnd(tSkipChar) into tSkipChar
-         end if
+      if tNextEndChar < tNextSpaceChar then
+         -- not a tag with an attribute such as type or id
+         put LF & "tNextEndChar < tNextSpaceChar so not a tag with attribute such as type or id" & LF after msg
       else
-         -- tag with id
-         add tNextIDchar to tSkipChar -- points to space of space & id=
-         put tSkipChar into tNextIDchar
-         put char tNextTagStart + 1 to tNextIDchar - 1 of oHtmlFileData into tTagName
+         add tSkipChar to tNextSpaceChar
+         put char tNextTagStart + 1 to tNextSpaceChar - 1 of oHtmlFileData into tTagName
+         put LF & "before switch in makeLiveCodeCard, tTagName = " & tTagName & LF after msg
          switch tTagName
             case "div"
                -- import div = group
@@ -195,6 +207,9 @@ on makeLiveCodeCard
                -- two input types: checkbox, radio button
                -- <label <input followed by <span
                break
+            case "canvas"
+               -- import ?? maybe use a div?
+               break
             default
                -- ignore
          end switch
@@ -217,6 +232,7 @@ end makeLiveCodeCard
 
 function fImportGroupStart tSkipChar
    put LF & "enter fImportGroupStart" & LF after msg
+   get fReporter(tSkipChar)
    -- <div> = group
    -- input argument tSkipChar points to space char after <div
    -- need to return updated tSkipChar
@@ -252,10 +268,10 @@ function fImportGroupStart tSkipChar
    put tIDname & LF after oGrpList
    -- get topLeft of group below for oGrpLocList
    
-   put LF & "JUST BEFORE create group " & tIDname & LF after msg
+   put LF & "JUST BEFORE create group " & tIDname after msg
    create group
    set the name of it to tIDname
-   put LF & "JUST AFTER create group " & tIDname & LF after msg
+   put LF & "JUST AFTER create group " & tIDname after msg
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    -- xxx problems if "#" & tID mentioned in a comment!
@@ -320,9 +336,9 @@ function fImportGroupStart tSkipChar
       end repeat
    end if
    -- do this after setting width and height since setting those changes topLeft
-   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" & LF after msg
-   put "group tIDname = " & tIDname & LF after msg
-   put "tTopLeft = " & tTopLeft & LF after msg
+   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" after msg
+   put LF & "group tIDname = " & tIDname after msg
+   put LF & "tTopLeft = " & tTopLeft after msg
    set the topLeft of group tIDname to tTopLeft
    set the lockLoc of group tIDname to true -- otherwise will "shrink to fit" contents, which are none at this point
    
@@ -334,15 +350,15 @@ function fImportGroupStart tSkipChar
    if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
    if the last line of oGrpLocList is not empty then
       put the last line of oGrpLocList into tLast
-      put "tLast = last line of oGrpLocList = " & the last line of oGrpLocList & LF after msg
+      put LF &"tLast = last line of oGrpLocList = " & the last line of oGrpLocList after msg
       set the itemDelimiter to comma
       add item 1 of tLast to item 1 of tTopLeft
       add item 2 of tLast to item 2 of tTopLeft
    end if
    put tTopLeft & LF after oGrpLocList
-   put LF & "oGrpLocList = " & LF & oGrpLocList & LF after msg
+   put LF & "oGrpLocList = " & LF & oGrpLocList after msg
    
-   put LF & "JUST BEFORE start editing group" && tIDname & LF after msg
+   put LF & "JUST BEFORE start editing group" && tIDname after msg
    start editing group tIDname
    put LF & "JUST AFTER start editing group" && tIDname & LF after msg
    
@@ -351,8 +367,19 @@ end fImportGroupStart
 
 ----------------------------- 
 
+function fReporter tSkipChar
+   put char tSkipChar-20 to tSkipChar+20 of oHtmlFileData into tReport
+   -- replace <> because some LC answer and text editors treat as HTML and/or colorize
+   replace "<" with "*" in tReport -- use one char so don't throw off count in report text
+   replace ">" with "*" in tReport -- use one char so don't throw off count in report text
+   put LF & "+/- 20 of (tSkipChar = " & tSkipChar & ") is: " after msg
+   put LF & "|||" & tReport & "|||" & LF after msg
+end fReporter
+-----------------------------
+
 function fImportGroupEnd tSkipChar
    put LF & "enter fImportGroupEnd" & LF after msg
+   get fReporter(tSkipChar)
    -- input argument tSkipChar points to < of </div>
    -- need to return updated tSkipChar
    -- char which can occur after </div> is space or < or LF 
@@ -368,15 +395,17 @@ function fImportGroupEnd tSkipChar
    -- get name of the last group
    put the last line of oGrpList into tGrpName
    
-   put LF & "Before delete last line, tGrpName = " & LF & tGrpName & LF after msg
+   put LF & "Before delete last line, tGrpName = " & LF & tGrpName after msg
    
-   put LF & "Before delete last line, oGrpList = " & LF & oGrpList & LF after msg
+   put LF & "Before delete last line, oGrpList = " & LF & oGrpList after msg
    
    -- delete the last line with info about group
    if oGrpList is not empty then delete the last line of oGrpList
    if oGrpLocList is not empty then delete the last line of oGrpLocList
    
-   -- MUST USE "BACKGROUND" HERE AND NOT "GROUP"
+   -- FOUND I MUST USE "BACKGROUND" HERE AND NOT "GROUP"
+   -- xxx is this a bug in this LC version = 9 dp 6 ??? 
+   -- xxx group works above when start editing
    put LF & "the name of this background = " & the name of this background & LF after msg
    
    if oGrpList is empty then
@@ -386,15 +415,24 @@ function fImportGroupEnd tSkipChar
       stop editing
       put LF & "stop editing" & LF after msg
    else
-      -- MUST USE "BACKGROUND" HERE WHEN STOPPING EDIT OF GROUP AND NOT "GROUP"
-      put LF & "JUST BEFORE stop editing background" && tGrpName & LF after msg
+      -- FOUND I MUST USE "BACKGROUND" HERE WHEN STOPPING EDIT OF GROUP AND NOT "GROUP"
+      -- xxx is this a bug in this LC version = 9 dp 6 ??? 
+      -- xxx group works above when start editing
+      put LF & "JUST BEFORE stop editing background" && tGrpName after msg
       stop editing background tGrpName
-      put LF & "stop editing background" && tGrpName & LF after msg
+      put LF & "stop editing background" && tGrpName after msg
+      
+      -- xxx BUT THIS ALSO STOPS EDITING OF THE GROUP IN WHICH THIS GROUP IS LOCATED !!!! 
+      -- xxx WHICH IN THIS CASE IS THE SIMULATION FRAME GROUP
+      -- xxx SINCE DO NOT HAVE 3rd LEVEL NESTING IN HTML EXAMPLE USED HERE...
+      
    end if
    
    -- get tSkipChar off this </div>
-   add 5 to tSkipChar
+   add 1 to tSkipChar
    
+   put LF & "return tSkipChar = " & tSkipChar after msg
+   put LF & "just before end fImportGroupEnd" & LF after msg
    return tSkipChar
 end fImportGroupEnd
 
@@ -427,9 +465,9 @@ function fImportLockedField tSkipChar
    replace "_" with space in tField
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
-   put LF & "JUST BEFORE CREATE FIELD tField = " & tField & LF after msg
+   put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    create field tField
-   put LF & "JUST AFTER CREATE FIELD tField = " & tField & LF after msg
+   put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
    -- get <p> tag (locked field) contents
    put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar
@@ -516,38 +554,60 @@ function fImportLockedField tSkipChar
       add item 2 of tLast to item 2 of tTopLeft
    end if
    
-   put LF & "JUST BEFORE set the topLeft of field tField to tTopLeft" & LF after msg
-   put "tField = " & tField && ";" && "tTopLeft = " & tTopLeft & LF after msg
+   put LF & "just before set the topLeft of field tField to tTopLeft" after msg
+   put LF & "tField = " & tField && ";" && "tTopLeft = " & tTopLeft after msg
    
    set the topLeft of field tField to tTopLeft
+   
+   put LF & "just before end of fImportLockedField" & LF after msg
    return tSkipChar
 end fImportLockedField
 
 ---------------------------------
 
 function fImportInputTag tSkipChar
+   put LF & "enter fImportInputTag" & LF after msg
+   get fReporter(tSkipChar)
    -- tSkipChar points to < of <input
    -- imports <input that is not inside <label tags
    -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
    
    -- get type attribute if any - if no type then input for unlocked field
    put offset("type",oHtmlFileData,tSkipChar) into tTypeChar
+   put LF & "offset gives tTypeChar before add skip = " & tTypeChar after msg
    add tSkipChar to tTypeChar
    put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+   put LF & "offset gives tEndChar before add skip = " & tEndChar after msg
    add tSkipChar to tEndChar -- tEndChar put into tSkipChar at end this function
-   if tTypeChar > tEndChar or tTypeChar = 0 then -- tTypeChar = 0 if no more types in file
+   put LF & "tTypeChar = " & tTypeChar && "tEndChar = " & tEndChar after msg
+   if tTypeChar > tEndChar or tTypeChar = tSkipChar then -- tTypeChar = 0 if no more types in file
+      put LF & "(tTypeChar > tEndChar or tTypeChar = tSkipChar) so no type" after msg
       -- input tag does not have a type attribute
       -- so input tag is for an unlocked field
       get fImportUnlockedField(tSkipChar)
       -- don't do anything with return, update tSkipChar below
    else
+      put LF & "(tTypeChar NOT > tEndChar AND tTypeChar NOT = tSkipChar) so there IS a type" after msg
       -- input tag has a type attribute
       -- check what type attribute is
-      put offset(quote,oHtmlFileData,tTypeChar) into tFirstQuote
-      add tSkipChar to tFirstQuote
-      put offset(quote,oHtmlFileData,tFirstQuote) into tSecondQuote
-      add tSkipChar to tSecondQuote
-      put char tFirstQuote+1 to tSecondQuote-1 of oHtmlFileData into tType
+      -- xxx ASSUME type="typename" FOLLOWED BY SPACE OR >
+      -- xxx was having problems using offset to find quote
+      put offset(space,oHtmlFileData,tTypeChar) into tSpaceChar
+      put LF & "tSpaceChar before add tTypeChar = " & tSpaceChar after msg
+      add tTypeChar to tSpaceChar
+      put offset(">",oHtmlFileData,tTypeChar) into tEndChar -- tEndChar changed from that above
+      put LF & "tEndChar before add tTypeChar = " & tEndChar after msg
+      add tTypeChar to tEndChar
+      if tSpaceChar < tEndChar then
+         -- assume have type="typename" immediately followed by space
+         put LF & "tSpaceChar = " & tSpaceChar & " < tEndChar = " & tEndChar after msg
+         put char tTypeChar+6 to tSpaceChar-2 of oHtmlFileData into tType
+      else
+         -- assume have type="typename" immediately followed by >
+         put LF & "tSpaceChar = " & tSpaceChar & " > tEndChar = " & tEndChar after msg
+         put char tTypeChar+6 to tEndChar-2 of oHtmlFileData into tType
+      end if
+      put LF & "tType = " & tType after msg
       switch tType
          case "button"
             get fImportButton(tSkipChar)
@@ -562,37 +622,170 @@ function fImportInputTag tSkipChar
       end switch
    end if
    put tEndChar into tSkipChar -- tEndChar for > found above
+   put LF & "just before end fImportInputTag" & LF after msg
    return tSkipChar
 end fImportInputTag
 
 -------------------------------
 
 function fImportUnlockedField tSkipChar
+   put LF & "enter fImportUnlockedField" & LF after msg
    -- tSkipChar points to < of parent <input
    -- called by function fImportInputTag
    -- EXAMPLE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
    
+   put LF & "just before end fImportUnlockedField" & LF after msg
    return empty -- do not return tSkipChar
 end fImportUnlockedField
 
 -------------------------------
 
 function fImportButton tSkipChar
+   put LF & "enter fImportButton" & LF after msg
    -- tSkipChar points to < of parent <input
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID 
+   put LF & "tID = " & tID after msg
+   -- tID used below in GET CSS
+   put tID into tButton
+   replace "_" with space in tButton
+   -- "button" added in export, others added later might not have it
+   if word 1 of tButton is "button" then delete word 1 of tButton
+   -- xxx for now keep the original id number
+   -- GET VALUE
+   put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at v of "value="
+   add 7 to tIDstartChar -- char just inside "value="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tValue
+   put LF & "tValue= " & tValue after msg
+   -- GET ONCLICK
+   put offset("onclick=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at o of "onclick="
+      add 9 to tIDstartChar -- char just inside "onclick="
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tOnclick
+      put LF & "tOnclick= " & tOnclick after msg
+   else
+      put LF & "NO onclick found" after msg
+   end if
    
+   -- CREATE BUTTON
+   create button
+   set the name of it to tButton
+   set the label of button tButton to tValue
+   set the cOnclick of button tButton to tOnclick -- xxx add this to EXPORT
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+         
+         switch tProp
+            case "width"
+               set the width of button tButton to tPix
+               break
+            case "height"
+               set the height of button tButton to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+            case "top"
+               -- xxx EXPORT subtracts a constant (16) from top before writing <p> to CSS, reverse here
+               add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
+               set the itemDelimiter to comma
+               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of button tButton to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "JUST BEFORE set the topLeft of button tButton to tTopLeft" after msg
+   put LF & "tButton = " & tButton && ";" && "tTopLeft = " & tTopLeft after msg
+   
+   set the topLeft of button tButton to tTopLeft
+   
+   put LF & "just before end fImportButton" & LF after msg
    return empty -- do not return tSkipChar
 end fImportButton
 
 ------------------------------- 
 
 function fImportScrollbar tSkipChar
+   put LF & "enter fImportScrollbar" & LF after msg
    -- tSkipChar points to < of parent <input
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
    --                          oninput = "puCatalystLayer.updateUIparams()"></input>
    
+   put LF & "just before end fImportScrollbar" & LF after msg
    return empty -- do not return tSkipChar
 end fImportScrollbar
 
