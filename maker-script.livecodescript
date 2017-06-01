@@ -152,7 +152,9 @@ on makeLiveCodeCard
       if offset("!--",oHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of <!-- comment
          put LF & "comment found" & LF after msg
-         add one to tSkipChar
+         -- want to skip to end comment in case have commented out some controls
+         put offset("-->",oHtmlFileData,tSkipChar) into tEndComment
+         add tEndComment to tSkipChar
          next repeat
       end if
       if offset("/div>",oHtmlFileData,tSkipChar) = 1 then 
@@ -395,7 +397,7 @@ function fImportGroupEnd tSkipChar
    -- get name of the last group
    put the last line of oGrpList into tGrpName
    
-   put LF & "Before delete last line, tGrpName = " & LF & tGrpName after msg
+   put LF & "Before delete last line, tGrpName = " & tGrpName after msg
    
    put LF & "Before delete last line, oGrpList = " & LF & oGrpList after msg
    
@@ -418,13 +420,26 @@ function fImportGroupEnd tSkipChar
       -- FOUND I MUST USE "BACKGROUND" HERE WHEN STOPPING EDIT OF GROUP AND NOT "GROUP"
       -- xxx is this a bug in this LC version = 9 dp 6 ??? 
       -- xxx group works above when start editing
-      put LF & "JUST BEFORE stop editing background" && tGrpName after msg
-      stop editing background tGrpName
-      put LF & "stop editing background" && tGrpName after msg
+      
+      --       put LF & "JUST BEFORE stop editing background" && tGrpName after msg
+      --       stop editing background tGrpName
+      --       put LF & "stop editing background" && tGrpName after msg
       
       -- xxx BUT THIS ALSO STOPS EDITING OF THE GROUP IN WHICH THIS GROUP IS LOCATED !!!! 
       -- xxx WHICH IN THIS CASE IS THE SIMULATION FRAME GROUP
       -- xxx SINCE DO NOT HAVE 3rd LEVEL NESTING IN HTML EXAMPLE USED HERE...
+      
+      -- xxx SO HAD SAME EFFECT AS "STOP EDITING"
+      
+      stop editing
+      put LF & "stop editing" & LF after msg
+      
+      -- if this group was nested inside a parent group, then go back to editing that parent group
+      -- this has been tested for groups nested 3 deep: grandparent > parent > child
+      if oGrpList is not empty then 
+         put the last line of oGrpList into tGrpName
+         start editing group tGrpName
+      end if
       
    end if
    

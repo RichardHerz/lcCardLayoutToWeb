@@ -17,6 +17,36 @@
   https://developers.google.com/web/updates/2016/02/css-variables-why-should-you-care
 */
 
+/*
+#div_tester_01 {
+  display: block;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 60px;
+  height: 20px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
+  opacity: 1;
+}
+
+#hello {
+ display: block;
+ position: absolute;
+ word-wrap: break-word;
+ left: 2px;
+ top: 2px;
+ width: 56px;
+ height: 16px;
+ text-align: left;
+ font-size: 12px;
+ visibility: visible;
+ border-width: 0px;
+ border-style: outset;
+}
+*/
+
 /* FIELDS TO DISPLAY DATA DURING DEVELOPMENT */
 
 #dev00 {
