@@ -59,7 +59,8 @@ on importWebPage
    -- "answer files" allows more than one file to be selected and returns paths on separate lines
    
    put empty into tHtmlFile
-   answer file "select HTML file"
+   
+   answer file "select HTML file" with type "html|html|html"
    if the result is empty then
       put it into tHtmlFile
       if ".html" is in tHtmlFile then
@@ -72,7 +73,7 @@ on importWebPage
    
    if tHtmlFile is not empty then
       put empty into tCssFile
-      answer file "select CSS file"
+      answer file "select CSS file" with type "css|css|css"
       if the result is empty then
          put it into tCssFile
          if ".css" is in tCssFile then
@@ -222,6 +223,20 @@ end makeLiveCodeCard
 
 ----------------------------- 
 
+function fStripOuterSpace tText
+   -- used to strip junk from both ends of text in <p> tag
+   -- need to use compound conditions because can be in any order, e.g., space LF tab space
+   repeat while char 1 of tText is space OR char 1 of tText is LF OR char 1 of tText is tab
+      delete char 1 of tText
+   end repeat
+   repeat while the last char of tText is space OR the last char of tText is LF OR the last char of tText is tab
+      delete the last char of tText
+   end repeat
+   return tText
+end fStripOuterSpace
+
+----------------------------- 
+
 -- VARIABLES USED IN *EXPORT* OF GROUPS
 -- tGrpList 
 -- tGrpCurrent 
@@ -323,28 +338,22 @@ function fImportGroupStart tSkipChar
                set the height of group tIDname to tPix
                break
             case "left"
-               -- xxx need to account for relative position if inside a div = group!
                set the itemDelimiter to comma
-               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
                set the itemDelimiter to colon
                break
             case "top"
-               -- xxx need to account for relative position if inside a div = group!
                set the itemDelimiter to comma
-               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
                set the itemDelimiter to colon
                break
          end switch
       end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" after msg
-   put LF & "group tIDname = " & tIDname after msg
-   put LF & "tTopLeft = " & tTopLeft after msg
-   set the topLeft of group tIDname to tTopLeft
-   set the lockLoc of group tIDname to true -- otherwise will "shrink to fit" contents, which are none at this point
-   
-   set the showBorder of group tIDname to true -- xxx so can see it in development
+   end if   
    
    -- STORE CUMMULATIVE locations in oGrpLocList
    -- add these locs to locs from line above, if any
@@ -359,6 +368,13 @@ function fImportGroupStart tSkipChar
    end if
    put tTopLeft & LF after oGrpLocList
    put LF & "oGrpLocList = " & LF & oGrpLocList after msg
+   -- do this after setting width and height since setting those change topLeft
+   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" after msg
+   put LF & "group tIDname = " & tIDname after msg
+   put LF & "tTopLeft = " & tTopLeft after msg
+   set the topLeft of group tIDname to tTopLeft
+   set the lockLoc of group tIDname to true -- otherwise will "shrink to fit" contents, which are none at this point
+   set the showBorder of group tIDname to true -- xxx so can see it in development
    
    put LF & "JUST BEFORE start editing group" && tIDname after msg
    start editing group tIDname
@@ -484,11 +500,17 @@ function fImportLockedField tSkipChar
    create field tField
    put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
+   set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
+   set the lockText of field tField to true
+   
    -- get <p> tag (locked field) contents
    put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar
    add tSkipChar to tPendTagChar
    put tPendTagChar into tSkipChar
    put char tPendChar+1 to tPendTagChar-1 of oHtmlFileData into tPcontents
+   
+   put fStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
+   
    set the htmlText of field tField to tPcontents
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
@@ -542,14 +564,18 @@ function fImportLockedField tSkipChar
                break
             case "left"
                set the itemDelimiter to comma
-               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
                set the itemDelimiter to colon
                break
             case "top"
                -- xxx EXPORT subtracts a constant (16) from top before writing <p> to CSS, reverse here
                add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
                set the itemDelimiter to comma
-               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
                set the itemDelimiter to colon
                break
             case "font-size"
@@ -755,14 +781,16 @@ function fImportButton tSkipChar
                break
             case "left"
                set the itemDelimiter to comma
-               put tPix into item 1 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
                set the itemDelimiter to colon
                break
             case "top"
-               -- xxx EXPORT subtracts a constant (16) from top before writing <p> to CSS, reverse here
-               add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
                set the itemDelimiter to comma
-               put tPix into item 2 of tTopLeft -- save, don't set field topLeft yet
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
                set the itemDelimiter to colon
                break
             case "font-size"
