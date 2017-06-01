@@ -662,8 +662,7 @@ end fImportInputTag
 
 function fImportUnlockedField tSkipChar
    put LF & "enter fImportUnlockedField" & LF after msg
-   -- tSkipChar points to < of parent <input
-   -- need to return updated tSkipChar
+   -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- LC unlocked fields are for HTML input tag with no type attribute for input fields
    -- EXAMPLE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
@@ -693,7 +692,7 @@ function fImportUnlockedField tSkipChar
    put offset("onchange=",oHtmlFileData,tSkipChar) into tIDstartChar
    if tIDstartChar > 1 then
       add tSkipChar to tIDstartChar -- char at o of "onchange="
-      add 10 to tIDstartChar -- char just inside "onchange=" -- xxx for onclick in locked field <p>, add 9 
+      add 10 to tIDstartChar -- char just inside "onchange=" -- xxx for onclick in button, add 9 
       put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
       subtract 1 from tIDendChar -- step back before quote
       add tIDstartChar to tIDendChar
@@ -803,14 +802,14 @@ function fImportUnlockedField tSkipChar
    set the topLeft of field tField to tTopLeft
    
    put LF & "just before end of fImportUnlockedField" & LF after msg
-   return tSkipChar
+   return empty -- no need to return tSkipChar
 end fImportUnlockedField
 
 -------------------------------
 
 function fImportButton tSkipChar
    put LF & "enter fImportButton" & LF after msg
-   -- tSkipChar points to < of parent <input
+   -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
@@ -943,20 +942,20 @@ function fImportButton tSkipChar
    set the topLeft of button tButton to tTopLeft
    
    put LF & "just before end fImportButton" & LF after msg
-   return empty -- do not return tSkipChar
+   return empty -- no need to return tSkipChar
 end fImportButton
 
 ------------------------------- 
 
 function fImportScrollbar tSkipChar
    put LF & "enter fImportScrollbar" & LF after msg
-   -- tSkipChar points to < of parent <input
+   -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
    --                          oninput = "puCatalystLayer.updateUIparams()"></input>
    
    put LF & "just before end fImportScrollbar" & LF after msg
-   return empty -- do not return tSkipChar
+   return empty -- no need to return tSkipChar
 end fImportScrollbar
 
 -------------------------------
