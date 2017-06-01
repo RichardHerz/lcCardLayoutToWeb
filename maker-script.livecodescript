@@ -18,23 +18,17 @@ constant kTagEndStart = "</"
 
 -----------------------------
 /*
-APPROACH
-work on one type of control at a time
-write function that generates the LC control and sets its properties
-SAVE FOR WRITE AT OUTPUT 
-all text in html file before <body>
-where to save, maybe in custom prop of a button whose name includes the save to web kill word?
-then write </body></html> at end of output
-TAGS TO HANDLE 
-div = group 
-img = image
-p = locked field 
-select = menu button
-input with no type = unlocked field
-input with type="button" = button
-input with type="range" = slider
-label > input type="checkbox" > span = checkbox
-label > input type="radio" > span = radio button (will be several inside one div/group)
+TAGS DONE 
+   div = group 
+   p = locked field 
+   input with no type = unlocked field
+   input with type="button" = button
+TAGS TO DO
+   img = image
+   select = menu button
+   input with type="range" = scrollbar
+   label > input type="checkbox" > span = checkbox
+   label > input type="radio" > span = radio button (will be several inside one div/group
 ALL TAGS TO HANDLE WILL HAVE id ATTRIBUTE 
 search css for the id and parse to set properties of LC control
 HANDLE OTHER ATTRIBUTES control by control
@@ -475,11 +469,6 @@ function fImportLockedField tSkipChar
    -- input argument tSkipChar points to space char after <p
    -- need to return updated tSkipChar
    
-   -- THIS NEEDS TO
-   --   input topLeft coordinates of the divs/groups 
-   --   in which this <p> resides
-   --   and also the list in order of the names of the divs in which it resides
-   
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar 
@@ -512,6 +501,7 @@ function fImportLockedField tSkipChar
    put fStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
    
    set the htmlText of field tField to tPcontents
+   -- xxx BUT WHAT WILL HAPPEN WITH LINKS WHEN EXPORTED?
    
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    -- xxx problems if "#" & tID mentioned in a comment!
@@ -570,7 +560,8 @@ function fImportLockedField tSkipChar
                set the itemDelimiter to colon
                break
             case "top"
-               -- xxx EXPORT subtracts a constant (16) from top before writing <p> to CSS, reverse here
+               -- xxx for locked fields only, EXPORT subtracts a constant (16) from top before 
+               -- xxx      writing <p> to CSS, reverse here
                add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
                set the itemDelimiter to comma
                -- order in LC topLeft is left,top!
@@ -672,11 +663,147 @@ end fImportInputTag
 function fImportUnlockedField tSkipChar
    put LF & "enter fImportUnlockedField" & LF after msg
    -- tSkipChar points to < of parent <input
+   -- need to return updated tSkipChar
    -- called by function fImportInputTag
+   -- LC unlocked fields are for HTML input tag with no type attribute for input fields
    -- EXAMPLE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
    
-   put LF & "just before end fImportUnlockedField" & LF after msg
-   return empty -- do not return tSkipChar
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   add tSkipChar to tPendChar 
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & "tID = " & tID after msg -- development field
+   
+   -- GET VALUE
+   put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at v of "value="
+   add 7 to tIDstartChar -- char just inside "value="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tValue
+   put LF & "tValue= " & tValue after msg
+   -- GET ONCHANGE
+   put offset("onchange=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at o of "onchange="
+      add 10 to tIDstartChar -- char just inside "onchange=" -- xxx for onclick in locked field <p>, add 9 
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tOnchange
+      put LF & "tOnchange= " & tOnchange after msg
+   else
+      put LF & "NO onchange found" after msg
+   end if
+   
+   put tID into tField -- will use both tID and tField below
+   replace "_" with space in tField
+   -- "input" added in export of unlocked field, others added later might not have it
+   if word 1 of tField is "input" then delete word 1 of tField 
+   put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   create field tField
+   put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
+   
+   set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
+   set the lockText of field tField to false
+   
+   set the text of field tField to tValue
+   set the cOnchange of field tField to tOnchange -- xxx need to add this to EXPORT script
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+         
+         switch tProp
+            case "width"
+               set the width of field tField to tPix
+               break
+            case "height"
+               set the height of field tField to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of field tField to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "just before set the topLeft of field tField to tTopLeft" after msg
+   put LF & "tField = " & tField && ";" && "tTopLeft = " & tTopLeft after msg
+   
+   set the topLeft of field tField to tTopLeft
+   
+   put LF & "just before end of fImportUnlockedField" & LF after msg
+   return tSkipChar
 end fImportUnlockedField
 
 -------------------------------
@@ -714,7 +841,7 @@ function fImportButton tSkipChar
    put offset("onclick=",oHtmlFileData,tSkipChar) into tIDstartChar
    if tIDstartChar > 1 then
       add tSkipChar to tIDstartChar -- char at o of "onclick="
-      add 9 to tIDstartChar -- char just inside "onclick="
+      add 9 to tIDstartChar -- char just inside "onclick="  -- xxx for onchange in unlocked input field, add 10
       put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
       subtract 1 from tIDendChar -- step back before quote
       add tIDstartChar to tIDendChar
