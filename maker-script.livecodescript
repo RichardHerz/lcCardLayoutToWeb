@@ -1121,9 +1121,9 @@ function fImportScrollbar tSkipChar
          end switch
       end repeat
    end if
-   -- xxx TOPLEFT WILL HAVE TO BE MODIFIED IF CSS ROTATES RANGE & tTransformFlag is true
+   -- TOPLEFT WILL HAVE TO BE MODIFIED IF CSS ROTATES RANGE & tTransformFlag is true
    -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
+   -- get topLeft of group relative to LC card topLeft
    if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
    if the last line of oGrpLocList is not empty then
       put the last line of oGrpLocList into tLast
@@ -1134,41 +1134,42 @@ function fImportScrollbar tSkipChar
    end if
    
    if tTransformFlag is true then
+      -- CSS/HTML range started out as horiz then transformed by rotation 90 deg about center
       put LF & "tTransformFlag is true" after msg
       -- swap width and height
       put tWidth into tOldWidth
       put tHeight into tOldHeight
       put tOldWidth into tHeight
       put tOldHeight into tWidth
-      -- also have to modify topLeft for rotation about center
+      -- modify topLeft for rotation about center
       put item 1 of tTopLeft into tOldLeft
       put item 2 of tTopLeft into tOldTop
-      put tOldLeft + 0.5 * tOldWidth - 0.25 * tOldHeight into item 1 of tTopLeft
-      put tOldTop - 0.5 * tOldWidth + 0.5 * tOldHeight into item 2 of tTopLeft
+      put tOldLeft + tOldWidth/2 - tOldHeight/4 into item 1 of tTopLeft
+      put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
    end if
    
    set the width of scrollbar tScrollbar to tWidth
    set the height of scrollbar tScrollbar to tHeight
    set the topLeft of scrollbar tScrollbar to tTopLeft
    
-   -- NOTE THAT startValue in LC vertical scale is at top
-   -- xxx CSS/HTML rotated a horiz range to get vertical and EXPORT has high value at top
-   -- xxx so need to change both here and there to get correspondence between LC and CSS/HTML
-   set the startValue of scrollbar tScrollbar to tMin
-   set the endValue of scrollbar tScrollbar to tMax
+   if tTransformFlag is true then
+      -- vertical scrollbar
+      -- startValue in LC vertical scrollbar is at top
+      -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
+      -- CSS/HTML rotated a horiz range to get vertical
+      -- CSS/HTML horiz range rotated 270 deg to vertical range has min at bottom, max at top
+      set the startValue of scrollbar tScrollbar to tMax
+      set the endValue of scrollbar tScrollbar to tMin
+   else
+      -- horizontal scrollbar
+      set the startValue of scrollbar tScrollbar to tMin
+      set the endValue of scrollbar tScrollbar to tMax
+   end if
+   
+   -- finish up scrollbar
    set the pageInc of scrollbar tScrollbar to tStep
    set the thumbPosition of scrollbar tScrollbar to tValue
    set the cOninput of scrollbar tScrollbar to tOninput
-   
-   --          -- FROM EXPORT
-   --          put the startValue of control id tControl_ID into tStartValue
-   --          put the endValue of control id tControl_ID into tEndValue
-   --          put the thumbPosition of control id tControl_ID into tThumbPosition
-   --          put the pageInc of control id tControl_ID into tStep
-   --          put space & "min=" & quote & tStartValue & quote after tHTML
-   --          put space & "max=" & quote & tEndValue & quote after tHTML
-   --          put space & "step=" & quote & tStep & quote after tHTML
-   --          put space & "value=" & quote & tThumbPosition & quote after tHTML
    
    put LF & "just before end fImportScrollbar" & LF after msg
    return empty -- no need to return tSkipChar

@@ -692,14 +692,9 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put the endValue of control id tControl_ID into tEndValue
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put the pageInc of control id tControl_ID into tStep
-   put space & "min=" & quote & tStartValue & quote after tHTML
-   put space & "max=" & quote & tEndValue & quote after tHTML
-   put space & "step=" & quote & tStep & quote after tHTML
-   put space & "value=" & quote & tThumbPosition & quote after tHTML
-   put ">" & LF after tHTML
-   put tIndent & "</input>" & LF after tHTML
-   -- end html
-   -- write css
+   -- WILL WRITE SOME MORE HTML BELOW
+   
+   -- WRITE CSS (AND SOME MORE HTML) 
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
@@ -717,23 +712,45 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
+   
+   if tHt < tWd then
+      -- horizontal scrollbar
+      put space & "min=" & quote & tStartValue & quote after tHTML
+      put space & "max=" & quote & tEndValue & quote after tHTML
+   else
+      -- vertical scrollbar
+      -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
+      -- ALSO SEE if below
+      -- swap LC start and end values
+      put space & "min=" & quote & tEndValue & quote after tHTML
+      put space & "max=" & quote & tStartValue & quote after tHTML
+   end if
+   put space & "step=" & quote & tStep & quote after tHTML
+   put space & "value=" & quote & tThumbPosition & quote after tHTML
+   put ">" & LF after tHTML
+   put tIndent & "</input>" & LF after tHTML
+   -- END HTML
+   
+   -- CONTINUE WITH CSS
    if tHt > tWd then
       -- vertical scrollbar when height > width
       -- default in html and css is horizontal, so need to do something special to get vertical
-      -- xxx need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
-      -- xxx rotate appears to work in Google browser on Andoid phone
-      -- xxx there are a variety of techniques
-      -- xxx see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
-      -- xxx also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
+      -- need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
+      -- rotate appears to work in Google browser on Andoid phone
+      -- there are a variety of techniques
+      -- see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
+      -- also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
       -- HERE USE CSS ROTATE, need to swap height and width from LC, i.e.,
-      -- make horizontal, then rotate (270deg to get higher values at top)
-      -- xxx IN LC vertical scales, startValue is at top and get higher values at bottom
-      -- xxx so if have changed order in LC may have to rotate differently in HTML
+      -- make horizontal, then rotate
+      -- NOTE: IN LC vertical scales, startValue is at top and endValue at bottom
+      -- ASSUME LC has startValue at top GREATER THAN endValue at bottom - see if above
+      -- AND THEN ROTATE IN CSS by 270 deg to get min value at bottom, max at top
       -- save both old values for modify positioning below
       put tWd into tOldWd
       put tHt into tOldHt
       put tOldWd into tHt
       put tOldHt into tWd
+      -- need to rotate by 270 deg to get CSS/HTML with min value at bottom, max at top
       put space & "transform: rotate(270deg);" & LF after tCSS
       -- now need to modify positioning left and top
       -- as if you rotate original vertical about roughly its
@@ -750,7 +767,8 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put space & "height:" && tHt & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
-   -- end of css
+   -- END CSS
+   
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
