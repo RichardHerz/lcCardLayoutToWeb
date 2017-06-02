@@ -691,7 +691,6 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put the startValue of control id tControl_ID into tStartValue
    put the endValue of control id tControl_ID into tEndValue
    put the thumbPosition of control id tControl_ID into tThumbPosition
-   put the style of control id tControl_ID into tStyle
    put the pageInc of control id tControl_ID into tStep
    put space & "min=" & quote & tStartValue & quote after tHTML
    put space & "max=" & quote & tEndValue & quote after tHTML
@@ -728,6 +727,8 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
       -- xxx also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
       -- HERE USE CSS ROTATE, need to swap height and width from LC, i.e.,
       -- make horizontal, then rotate (270deg to get higher values at top)
+      -- xxx IN LC vertical scales, startValue is at top and get higher values at bottom
+      -- xxx so if have changed order in LC may have to rotate differently in HTML
       -- save both old values for modify positioning below
       put tWd into tOldWd
       put tHt into tOldHt

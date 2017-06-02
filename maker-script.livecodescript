@@ -840,7 +840,7 @@ function fImportButton tSkipChar
    put offset("onclick=",oHtmlFileData,tSkipChar) into tIDstartChar
    if tIDstartChar > 1 then
       add tSkipChar to tIDstartChar -- char at o of "onclick="
-      add 9 to tIDstartChar -- char just inside "onclick="  -- xxx for onchange in unlocked input field, add 10
+      add 9 to tIDstartChar -- char just inside "onclick="  -- for onchange in unlocked input field, add 10
       put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
       subtract 1 from tIDendChar -- step back before quote
       add tIDstartChar to tIDendChar
@@ -953,6 +953,222 @@ function fImportScrollbar tSkipChar
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
    --                          oninput = "puCatalystLayer.updateUIparams()"></input>
+   
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   add tSkipChar to tPendChar 
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & "tID = " & tID after msg -- development field
+   
+   -- tID used below in GET CSS
+   put tID into tScrollbar
+   replace "_" with space in tScrollbar
+   -- "range" added in export, others added later might not have it
+   if word 1 of tScrollbar is "range" then delete word 1 of tScrollbar
+   -- xxx for now keep the original id number
+   
+   -- GET VALUE
+   put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at v of "value="
+   add 7 to tIDstartChar -- char just inside "value="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tValue
+   put LF & "tValue= " & tValue after msg
+   
+   -- GET ONINPUT
+   put offset("oninput=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at o of "oninput="
+      add 9 to tIDstartChar -- char just inside "oninput=" -- xxx for onclick in button, add 9 
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tOninput
+      put LF & "tOninput= " & tOninput after msg
+   else
+      put LF & "NO tOninput found" after msg
+   end if
+   
+   -- GET MIN
+   put offset("min=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at m of "min="
+      add 5 to tIDstartChar -- char just inside "min=" -- for onclick in button, add 9 
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tMin
+      put LF & "tMin= " & tMin after msg
+   else
+      put LF & "NO tMin found" after msg
+   end if
+   
+   -- GET MIN
+   put offset("max=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at m of "max="
+      add 5 to tIDstartChar -- char just inside "max=" -- for onclick in button, add 9 
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tMax
+      put LF & "tMax= " & tMax after msg
+   else
+      put LF & "NO tMax found" after msg
+   end if
+   
+   -- GET STEP
+   put offset("step=",oHtmlFileData,tSkipChar) into tIDstartChar
+   if tIDstartChar > 1 then
+      add tSkipChar to tIDstartChar -- char at s of "step="
+      add 6 to tIDstartChar -- char just inside "step=" -- for onclick in button, add 9 
+      put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+      subtract 1 from tIDendChar -- step back before quote
+      add tIDstartChar to tIDendChar
+      put char tIDstartChar to tIDendChar of oHtmlFileData into tStep
+      put LF & "tStep= " & tStep after msg
+   else
+      put LF & "NO tStep found" after msg
+   end if
+   
+   create scrollbar tScrollbar
+   set the style of scrollbar tScrollbar to scale
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      put false into tTransformFlag -- used to check if range is rotated in CSS
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+         
+         switch tProp
+            case "width"
+               -- xxx set the width of button tButton to tPix
+               -- xxx special for scrollbar, save for below, may change for vertical orientation
+               put tPix into tWidth
+               break
+            case "height"
+               -- xxx set the height of button tButton to tPix
+               -- xxx special for scrollbar, save for below, may change for vertical orientation
+               put tPix into tHeight
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of button tButton to tPix
+               break
+            case "transform"
+               -- used when rotate horizontal range to vertical in CSS
+               put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
+               put true into tTransformFlag
+               break
+         end switch
+      end repeat
+   end if
+   -- xxx TOPLEFT WILL HAVE TO BE MODIFIED IF CSS ROTATES RANGE & tTransformFlag is true
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   if tTransformFlag is true then
+      put LF & "tTransformFlag is true" after msg
+      -- swap width and height
+      put tWidth into tOldWidth
+      put tHeight into tOldHeight
+      put tOldWidth into tHeight
+      put tOldHeight into tWidth
+      -- also have to modify topLeft for rotation about center
+      put item 1 of tTopLeft into tOldLeft
+      put item 2 of tTopLeft into tOldTop
+      put tOldLeft + 0.5 * tOldWidth - 0.25 * tOldHeight into item 1 of tTopLeft
+      put tOldTop - 0.5 * tOldWidth + 0.5 * tOldHeight into item 2 of tTopLeft
+   end if
+   
+   set the width of scrollbar tScrollbar to tWidth
+   set the height of scrollbar tScrollbar to tHeight
+   set the topLeft of scrollbar tScrollbar to tTopLeft
+   
+   -- NOTE THAT startValue in LC vertical scale is at top
+   -- xxx CSS/HTML rotated a horiz range to get vertical and EXPORT has high value at top
+   -- xxx so need to change both here and there to get correspondence between LC and CSS/HTML
+   set the startValue of scrollbar tScrollbar to tMin
+   set the endValue of scrollbar tScrollbar to tMax
+   set the pageInc of scrollbar tScrollbar to tStep
+   set the thumbPosition of scrollbar tScrollbar to tValue
+   set the cOninput of scrollbar tScrollbar to tOninput
+   
+   --          -- FROM EXPORT
+   --          put the startValue of control id tControl_ID into tStartValue
+   --          put the endValue of control id tControl_ID into tEndValue
+   --          put the thumbPosition of control id tControl_ID into tThumbPosition
+   --          put the pageInc of control id tControl_ID into tStep
+   --          put space & "min=" & quote & tStartValue & quote after tHTML
+   --          put space & "max=" & quote & tEndValue & quote after tHTML
+   --          put space & "step=" & quote & tStep & quote after tHTML
+   --          put space & "value=" & quote & tThumbPosition & quote after tHTML
    
    put LF & "just before end fImportScrollbar" & LF after msg
    return empty -- no need to return tSkipChar
