@@ -181,8 +181,7 @@ on makeLiveCodeCard
                break
             case "select"
                -- import select = menu button
-               -- has attribute value
-               -- has tags <option with attribute value and tag content of text before </option> before </select>
+               put fImportMenuButton(tSkipChar) into tSkipChar
                break
             case "input"
                -- import input that are not inside <label tags
@@ -453,6 +452,35 @@ function fImportGroupEnd tSkipChar
    put LF & "just before end fImportGroupEnd" & LF after msg
    return tSkipChar
 end fImportGroupEnd
+
+-----------------------------
+
+function fImportMenuButton tSkipChar
+   put LF & "enter fImportMenuButton" & LF after msg
+   -- tSkipChar points to < of <select
+   -- need to return updated tSkipChar
+   
+   --    EXAMPLE: 
+   --    <select id="select_Option_Menu_1105" value="Choice 2">
+   --       <option value="Choice 1">Choice 1</option>
+   --       <option value="Choice 2">Choice 2</option>
+   --       <option value="Choice 3">Choice 3</option>
+   --    </select>
+   
+   -- LC menu buttons are buttons with property style set to menu
+   -- there is also a menuMode property for menu buttons: option, pulldown, and others
+   -- see LC docs
+   -- will have to do some work on both EXPORT script and this IMPORT script
+   
+   put LF & "just before end fImportMenuButton" & LF after msg 
+   
+   -- update tSkipChar
+   put offset("</select>",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   return tSkipChar
+end fImportMenuButton
 
 -----------------------------
 
