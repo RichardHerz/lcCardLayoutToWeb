@@ -472,13 +472,167 @@ function fImportMenuButton tSkipChar
    -- see LC docs
    -- will have to do some work on both EXPORT script and this IMPORT script
    
-   put LF & "just before end fImportMenuButton" & LF after msg 
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & "tID = " & tID after msg -- development field
    
-   -- update tSkipChar
-   put offset("</select>",oHtmlFileData,tSkipChar) into tEndChar
-   add tEndChar to tSkipChar
+   put tID into tMenuBtn -- will use both tID and tMenuBtn below
+   replace "_" with space in tMenuBtn
+   -- "select" added in export, others added later might not have it
+   if word 1 of tMenuBtn is "select" then delete word 1 of tMenuBtn 
+   put LF & "JUST BEFORE CREATE button tMenuBtn  = " & tMenuBtn after msg
+   
+   create button tMenuBtn
+   set the style of button tMenuBtn to "menu"
+   set the menuMode of button tMenuBtn to "option"
+   
+   put LF & "JUST AFTER CREATE button tMenuBtn  = " & tMenuBtn after msg
+   
+   -- GET VALUE - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 7 to tIDstartChar -- char just inside " of value=" -- was 4 for id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tValue
+   put LF & "tValue = " & tValue after msg -- development field
+   
+   -- GET OPTION(S)
+   --    EXAMPLE: 
+   --    <select id="select_Option_Menu_1105" value="Choice 2">
+   --       <option value="Choice 1">Choice 1</option>
+   --       <option value="Choice 2">Choice 2</option>
+   --       <option value="Choice 3">Choice 3</option>
+   --    </select>
    put offset(">",oHtmlFileData,tSkipChar) into tEndChar
    add tEndChar to tSkipChar
+   put offset("</select>",oHtmlFileData,tSkipChar) into tEndSelectTagChar
+   add tSkipChar to tEndSelectTagChar
+   put 0 into tCounter
+   put empty into tMenuBtnText
+   repeat
+      get offset("<option",oHtmlFileData,tSkipChar)
+      if it is empty or it is 0 then exit repeat -- no more option in file
+      put it into tOptionChar
+      add tSkipChar to tOptionChar
+      if tOptionChar > tEndSelectTagChar then exit repeat -- option in another tag
+      put tOptionChar into tSkipChar
+      put offset("value",oHtmlFileData,tSkipChar) into tStartChar
+      add 7 to tStartChar -- move to just inside start "
+      add tSkipChar to tStartChar
+      put tStartChar into tSkipChar
+      put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+      subtract 2 from tEndChar -- move to just inside end "
+      add tSkipChar to tEndChar
+      put char tStartChar to tEndChar of oHtmlFileData into tOptionVal
+      add 1 to tCounter
+      put tOptionVal into line tCounter of tMenuBtnText
+      -- xxx at least for now, ignore TEXT between <option>TEXT</option>
+      -- xxx set to be same as option value in EXPORT script
+   end repeat
+   set the text of button tMenuBtn to tMenuBtnText
+   if tCounter < 6 then
+      set the menuLines of button tMenuBtn to tCounter 
+   else
+      set the menuLines of button tMenuBtn to 6
+   end if
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         switch tProp
+            case "width"
+               set the width of button tMenuBtn to tPix
+               break
+            case "height"
+               set the height of button tMenuBtn to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of button tMenuBtn to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "just before set the topLeft of button tMenuBtn to tTopLeft" after msg
+   put LF & "tMenuBtn = " & tMenuBtn && ";" && "tTopLeft = " & tTopLeft & LF after msg
+   
+   set the topLeft of button tMenuBtn to tTopLeft
+   
+   put LF & "just before end fImportMenuButton" & LF after msg 
+   -- update tSkipChar
+   put offset("</select>",oHtmlFileData,tSkipChar) into tEndSelectTagChar
+   add tEndSelectTagChar to tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tEndSelectTagChar
+   add tEndSelectTagChar to tSkipChar
    return tSkipChar
 end fImportMenuButton
 
@@ -498,7 +652,7 @@ function fImportImage tSkipChar
    subtract 1 from tIDendChar -- step back before quote
    add tIDstartChar to tIDendChar
    put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & tID after msg -- development field
+   put LF & "tID = " & tID after msg -- development field
    
    put tID into tImage -- will use both tID and tImage below
    replace "_" with space in tImage
