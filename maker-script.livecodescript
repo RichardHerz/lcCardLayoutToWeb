@@ -463,8 +463,6 @@ function fImportImage tSkipChar
    -- need to return updated tSkipChar
    
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   --    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
-   --    add tSkipChar to tPendChar 
    put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
    add tSkipChar to tIDstartChar -- char at i of id=
    add 4 to tIDstartChar -- char just inside " of id="
@@ -582,6 +580,9 @@ function fImportImage tSkipChar
    
    set the topLeft of image tImage to tTopLeft
    
+   -- update and return tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tTagEndChar
+   add tTagEndChar to tSkipChar
    return tSkipChar
 end fImportImage
 
@@ -716,6 +717,9 @@ function fImportLockedField tSkipChar
    set the topLeft of field tField to tTopLeft
    
    put LF & "just before end of fImportLockedField" & LF after msg
+   
+   -- return updated tSkipChar
+   -- which was updated above in fImportLockedField
    return tSkipChar
 end fImportLockedField
 
@@ -778,8 +782,11 @@ function fImportInputTag tSkipChar
             -- put LF & "at parent input tag but no known type found" & LF after msg
       end switch
    end if
-   put tEndChar into tSkipChar -- tEndChar for > found above
+   
    put LF & "just before end fImportInputTag" & LF after msg
+   
+   -- return updated tSkipChar
+   put tEndChar into tSkipChar -- tEndChar for > found above
    return tSkipChar
 end fImportInputTag
 
