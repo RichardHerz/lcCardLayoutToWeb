@@ -19,16 +19,16 @@ constant kTagEndStart = "</"
 -----------------------------
 /*
 TAGS DONE 
-   div = group 
-   p = locked field 
-   input with no type = unlocked field
-   input with type="button" = button
+div = group 
+p = locked field 
+img = image 
+input with no type = unlocked field
+input with type="button" = button
+input with type="range" = scrollbar
 TAGS TO DO
-   img = image
-   select = menu button
-   input with type="range" = scrollbar
-   label > input type="checkbox" > span = checkbox
-   label > input type="radio" > span = radio button (will be several inside one div/group
+select = menu button
+label > input type="checkbox" > span = checkbox
+label > input type="radio" > span = radio button (will be several inside one div/group)
 ALL TAGS TO HANDLE WILL HAVE id ATTRIBUTE 
 search css for the id and parse to set properties of LC control
 HANDLE OTHER ATTRIBUTES control by control
@@ -129,21 +129,12 @@ on makeLiveCodeCard
    
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end <body>
-   
-   -- xxx problems occur when, inside comments in html or css,
-   -- xxx tags and id's are mentioned
-   -- xxx maybe set a flag when start of comment detected and
-   -- xxx ignore all until end of comment detected...
-   -- xxx may need to read all css file in at once and reject comments
-   -- xxx when getting properties
-   -- xxx and probably should save comments somehow?
-   
+      
    repeat
       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
-      -- be careful, attributes can be in any order!
       if offset("!--",oHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of <!-- comment
          put LF & "comment found" & LF after msg
@@ -186,7 +177,7 @@ on makeLiveCodeCard
                break
             case "img"
                -- import img = image
-               -- has attribute src
+               put fImportImage(tSkipChar) into tSkipChar
                break
             case "select"
                -- import select = menu button
@@ -243,10 +234,11 @@ end fStripOuterSpace
 
 function fImportGroupStart tSkipChar
    put LF & "enter fImportGroupStart" & LF after msg
-   get fReporter(tSkipChar)
    -- <div> = group
-   -- input argument tSkipChar points to space char after <div
+   -- tSkipChar points to < of <div
    -- need to return updated tSkipChar
+   
+   -- get fReporter(tSkipChar) -- development
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
@@ -391,10 +383,11 @@ end fReporter
 
 function fImportGroupEnd tSkipChar
    put LF & "enter fImportGroupEnd" & LF after msg
-   get fReporter(tSkipChar)
    -- input argument tSkipChar points to < of </div>
    -- need to return updated tSkipChar
    -- char which can occur after </div> is space or < or LF 
+   
+   -- get fReporter(tSkipChar) -- development
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
@@ -463,10 +456,141 @@ end fImportGroupEnd
 
 -----------------------------
 
+function fImportImage tSkipChar
+   put LF & "enter fImportImage" & LF after msg
+   -- EXAMPLE: <img id="image_robo_99_png_1059" src="images/robo 99.png"> 
+   -- tSkipChar points to < of <img
+   -- need to return updated tSkipChar
+   
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   --    put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   --    add tSkipChar to tPendChar 
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
+   put LF & tID after msg -- development field
+   
+   put tID into tImage -- will use both tID and tImage below
+   replace "_" with space in tImage
+   -- "image" added in export, others added later might not have it
+   if word 1 of tImage is "image" then delete word 1 of tImage 
+   put LF & "JUST BEFORE CREATE IMAGE tImage = " & tImage after msg
+   create image tImage
+   -- set the showBorder of image tImage to true -- during development if need to see rect
+   put LF & "JUST AFTER CREATE IMAGE tImage = " & tImage after msg
+   
+   -- GET SRC ATTRIBUTE - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset("src=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of src=
+   add 5 to tIDstartChar -- char just inside " of src=" -- was 4 for id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tSRC
+   put LF & "tSRC = " & tSRC after msg -- development field
+   
+   set the cFilename of image tImage to tSRC -- xxx may want to use this on export
+   
+   -- for files in images folder, put copy of images folder with this image
+   -- at level of the maker stack
+   set the filename of image tImage to tSRC
+   
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         switch tProp
+            case "width"
+               set the width of image tImage to tPix
+               break
+            case "height"
+               set the height of image tImage to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of image tImage to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "just before set the topLeft of image tImage to tTopLeft" after msg
+   put LF & "tImage = " & tImage && ";" && "tTopLeft = " & tTopLeft & LF after msg
+   
+   set the topLeft of image tImage to tTopLeft
+   
+   return tSkipChar
+end fImportImage
+
+-----------------------------
+
 function fImportLockedField tSkipChar
    put LF & "enter fImportLockedField" & LF after msg
    -- <p> tag = locked field
-   -- input argument tSkipChar points to space char after <p
+   -- tSkipChar points to < of <p
    -- need to return updated tSkipChar
    
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
@@ -605,6 +729,7 @@ function fImportInputTag tSkipChar
    -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
    
    -- get type attribute if any - if no type then input for unlocked field
+   -- attributes can be in any order
    put offset("type",oHtmlFileData,tSkipChar) into tTypeChar
    put LF & "offset gives tTypeChar before add skip = " & tTypeChar after msg
    add tSkipChar to tTypeChar
