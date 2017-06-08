@@ -22,11 +22,12 @@ TAGS DONE
 div = group 
 p = locked field 
 img = image 
+select = menu button
 input with no type = unlocked field
 input with type="button" = button
 input with type="range" = scrollbar
 TAGS TO DO
-select = menu button
+canvas 
 label > input type="checkbox" > span = checkbox
 label > input type="radio" > span = radio button (will be several inside one div/group)
 ALL TAGS TO HANDLE WILL HAVE id ATTRIBUTE 
@@ -129,7 +130,7 @@ on makeLiveCodeCard
    
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end <body>
-      
+   
    repeat
       put offset("<",oHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
@@ -193,9 +194,11 @@ on makeLiveCodeCard
                -- need to look for <input inside
                -- two input types: checkbox, radio button
                -- <label <input followed by <span
+               put fImportLabelTag(tSkipChar) into tSkipChar
                break
             case "canvas"
                -- import ?? maybe use a div?
+               put fImportCanvas(tSkipChar) into tSkipChar
                break
             default
                -- ignore
@@ -204,6 +207,173 @@ on makeLiveCodeCard
    end repeat
    
 end makeLiveCodeCard
+
+----------------------------- 
+
+function fImportCanvas tSkipChar
+   -- need to return updated tSkipChar
+   -- EXAMPLE: <canvas id="canvas_rate"></canvas> 
+   -- used for generating images on HTML canvas by Javascript
+   
+   
+   -- update tSkipChar before returning
+   put offset("</canvas>",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   return tSkipChar
+end fImportCanvas
+
+----------------------------- 
+
+function fImportLabelTag tSkipChar
+   put LF & "enter fImportLabelTag" & LF after msg
+   -- tSkipChar points to < of <label
+   -- need to return updated tSkipChar
+   -- THERE ARE TWO TYPES
+   -- need to look for <input inside of <label and </label>
+   -- two input types: checkbox, radio button
+   -- <label <input followed by <span
+   -- EXAMPLE OF CHECKBOX
+   --    <label id="checkbox_Check1_1046_LABEL">
+   --      <input type="checkbox" id="checkbox_Check1_1046">
+   --      <span id="checkbox_Check1_1046_SPAN">Check1</span>
+   --    </label>
+   -- EXAMPLE OF RADIO BUTTONS - ALL INSIDE A DIV HANDLED BY fImportGroupStart and ...End
+   -- HERE JUST IMPORT ONE OF THE RADIO BUTTONS -- THAT IS, ONE LABEL TAG
+   --    <label id="radio_Radio2_1043_LABEL" name="radio_of_group_RADIO_group">
+   --       <input type="radio" id="radio_Radio2_1043" name="radio_of_group_RADIO_group">
+   --       <span id="radio_Radio2_1043_SPAN">Radio2</span>
+   --    </label>
+   --    <label id="radio_Radio1_1044_LABEL" name="radio_of_group_RADIO_group">
+   --       <input type="radio" id="radio_Radio1_1044" name="radio_of_group_RADIO_group" checked>
+   --       <span id="radio_Radio1_1044_SPAN">Radio1</span>
+   --    </label>
+   put offset("</label>",oHtmlFileData,tSkipChar) into tEndChar
+   put offset("type=",oHtmlFileData,tSkipChar) into tTypeChar
+   put empty into tType
+   if (tTypeChar < tEndChar) then
+      add tSkipChar to tTypeChar
+      add 6 to tTypeChar -- just inside " of type="
+      put offset(quote,oHtmlFileData,tTypeChar) into tQuoteChar
+      subtract 1 from tQuoteChar
+      add tTypeChar to tQuoteChar
+      put char tTypeChar to tQuoteChar of oHtmlFileData into tType
+   end if
+   switch tType
+      case "radio"
+         get fImportRadioButton(tSkipChar)
+         -- do not update tSkipChar here
+         break
+      case "checkbox"
+         get fImportCheckBox(tSkipChar)
+         -- do not update tSkipChar here
+         break
+      default
+         -- no type?
+         -- xxx need error message
+   end switch
+   
+   put LF & "exit fImportLabelTag" & LF after msg
+   
+   -- update tSkipChar here before returning
+   put offset("</label>",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   put offset(">",oHtmlFileData,tSkipChar) into tEndChar
+   add tEndChar to tSkipChar
+   return tSkipChar
+end fImportLabelTag
+
+-----------------------------  
+
+function fImportCheckBox tSkipChar
+   put LF & "enter fImportCheckBox" & LF after msg
+   -- tSkipChar points to < of <label inside which the checkbox is contained
+   -- EXAMPLE OF CHECKBOX
+   --    <label id="checkbox_Check1_1046_LABEL">
+   --      <input type="checkbox" id="checkbox_Check1_1046">
+   --      <span id="checkbox_Check1_1046_SPAN">Check1</span>
+   --    </label>
+   -- EXPORT only writes CSS for <label and <span, not <input
+   -- but modified HTML may have a checked attribute in <input when
+   -- when the hilite of the LC checkbox is true
+   -- and also will have an onchange in <input so need to save to custom prop and
+   -- add on export   
+   -- on export, the short name of the LC control is written to the <span
+   -- xxx or should it use the LC label?
+      
+   -- GET ID FOR LABEL
+   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID   
+   put LF & "tID = " & tID after msg -- development field
+   
+   -- ASSUME id of label has _LABEL after same id as input
+   -- ASSUME id of span has _SPAN after same id as input
+   
+   put tID into tID_LABEL
+   put tID into tIDname
+   replace "_" with space in tIDname   
+   delete the last word of tIDname -- delete _LABEL
+   put tIDname into tID_SPAN
+   put space & "SPAN" after tID_SPAN
+   replace space with "_" in tID_SPAN
+   delete the first word of tIDname -- delete the type (checkbox or radio) 
+   
+   -- NOW HAVE: tID_LABEL, tIDname, tID_SPAN
+   -- UNDER ASSUMED NAMING CONVENTION
+   
+   -- GET WHETHER OR NOT INPUT HAS CHECKED ATTRIBUTE
+   -- AND SAVE AS CUSTOM PROP OF LC CONTROL
+   -- xxx and add on EXPORT
+   
+   
+   -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
+   -- AND SAVE AS CUSTOM PROP OF LC CONTROL
+   -- xxx and add on EXPORT
+   
+   
+   -- GET TEXT BETWEEN <span AND </span>
+   -- AND SET AS SHORT NAME OF THE LC CONTROL
+   
+   
+   -- CREATE LC CONTROL
+   
+   
+   -- GET CSS
+   
+   
+   -- SET PROPERTIES OF LC CONTROL
+   
+   
+   put LF & "exit fImportCheckBox" & LF after msg
+   -- do not return tSkipChar here
+end fImportCheckBox
+
+----------------------------- 
+
+function fImportRadioButton tSkipChar
+   put LF & "enter fImportRadioButton" & LF after msg
+   -- tSkipChar points to < of <label inside which the radio button is contained
+   -- HERE JUST IMPORT ONE RADIO BUTTON -- THAT IS, ONE LABEL TAG
+   -- EXAMPLE:
+   --    <label id="radio_Radio2_1043_LABEL" name="radio_of_group_RADIO_group">
+   --       <input type="radio" id="radio_Radio2_1043" name="radio_of_group_RADIO_group">
+   --       <span id="radio_Radio2_1043_SPAN">Radio2</span>
+   --    </label>
+   -- EXPORT only writes CSS for <label and <span, not <input
+   -- but modified HTML may have a checked attribute in <input 
+   -- and also will have an onchange in <input so need to save to custom prop and
+   -- add on export
+   
+   put LF & "exit fImportRadioButton" & LF after msg
+   -- do not return tSkipChar here
+end fImportRadioButton
 
 ----------------------------- 
 
