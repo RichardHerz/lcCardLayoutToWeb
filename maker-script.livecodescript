@@ -216,6 +216,7 @@ function fImportCanvas tSkipChar
    -- used for generating images on HTML canvas by Javascript
    
    
+   
    -- update tSkipChar before returning
    put offset("</canvas>",oHtmlFileData,tSkipChar) into tEndChar
    add tEndChar to tSkipChar
@@ -278,6 +279,45 @@ end fImportLabelTag
 
 -----------------------------  
 
+function fGetControlID tSkipChar,tHtmlFileData
+   put offset("id=",tHtmlFileData,tSkipChar) into tIDstartChar
+   add tSkipChar to tIDstartChar -- char at i of id=
+   add 4 to tIDstartChar -- char just inside " of id="
+   put offset(quote,tHtmlFileData,tIDstartChar) into tIDendChar
+   subtract 1 from tIDendChar -- step back before quote
+   add tIDstartChar to tIDendChar
+   put char tIDstartChar to tIDendChar of oHtmlFileData into tID   
+   put LF & "fGetControlID, tID = " & tID after msg -- development field
+   return tID
+end fGetControlID
+
+----------------------------- 
+
+function fGetReporter tSkipChar
+   put char tSkipChar-20 to tSkipChar+20 of oHtmlFileData into tReport
+   -- replace <> because some LC answer and text editors treat as HTML and/or colorize
+   replace "<" with "*" in tReport -- use one char so don't throw off count in report text
+   replace ">" with "*" in tReport -- use one char so don't throw off count in report text
+   put LF & "+/- 20 of (tSkipChar = " & tSkipChar & ") is: " after msg
+   put LF & "|||" & tReport & "|||" & LF after msg
+end fGetReporter
+
+----------------------------- 
+
+function fGetStripOuterSpace tText
+   -- used to strip junk from both ends of text in <p> tag
+   -- need to use compound conditions because can be in any order, e.g., space LF tab space
+   repeat while char 1 of tText is space OR char 1 of tText is LF OR char 1 of tText is tab
+      delete char 1 of tText
+   end repeat
+   repeat while the last char of tText is space OR the last char of tText is LF OR the last char of tText is tab
+      delete the last char of tText
+   end repeat
+   return tText
+end fGetStripOuterSpace
+
+-----------------------------  
+
 function fImportCheckOrRadioButton tSkipChar, pStyle
    put LF & "enter fImportCheckOrRadioButton" & LF after msg
    -- fImportCheckOrRadioButton is called by fImportLabelTag
@@ -296,17 +336,9 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    -- on export, the short name of the LC control is written to the <span
    -- xxx or should it use the LC label?
    
-   -- GET ID FOR LABEL
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID   
-   put LF & "tID = " & tID after msg -- development field
-   
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
+      
    -- ASSUME id of label has _LABEL after same id as input
    -- ASSUME id of span has _SPAN after same id as input
    
@@ -483,20 +515,6 @@ end fImportCheckOrRadioButton
 
 ----------------------------- 
 
-function fStripOuterSpace tText
-   -- used to strip junk from both ends of text in <p> tag
-   -- need to use compound conditions because can be in any order, e.g., space LF tab space
-   repeat while char 1 of tText is space OR char 1 of tText is LF OR char 1 of tText is tab
-      delete char 1 of tText
-   end repeat
-   repeat while the last char of tText is space OR the last char of tText is LF OR the last char of tText is tab
-      delete the last char of tText
-   end repeat
-   return tText
-end fStripOuterSpace
-
------------------------------ 
-
 -- VARIABLES USED IN *EXPORT* OF GROUPS
 -- tGrpList 
 -- tGrpCurrent 
@@ -513,7 +531,7 @@ function fImportGroupStart tSkipChar
    -- tSkipChar points to < of <div
    -- need to return updated tSkipChar
    
-   -- get fReporter(tSkipChar) -- development
+   -- get fGetReporter(tSkipChar) -- development
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
@@ -526,17 +544,8 @@ function fImportGroupStart tSkipChar
    -- may want to keep original _1128 by revising export rather than use a new id if can't set
    -- so that orig javascript still works
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
-   add tSkipChar to tPendChar 
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & tID after msg
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    -- tID example is div_simulation_frame_1128
    put tID into tIDname -- tIDname will have spaces, keep tID for CSS
@@ -644,16 +653,6 @@ function fImportGroupStart tSkipChar
    return tSkipChar
 end fImportGroupStart
 
------------------------------ 
-
-function fReporter tSkipChar
-   put char tSkipChar-20 to tSkipChar+20 of oHtmlFileData into tReport
-   -- replace <> because some LC answer and text editors treat as HTML and/or colorize
-   replace "<" with "*" in tReport -- use one char so don't throw off count in report text
-   replace ">" with "*" in tReport -- use one char so don't throw off count in report text
-   put LF & "+/- 20 of (tSkipChar = " & tSkipChar & ") is: " after msg
-   put LF & "|||" & tReport & "|||" & LF after msg
-end fReporter
 -----------------------------
 
 function fImportGroupEnd tSkipChar
@@ -662,7 +661,7 @@ function fImportGroupEnd tSkipChar
    -- need to return updated tSkipChar
    -- char which can occur after </div> is space or < or LF 
    
-   -- get fReporter(tSkipChar) -- development
+   -- get fGetReporter(tSkipChar) -- development
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
@@ -748,15 +747,8 @@ function fImportMenuButton tSkipChar
    -- see LC docs
    -- will have to do some work on both EXPORT script and this IMPORT script
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & "tID = " & tID after msg -- development field
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    put tID into tMenuBtn -- will use both tID and tMenuBtn below
    replace "_" with space in tMenuBtn
@@ -920,15 +912,8 @@ function fImportImage tSkipChar
    -- tSkipChar points to < of <img
    -- need to return updated tSkipChar
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & "tID = " & tID after msg -- development field
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    put tID into tImage -- will use both tID and tImage below
    replace "_" with space in tImage
@@ -1052,19 +1037,10 @@ function fImportLockedField tSkipChar
    -- tSkipChar points to < of <p
    -- need to return updated tSkipChar
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
-   add tSkipChar to tPendChar 
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & tID after msg -- development field
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
-   put tID into tField -- will use both tID and tField below
+   put tID into tField
    replace "_" with space in tField
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
@@ -1076,12 +1052,14 @@ function fImportLockedField tSkipChar
    set the lockText of field tField to true
    
    -- get <p> tag (locked field) contents
+   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
+   add tSkipChar to tPendChar
    put offset("</p",oHtmlFileData,tSkipChar) into tPendTagChar
    add tSkipChar to tPendTagChar
    put tPendTagChar into tSkipChar
    put char tPendChar+1 to tPendTagChar-1 of oHtmlFileData into tPcontents
    
-   put fStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
+   put fGetStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
    
    set the htmlText of field tField to tPcontents
    -- xxx BUT WHAT WILL HAPPEN WITH LINKS WHEN EXPORTED?
@@ -1185,7 +1163,7 @@ end fImportLockedField
 
 function fImportInputTag tSkipChar
    put LF & "enter fImportInputTag" & LF after msg
-   get fReporter(tSkipChar)
+   get fGetReporter(tSkipChar)
    -- tSkipChar points to < of <input
    -- imports <input that is not inside <label tags
    -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
@@ -1257,17 +1235,8 @@ function fImportUnlockedField tSkipChar
    -- LC unlocked fields are for HTML input tag with no type attribute for input fields
    -- EXAMPLE:  <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"></input>
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
-   add tSkipChar to tPendChar 
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & "tID = " & tID after msg -- development field
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    -- GET VALUE
    put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
@@ -1402,15 +1371,10 @@ function fImportButton tSkipChar
    -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID 
-   put LF & "tID = " & tID after msg
+   
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
+   
    -- tID used below in GET CSS
    put tID into tButton
    replace "_" with space in tButton
@@ -1544,17 +1508,8 @@ function fImportScrollbar tSkipChar
    -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
    --                          oninput = "puCatalystLayer.updateUIparams()"></input>
    
-   -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   put offset(">",oHtmlFileData,tSkipChar) into tPendChar
-   add tSkipChar to tPendChar 
-   put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
-   add tSkipChar to tIDstartChar -- char at i of id=
-   add 4 to tIDstartChar -- char just inside " of id="
-   put offset(quote,oHtmlFileData,tIDstartChar) into tIDendChar
-   subtract 1 from tIDendChar -- step back before quote
-   add tIDstartChar to tIDendChar
-   put char tIDstartChar to tIDendChar of oHtmlFileData into tID
-   put LF & "tID = " & tID after msg -- development field
+   -- GET CONTROL ID
+   put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    -- tID used below in GET CSS
    put tID into tScrollbar
