@@ -301,7 +301,7 @@ function fImportCheckBox tSkipChar
    -- add on export   
    -- on export, the short name of the LC control is written to the <span
    -- xxx or should it use the LC label?
-      
+   
    -- GET ID FOR LABEL
    -- GET ID - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset("id=",oHtmlFileData,tSkipChar) into tIDstartChar
@@ -331,25 +331,167 @@ function fImportCheckBox tSkipChar
    -- GET WHETHER OR NOT INPUT HAS CHECKED ATTRIBUTE
    -- AND SAVE AS CUSTOM PROP OF LC CONTROL
    -- xxx and add on EXPORT
-   
+   put offset("<input",oHtmlFileData,tSkipChar) into tInputTagStart 
+   add tSkipChar to tInputTagStart
+   put offset(">",oHtmlFileData,tSkipChar) into tInputTagEnd
+   add tSkipChar to tInputTagEnd
+   put offset(space & "checked",oHtmlFileData,tSkipChar) into tCheckedChar -- no space at end for checked>
+   if tCheckedChar > 0 and tCheckedChar < tInputTagEnd then
+      put "true" into tCheckedFlag 
+      
+      -- later, set the hilite of the control to true
+      
+   else
+      put "false" into tCheckedFlag 
+   end if
    
    -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
    -- AND SAVE AS CUSTOM PROP OF LC CONTROL
    -- xxx and add on EXPORT
-   
+   put offset("<input",oHtmlFileData,tSkipChar) into tInputTagStart 
+   put offset(">",oHtmlFileData,tSkipChar) into tInputTagEnd
+   put offset("onchange=",oHtmlFileData,tSkipChar) into tChangedChar
+   if tChangedChar > tInputTagStart and tChangedChar < tInputTagEnd then
+      put "true" into tChangedFlag
+   else
+      put "false" into tChangedFlag
+   end if
+   if tChangedFlag is "true" then
+      add tSkipChar to tChangedStart
+      add 10 to tChangedStart -- move from o to inside " of onchange="
+      put offset(quote,oHtmlFileData,tChangedChar) into tChangedEnd
+      subtract 1 from tChangedEnd
+      put char tChangedStart to tChangedEnd of oHtmlFileData into tOnchange
+      
+      -- later set the cOnchange of the control to tOnchange
+      
+   end if
    
    -- GET TEXT BETWEEN <span AND </span>
    -- AND SET AS SHORT NAME OF THE LC CONTROL
+   -- ASSUME THERE IS A SPAN TAG WITH TEXT INSIDE LABEL TAG
+   put offset("<span",oHtmlFileData,tSkipChar) into tSpanTagStart
+   add tSkipChar to tSpanTagStart
+   put offset(">",oHtmlFileData,tSpanTagStart) into tSpanTagTemp
+   add tSpanTagTemp to tSpanTagStart
+   put offset("</span>",oHtmlFileData,tSkipChar) into tSpanTagEnd
+   add tSkipChar to tSpanTagEnd
+   add 1 to tSpanTagStart
+   subtract 1 from tSpanTagEnd
+   put char tSpanTagStart to tSpanTagEnd of oHtmlFileData into tButton -- tButton used below in CSS
    
+   -- later set the short name of the LC control to tSpanTagText
    
    -- CREATE LC CONTROL
-   
+   create button
+   set the name of it to tButton
+   set the style of button tButton to "checkbox"
+   set the cOnchange of button tButton to tOnchange
+   if tCheckedFlag is "true" then set the hilite of button tButton to "true"
    
    -- GET CSS
+   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- xxx problems if "#" & tID mentioned in a comment!
+   -- DO NOT USE tSkipChar for CSS
    
+   -- THIS IS DIFFERENT BECAUSE CSS HAS tID_LABEL &  tID_SPAN
+   -- CSS for tID_LABEL has left and top for LC topLeft (left,top)
+   -- CSS for tID_SPAN has info for text label
+   -- EXAMPLE
+   --    #checkbox_Check1_1046_LABEL {
+   --    left: 180px;
+   --    top: 113px;
+   --    }
    
-   -- SET PROPERTIES OF LC CONTROL
+   --    #checkbox_Check1_1046_SPAN {
+   --    margin-left: 22px;
+   --    line-height: 18px;
+   --    }
    
+   -- FOR NOW, ONLY GET _LABEL FOR BUTTON LOCATION
+   put tID_LABEL into tID -- use tID below
+   
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & tID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+         
+         switch tProp
+            case "width"
+               set the width of button tButton to tPix
+               break
+            case "height"
+               set the height of button tButton to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of button tButton to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "JUST BEFORE set the topLeft of button tButton to tTopLeft" after msg
+   put LF & "tButton = " & tButton && ";" && "tTopLeft = " & tTopLeft after msg
+   
+   set the topLeft of button tButton to tTopLeft
    
    put LF & "exit fImportCheckBox" & LF after msg
    -- do not return tSkipChar here
