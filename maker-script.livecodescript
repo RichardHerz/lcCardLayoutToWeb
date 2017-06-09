@@ -233,7 +233,7 @@ function fImportLabelTag tSkipChar
    -- THERE ARE TWO TYPES
    -- need to look for <input inside of <label and </label>
    -- two input types: checkbox, radio button
-   -- <label <input followed by <span
+   -- <label followed by <input followed by <span
    -- EXAMPLE OF CHECKBOX
    --    <label id="checkbox_Check1_1046_LABEL">
    --      <input type="checkbox" id="checkbox_Check1_1046">
@@ -261,6 +261,11 @@ function fImportLabelTag tSkipChar
       put char tTypeChar to tQuoteChar of oHtmlFileData into tType
    end if
    
+   -- radiobutton is LC button style property for radio buttons
+   if tType is "radio" then put "radiobutton" into tType 
+   
+   get fImportCheckOrRadioButton(tSkipChar, tType)
+      
    put LF & "exit fImportLabelTag" & LF after msg
    
    -- update tSkipChar here before returning
@@ -275,8 +280,9 @@ end fImportLabelTag
 
 function fImportCheckOrRadioButton tSkipChar, pStyle
    put LF & "enter fImportCheckOrRadioButton" & LF after msg
+   -- fImportCheckOrRadioButton is called by fImportLabelTag
    -- tSkipChar points to < of <label inside which the button is contained
-   -- pStyle is "radio" or "checkbox" ***** NOTE pStyle AND NOT tStyle HERE in case merge functions *******
+   -- pStyle is "radiobutton" or "checkbox" ***** NOTE pStyle AND NOT tStyle HERE in case merge functions *******
    -- EXAMPLE OF CHECKBOX
    --    <label id="checkbox_Check1_1046_LABEL">
    --      <input type="checkbox" id="checkbox_Check1_1046">
@@ -321,15 +327,15 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    -- xxx and add on EXPORT
    put offset("<input",oHtmlFileData,tSkipChar) into tInputTagStart 
    add tSkipChar to tInputTagStart
-   put offset(">",oHtmlFileData,tSkipChar) into tInputTagEnd
-   add tSkipChar to tInputTagEnd
-   put offset(space & "checked",oHtmlFileData,tSkipChar) into tCheckedChar -- no space at end for checked>
-   if tCheckedChar > 0 and tCheckedChar < tInputTagEnd then
-      put "true" into tCheckedFlag 
-      -- BELOW, set the hilited of the control to true
+   put offset(">",oHtmlFileData,tInputTagStart) into tInputTagEnd
+   -- do NOT add tSkipChar to tInputTagEnd because check for tCheckedChar > 0
+   put offset(space & "checked",oHtmlFileData,tInputTagStart) into tCheckedChar -- no space at end in case checked>
+   if tCheckedChar > 0 and tCheckedChar < tInputTagEnd then 
+      put "true" into tCheckedFlag
    else
-      put "false" into tCheckedFlag 
+      put "false" into tCheckedFlag
    end if
+   -- BELOW, set the hilited of the control to tCheckedFlag
    
    -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
    -- AND SAVE AS CUSTOM PROP OF LC CONTROL
@@ -337,16 +343,11 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    put offset("<input",oHtmlFileData,tSkipChar) into tInputTagStart 
    put offset(">",oHtmlFileData,tSkipChar) into tInputTagEnd
    put offset("onchange=",oHtmlFileData,tSkipChar) into tChangedChar
-   if tChangedChar > tInputTagStart and tChangedChar < tInputTagEnd then
-      put "true" into tChangedFlag
-   else
-      put "false" into tChangedFlag
-   end if
-   if tChangedFlag is "true" then
+   if tChangedChar > tInputTagStart and tChangedChar < tInputTagEnd then 
       add tSkipChar to tChangedStart
       add 10 to tChangedStart -- move from o to inside " of onchange="
       put offset(quote,oHtmlFileData,tChangedChar) into tChangedEnd
-      subtract 1 from tChangedEnd
+      subtract 1 from tChangedEnd -- move inside end quote
       put char tChangedStart to tChangedEnd of oHtmlFileData into tOnchange
       -- BELOW, set the cOnchange of the control to tOnchange
    end if
@@ -370,12 +371,7 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    set the name of it to tButton
    set the style of button tButton to pStyle -- pStyle is input argument to this function
    set the cOnchange of button tButton to tOnchange
-   -- xxx BELOW NOT WORKING - SETS ALL RADIOS, AT LEAST, IN GROUP TO TRUE
-   --    if tCheckedFlag is "true" then 
-   --       set the hilited of button tButton to "true"
-   --    else
-   --       set the hilited of button tButton to "false"
-   --    end if
+   set the hilited of button tButton to tCheckedFlag
    
    -- GET CSS
    -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
@@ -483,7 +479,7 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    
    put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
-end fImportRadioButton
+end fImportCheckOrRadioButton
 
 ----------------------------- 
 
