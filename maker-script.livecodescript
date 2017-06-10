@@ -266,7 +266,7 @@ function fImportLabelTag tSkipChar
    if tType is "radio" then put "radiobutton" into tType 
    
    get fImportCheckOrRadioButton(tSkipChar, tType)
-      
+   
    put LF & "exit fImportLabelTag" & LF after msg
    
    -- update tSkipChar here before returning
@@ -316,6 +316,101 @@ function fGetStripOuterSpace tText
    return tText
 end fGetStripOuterSpace
 
+-----------------------------
+
+function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
+   -- pControlName is first words of long name of control before first "of"
+   -- for example, pControlName = button "radio 2"
+   -- the long name does not work, at least when control is inside a group
+   
+   -- xxx problems if "#" & tID mentioned in a comment in CSS file
+   
+   put LF & "enter function fGetSetControlProps, pControlName = " & LF & pControlName after msg
+   
+   put empty into tCssData
+   if oCssFileData is not empty then
+      put offset("#" & pID,oCssFileData) into tStartChar
+      put offset("}",oCssFileData,tStartChar) into tEndChar
+      add tStartChar to tEndChar
+      put char tStartChar to tEndChar of oCssFileData into tCssData
+      put LF & tCssData & LF after msg -- development field
+   end if
+   
+   if tCssData is not empty then
+      -- assume top and bottom lines don't have data but the other lines do
+      
+      set the itemDelimiter to colon
+      repeat for each line n in tCssData
+         if n contains "#" then next repeat
+         if n contains "}" then exit repeat
+         put word 1 of item 1 of n into tProp -- so don't get spaces
+         put item 2 of n into tPix
+         
+         -- watch out for a calc();
+         if tPix contains "calc" then
+            put offset("+",tPix) into tPlusChar -- assume a space after plus
+            put offset("px",tPix) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+            put 50 into tShift -- xxx what I'm using in development
+            add tShift to tPix
+         else
+            repeat 3 times -- delete px;
+               delete the last char of tPix
+            end repeat
+         end if
+         
+         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          repeat 3 times -- delete px;
+         --             delete the last char of tPix
+         --          end repeat
+         
+         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
+         
+         switch tProp
+            case "width"
+               set the width of pControlName to tPix
+               break
+            case "height"
+               set the height of pControlName to tPix
+               break
+            case "left"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "top"
+               set the itemDelimiter to comma
+               -- order in LC topLeft is left,top!
+               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               -- save, need to add container group left & setting height & width first changes topLeft
+               set the itemDelimiter to colon
+               break
+            case "font-size"
+               set the textSize of pControlName to tPix
+               break
+         end switch
+      end repeat
+   end if
+   -- do this after setting width and height since setting those changes topLeft
+   -- first get topLeft of group relative to LC card topLeft
+   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
+   if the last line of oGrpLocList is not empty then
+      put the last line of oGrpLocList into tLast
+      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
+      set the itemDelimiter to comma
+      add item 1 of tLast to item 1 of tTopLeft
+      add item 2 of tLast to item 2 of tTopLeft
+   end if
+   
+   put LF & "JUST BEFORE set the topLeft of pControlName to tTopLeft" after msg
+   put LF & "pControlName = " & pControlName && ";" && "tTopLeft = " & tTopLeft after msg
+   
+   set the topLeft of pControlName to tTopLeft
+   
+end fGetSetControlProps
+
 -----------------------------  
 
 function fImportCheckOrRadioButton tSkipChar, pStyle
@@ -338,7 +433,7 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    
    -- GET CONTROL ID
    put fGetControlID(tSkipChar, oHtmlFileData) into tID
-      
+   
    -- ASSUME id of label has _LABEL after same id as input
    -- ASSUME id of span has _SPAN after same id as input
    
@@ -405,10 +500,7 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    set the cOnchange of button tButton to tOnchange
    set the hilited of button tButton to tCheckedFlag
    
-   -- GET CSS
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
+   -- GET CSS & SET CONTROL PROPERTIES
    
    -- THIS IS DIFFERENT BECAUSE CSS HAS tID_LABEL &  tID_SPAN
    -- CSS for tID_LABEL has left and top for LC topLeft (left,top)
@@ -425,89 +517,12 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    --    }
    
    -- FOR NOW, ONLY GET _LABEL FOR BUTTON LOCATION
-   put tID_LABEL into tID -- use tID below
    
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   put the long name of button tButton into tControlLongName -- NOTE button tButton
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
-         switch tProp
-            case "width"
-               set the width of button tButton to tPix
-               break
-            case "height"
-               set the height of button tButton to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of button tButton to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
-   
-   put LF & "JUST BEFORE set the topLeft of button tButton to tTopLeft" after msg
-   put LF & "tButton = " & tButton && ";" && "tTopLeft = " & tTopLeft after msg
-   
-   set the topLeft of button tButton to tTopLeft
+   get fGetSetControlProps(tID_LABEL, tControlName, oCssFileData, oGrpLocList) -- NOTE tID_LABEL
    
    put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
@@ -560,9 +575,10 @@ function fImportGroupStart tSkipChar
    set the name of it to tIDname
    put LF & "JUST AFTER create group " & tIDname after msg
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
+   -- GET CSS & SET GROUP PROPERTIES
+   
+   -- THIS IS DIFFERENT FOR GROUPS THAN IT IS FOR CONTROLS 
+   
    put empty into tCssData
    if oCssFileData is not empty then
       put offset("#" & tID,oCssFileData) into tStartChar
@@ -750,17 +766,17 @@ function fImportMenuButton tSkipChar
    -- GET CONTROL ID
    put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
-   put tID into tMenuBtn -- will use both tID and tMenuBtn below
-   replace "_" with space in tMenuBtn
+   put tID into tButton -- will use both tID and tButton below
+   replace "_" with space in tButton
    -- "select" added in export, others added later might not have it
-   if word 1 of tMenuBtn is "select" then delete word 1 of tMenuBtn 
-   put LF & "JUST BEFORE CREATE button tMenuBtn  = " & tMenuBtn after msg
+   if word 1 of tButton is "select" then delete word 1 of tButton 
+   put LF & "JUST BEFORE CREATE button tButton  = " & tButton after msg
    
-   create button tMenuBtn
-   set the style of button tMenuBtn to "menu"
-   set the menuMode of button tMenuBtn to "option"
+   create button tButton
+   set the style of button tButton to "menu"
+   set the menuMode of button tButton to "option"
    
-   put LF & "JUST AFTER CREATE button tMenuBtn  = " & tMenuBtn after msg
+   put LF & "JUST AFTER CREATE button tButton  = " & tButton after msg
    
    -- GET VALUE - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
    put offset("value=",oHtmlFileData,tSkipChar) into tIDstartChar
@@ -784,7 +800,7 @@ function fImportMenuButton tSkipChar
    put offset("</select>",oHtmlFileData,tSkipChar) into tEndSelectTagChar
    add tSkipChar to tEndSelectTagChar
    put 0 into tCounter
-   put empty into tMenuBtnText
+   put empty into tButtonText
    repeat
       get offset("<option",oHtmlFileData,tSkipChar)
       if it is empty or it is 0 then exit repeat -- no more option in file
@@ -801,99 +817,24 @@ function fImportMenuButton tSkipChar
       add tSkipChar to tEndChar
       put char tStartChar to tEndChar of oHtmlFileData into tOptionVal
       add 1 to tCounter
-      put tOptionVal into line tCounter of tMenuBtnText
+      put tOptionVal into line tCounter of tButtonText
       -- xxx at least for now, ignore TEXT between <option>TEXT</option>
       -- xxx set to be same as option value in EXPORT script
    end repeat
-   set the text of button tMenuBtn to tMenuBtnText
+   set the text of button tButton to tButtonText
    if tCounter < 6 then
-      set the menuLines of button tMenuBtn to tCounter 
+      set the menuLines of button tButton to tCounter 
    else
-      set the menuLines of button tMenuBtn to 6
+      set the menuLines of button tButton to 6
    end if
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         switch tProp
-            case "width"
-               set the width of button tMenuBtn to tPix
-               break
-            case "height"
-               set the height of button tMenuBtn to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of button tMenuBtn to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put the long name of button tButton into tControlLongName -- NOTE button tButton
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   put LF & "just before set the topLeft of button tMenuBtn to tTopLeft" after msg
-   put LF & "tMenuBtn = " & tMenuBtn && ";" && "tTopLeft = " & tTopLeft & LF after msg
-   
-   set the topLeft of button tMenuBtn to tTopLeft
+   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
    
    put LF & "just before end fImportMenuButton" & LF after msg 
    -- update tSkipChar
@@ -940,88 +881,13 @@ function fImportImage tSkipChar
    -- at level of the maker stack
    set the filename of image tImage to tSRC
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         switch tProp
-            case "width"
-               set the width of image tImage to tPix
-               break
-            case "height"
-               set the height of image tImage to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of image tImage to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put the long name of image tImage into tControlLongName -- NOTE image tImage
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   put LF & "just before set the topLeft of image tImage to tTopLeft" after msg
-   put LF & "tImage = " & tImage && ";" && "tTopLeft = " & tTopLeft & LF after msg
-   
-   set the topLeft of image tImage to tTopLeft
+   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
    
    -- update and return tSkipChar
    put offset(">",oHtmlFileData,tSkipChar) into tTagEndChar
@@ -1064,93 +930,20 @@ function fImportLockedField tSkipChar
    set the htmlText of field tField to tPcontents
    -- xxx BUT WHAT WILL HAPPEN WITH LINKS WHEN EXPORTED?
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
-         switch tProp
-            case "width"
-               set the width of field tField to tPix
-               break
-            case "height"
-               set the height of field tField to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               -- xxx for locked fields only, EXPORT subtracts a constant (16) from top before 
-               -- xxx      writing <p> to CSS, reverse here
-               add 16 to tPix -- xxx add a variable so a change in EXPORT appears here in IMPORT
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of field tField to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put the long name of field tField into tControlLongName -- NOTE field tField
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   put LF & "just before set the topLeft of field tField to tTopLeft" after msg
-   put LF & "tField = " & tField && ";" && "tTopLeft = " & tTopLeft after msg
+   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
    
-   set the topLeft of field tField to tTopLeft
+   -- xxx for locked fields only, EXPORT subtracts a constant (16) from top  
+   -- xxx      before writing <p> to CSS
+   -- xxx      reverse here
+   put the topLeft of field tField into tTopLeft
+   add 16 to item 2 of tTopLeft -- xxx CHANGE TO add variable so changed value in EXPORT appears in IMPORT
+   set the topLeft of field tField to tTopLeft 
    
    put LF & "just before end of fImportLockedField" & LF after msg
    
@@ -1275,90 +1068,13 @@ function fImportUnlockedField tSkipChar
    set the text of field tField to tValue
    set the cOnchange of field tField to tOnchange -- xxx need to add this to EXPORT script
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
-         switch tProp
-            case "width"
-               set the width of field tField to tPix
-               break
-            case "height"
-               set the height of field tField to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of field tField to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put the long name of field tField into tControlLongName -- NOTE field tField
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   put LF & "just before set the topLeft of field tField to tTopLeft" after msg
-   put LF & "tField = " & tField && ";" && "tTopLeft = " & tTopLeft after msg
-   
-   set the topLeft of field tField to tTopLeft
+   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
    
    put LF & "just before end of fImportUnlockedField" & LF after msg
    return empty -- no need to return tSkipChar
@@ -1410,90 +1126,13 @@ function fImportButton tSkipChar
    set the label of button tButton to tValue
    set the cOnclick of button tButton to tOnclick -- xxx add this to EXPORT
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
-         switch tProp
-            case "width"
-               set the width of button tButton to tPix
-               break
-            case "height"
-               set the height of button tButton to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of button tButton to tPix
-               break
-         end switch
-      end repeat
-   end if
-   -- do this after setting width and height since setting those changes topLeft
-   -- first get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put the long name of button tButton into tControlLongName -- NOTE button tButton
+   put offset(space & "of",tControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of tControlLongName into tControlName
    
-   put LF & "JUST BEFORE set the topLeft of button tButton to tTopLeft" after msg
-   put LF & "tButton = " & tButton && ";" && "tTopLeft = " & tTopLeft after msg
-   
-   set the topLeft of button tButton to tTopLeft
+   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
    
    put LF & "just before end fImportButton" & LF after msg
    return empty -- no need to return tSkipChar
@@ -1587,7 +1226,9 @@ function fImportScrollbar tSkipChar
    create scrollbar tScrollbar
    set the style of scrollbar tScrollbar to scale
    
-   -- GET CSS INFO - SEE SIMILAR IN OTHER SECTIONS - MAKE INTO FUNCTION
+   -- GET CSS INFO 
+   -- SPECIAL FOR SCROLL BARS - CASE "TRANSFORM"  & IN CASES "WIDTH" & "HEIGHT"
+   
    -- xxx problems if "#" & tID mentioned in a comment!
    -- DO NOT USE tSkipChar for CSS
    put empty into tCssData
