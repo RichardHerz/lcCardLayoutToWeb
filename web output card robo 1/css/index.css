@@ -31,6 +31,17 @@ select {
  position: absolute;
 }
 
+#canvas_rate {
+  position: absolute;
+  top: 100px;
+  left: 392px;
+  width: 414px;
+  height: 80px;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px;
+}
+
 #div_simulation_frame_1128 {
  display: block;
  position: absolute;
@@ -243,4 +254,3 @@ select {
  width: 100px;
  height: 21px;
 }
-
