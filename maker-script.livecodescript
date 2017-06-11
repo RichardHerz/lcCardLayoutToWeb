@@ -318,14 +318,19 @@ end fGetStripOuterSpace
 
 -----------------------------
 
-function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
-   -- pControlName is first words of long name of control before first "of"
-   -- for example, pControlName = button "radio 2"
-   -- the long name does not work, at least when control is inside a group
+function fGetSetControlProps pID, pControlLongName, oCssFileData, oGrpLocList
+   -- returns true if css has a transform property
+   -- which will be the case for vertical scrollbars
    
    -- xxx problems if "#" & tID mentioned in a comment in CSS file
    
-   put LF & "enter function fGetSetControlProps, pControlName = " & LF & pControlName after msg
+   put offset(space & "of",pControlLongName) into tMarkChar
+   put char 1 to tMarkChar-1 of pControlLongName into tControlName
+   -- tControlName is first words of long name of control before first "of"
+   -- for example, tControlName = button "radio 2"
+   -- the long name does not work, at least when control is inside a group
+   
+   put LF & "enter function fGetSetControlProps, tControlName = " & LF & tControlName after msg
    
    put empty into tCssData
    if oCssFileData is not empty then
@@ -339,7 +344,9 @@ function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
    if tCssData is not empty then
       -- assume top and bottom lines don't have data but the other lines do
       
+      put "false" into tTransformFlag
       set the itemDelimiter to colon
+      
       repeat for each line n in tCssData
          if n contains "#" then next repeat
          if n contains "}" then exit repeat
@@ -368,10 +375,10 @@ function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
          
          switch tProp
             case "width"
-               set the width of pControlName to tPix
+               put tPix into tWidth
                break
             case "height"
-               set the height of pControlName to tPix
+               put tPix into tHeight
                break
             case "left"
                set the itemDelimiter to comma
@@ -388,7 +395,13 @@ function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
                set the itemDelimiter to colon
                break
             case "font-size"
-               set the textSize of pControlName to tPix
+               set the textSize of tControlName to tPix
+               break
+            case "transform"
+               -- used when rotate horizontal range to vertical in CSS
+               put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
+               put "true" into tTransformFlag
+               put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
                break
          end switch
       end repeat
@@ -404,11 +417,33 @@ function fGetSetControlProps pID, pControlName, oCssFileData, oGrpLocList
       add item 2 of tLast to item 2 of tTopLeft
    end if
    
-   put LF & "JUST BEFORE set the topLeft of pControlName to tTopLeft" after msg
-   put LF & "pControlName = " & pControlName && ";" && "tTopLeft = " & tTopLeft after msg
+   if tTransformFlag is "true" then
+      -- CSS/HTML range started out as horiz then transformed by rotation 90 deg about center
+      put LF & "in IF swapping width and height, tTransformFlag is true" after msg
+      -- swap width and height
+      put tWidth into tOldWidth
+      put tHeight into tOldHeight
+      put tOldWidth into tHeight
+      put tOldHeight into tWidth
+      -- modify topLeft for rotation about center
+      put item 1 of tTopLeft into tOldLeft
+      put item 2 of tTopLeft into tOldTop
+      put tOldLeft + tOldWidth/2 - tOldHeight/4 into item 1 of tTopLeft
+      put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
+   end if
    
-   set the topLeft of pControlName to tTopLeft
+   put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
+   put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
    
+   -- _LABEL in CSS for checkbox and radio buttons may not have width and height values
+   if tWidth > 0 then set the width of tControlName to tWidth
+   if tHeight > 0 then set the height of tControlName to tHeight
+   
+   -- set topLeft AFTER set width and height
+   set the topLeft of tControlName to tTopLeft
+   
+   put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
+   return tTransformFlag
 end fGetSetControlProps
 
 -----------------------------  
@@ -518,11 +553,8 @@ function fImportCheckOrRadioButton tSkipChar, pStyle
    
    -- FOR NOW, ONLY GET _LABEL FOR BUTTON LOCATION
    
-   put the long name of button tButton into tControlLongName -- NOTE button tButton
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID_LABEL, tControlName, oCssFileData, oGrpLocList) -- NOTE tID_LABEL
+   put the long name of button tButton into tControlLongName -- NOTE button tButton   
+   get fGetSetControlProps(tID_LABEL, tControlLongName, oCssFileData, oGrpLocList) -- NOTE tID_LABEL
    
    put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
@@ -563,108 +595,33 @@ function fImportGroupStart tSkipChar
    put fGetControlID(tSkipChar, oHtmlFileData) into tID
    
    -- tID example is div_simulation_frame_1128
-   put tID into tIDname -- tIDname will have spaces, keep tID for CSS
-   replace "_" with space in tIDname
+   put tID into tGroup -- will use both tID and tGroup below
+   replace "_" with space in tGroup
    -- "div" added in export, others added later might not have it
-   if word 1 of tIDname is "div" then delete word 1 of tIDname -- delete div
-   put tIDname & LF after oGrpList
-   -- get topLeft of group below for oGrpLocList
+   if word 1 of tGroup is "div" then delete word 1 of tGroup -- delete div
+   
+   -- UPDATE oGrpList
+   put tGroup & LF after oGrpList
    
    put LF & "JUST BEFORE create group " & tIDname after msg
    create group
-   set the name of it to tIDname
-   put LF & "JUST AFTER create group " & tIDname after msg
+   set the name of it to tGroup
+   put LF & "JUST AFTER create group " & tGroup after msg
    
-   -- GET CSS & SET GROUP PROPERTIES
+   -- GET CSS & SET CONTROL PROPERTIES
    
-   -- THIS IS DIFFERENT FOR GROUPS THAN IT IS FOR CONTROLS 
+   put the long name of group tGroup into tControlLongName -- NOTE group tGroup
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   -- UPDATE oGrpLocList
+   put the topLeft of group tGroup & LF after oGrpLocList
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         switch tProp
-            case "width"
-               set the width of group tIDname to tPix
-               break
-            case "height"
-               set the height of group tIDname to tPix
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-         end switch
-      end repeat
-   end if   
+   set the lockLoc of group tGroup to true -- otherwise will "shrink to fit" contents, which are none at this point
+   set the showBorder of group tGroup to true -- xxx so can see it in development
    
-   -- STORE CUMMULATIVE locations in oGrpLocList
-   -- add these locs to locs from line above, if any
-   -- then a new control just has to get locs from last line in group list
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF &"tLast = last line of oGrpLocList = " & the last line of oGrpLocList after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
-   put tTopLeft & LF after oGrpLocList
-   put LF & "oGrpLocList = " & LF & oGrpLocList after msg
-   -- do this after setting width and height since setting those change topLeft
-   put LF & "JUST BEFORE set the topLeft of group tIDname to tTopLeft" after msg
-   put LF & "group tIDname = " & tIDname after msg
-   put LF & "tTopLeft = " & tTopLeft after msg
-   set the topLeft of group tIDname to tTopLeft
-   set the lockLoc of group tIDname to true -- otherwise will "shrink to fit" contents, which are none at this point
-   set the showBorder of group tIDname to true -- xxx so can see it in development
-   
-   put LF & "JUST BEFORE start editing group" && tIDname after msg
-   start editing group tIDname
-   put LF & "JUST AFTER start editing group" && tIDname & LF after msg
+   put LF & "JUST BEFORE start editing group" && tGroup after msg
+   start editing group tGroup
+   put LF & "JUST AFTER start editing group" && tGroup & LF after msg
    
    return tSkipChar
 end fImportGroupStart
@@ -831,10 +788,7 @@ function fImportMenuButton tSkipChar
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
    put LF & "just before end fImportMenuButton" & LF after msg 
    -- update tSkipChar
@@ -884,10 +838,7 @@ function fImportImage tSkipChar
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of image tImage into tControlLongName -- NOTE image tImage
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
    -- update and return tSkipChar
    put offset(">",oHtmlFileData,tSkipChar) into tTagEndChar
@@ -933,10 +884,7 @@ function fImportLockedField tSkipChar
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of field tField into tControlLongName -- NOTE field tField
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
    -- xxx for locked fields only, EXPORT subtracts a constant (16) from top  
    -- xxx      before writing <p> to CSS
@@ -1071,10 +1019,7 @@ function fImportUnlockedField tSkipChar
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of field tField into tControlLongName -- NOTE field tField
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
    put LF & "just before end of fImportUnlockedField" & LF after msg
    return empty -- no need to return tSkipChar
@@ -1129,10 +1074,7 @@ function fImportButton tSkipChar
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton
-   put offset(space & "of",tControlLongName) into tMarkChar
-   put char 1 to tMarkChar-1 of tControlLongName into tControlName
-   
-   get fGetSetControlProps(tID, tControlName, oCssFileData, oGrpLocList)
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList)
    
    put LF & "just before end fImportButton" & LF after msg
    return empty -- no need to return tSkipChar
@@ -1226,119 +1168,17 @@ function fImportScrollbar tSkipChar
    create scrollbar tScrollbar
    set the style of scrollbar tScrollbar to scale
    
-   -- GET CSS INFO 
-   -- SPECIAL FOR SCROLL BARS - CASE "TRANSFORM"  & IN CASES "WIDTH" & "HEIGHT"
+   --- GET CSS & SET CONTROL PROPERTIES
    
-   -- xxx problems if "#" & tID mentioned in a comment!
-   -- DO NOT USE tSkipChar for CSS
-   put empty into tCssData
-   if oCssFileData is not empty then
-      put offset("#" & tID,oCssFileData) into tStartChar
-      put offset("}",oCssFileData,tStartChar) into tEndChar
-      add tStartChar to tEndChar
-      put char tStartChar to tEndChar of oCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
-   end if
+   put the long name of scrollbar tScrollbar into tControlLongName -- NOTE scrollbar tScrollbar   
+   get fGetSetControlProps(tID, tControlLongName, oCssFileData, oGrpLocList) 
    
-   if tCssData is not empty then
-      -- assume top and bottom lines don't have data but the other lines do
-      
-      set the itemDelimiter to colon
-      put false into tTransformFlag -- used to check if range is rotated in CSS
-      repeat for each line n in tCssData
-         if n contains "#" then next repeat
-         if n contains "}" then exit repeat
-         put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
-         
-         -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
-         else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
-         end if
-         
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
-         switch tProp
-            case "width"
-               -- xxx set the width of button tButton to tPix
-               -- xxx special for scrollbar, save for below, may change for vertical orientation
-               put tPix into tWidth
-               break
-            case "height"
-               -- xxx set the height of button tButton to tPix
-               -- xxx special for scrollbar, save for below, may change for vertical orientation
-               put tPix into tHeight
-               break
-            case "left"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "top"
-               set the itemDelimiter to comma
-               -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
-               -- save, need to add container group left & setting height & width first changes topLeft
-               set the itemDelimiter to colon
-               break
-            case "font-size"
-               set the textSize of button tButton to tPix
-               break
-            case "transform"
-               -- used when rotate horizontal range to vertical in CSS
-               put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
-               put true into tTransformFlag
-               break
-         end switch
-      end repeat
-   end if
-   -- TOPLEFT WILL HAVE TO BE MODIFIED IF CSS ROTATES RANGE & tTransformFlag is true
-   -- do this after setting width and height since setting those changes topLeft
-   -- get topLeft of group relative to LC card topLeft
-   if the last line of oGrpLocList is empty then delete the last line of oGrpLocList -- in case of LF and empty line
-   if the last line of oGrpLocList is not empty then
-      put the last line of oGrpLocList into tLast
-      put LF & "tLast = last line of oGrpLocList = " & tLast after msg
-      set the itemDelimiter to comma
-      add item 1 of tLast to item 1 of tTopLeft
-      add item 2 of tLast to item 2 of tTopLeft
-   end if
+   put it into tTransformFlag -- returned true if control has a transform flag
+   
+   put LF & "in fImportScrollbar, after return from fGetSet... tTransformFlag = " & tTransformFlag after msg 
    
    if tTransformFlag is true then
-      -- CSS/HTML range started out as horiz then transformed by rotation 90 deg about center
-      put LF & "tTransformFlag is true" after msg
-      -- swap width and height
-      put tWidth into tOldWidth
-      put tHeight into tOldHeight
-      put tOldWidth into tHeight
-      put tOldHeight into tWidth
-      -- modify topLeft for rotation about center
-      put item 1 of tTopLeft into tOldLeft
-      put item 2 of tTopLeft into tOldTop
-      put tOldLeft + tOldWidth/2 - tOldHeight/4 into item 1 of tTopLeft
-      put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
-   end if
-   
-   set the width of scrollbar tScrollbar to tWidth
-   set the height of scrollbar tScrollbar to tHeight
-   set the topLeft of scrollbar tScrollbar to tTopLeft
-   
-   if tTransformFlag is true then
+      put LF & "tTransformFlag is TRUE" after msg
       -- vertical scrollbar
       -- startValue in LC vertical scrollbar is at top
       -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
