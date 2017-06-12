@@ -312,7 +312,7 @@ on saveToWebPage
             put the long name of ttemp into ttemp
             put the id of ttemp into ttempID
             get fIDname(ttempID)
-            put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
+            put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
             put tNewLine after tHTML
             
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
@@ -417,7 +417,7 @@ on saveToWebPage
       put the long name of ttemp into ttemp
       put the id of ttemp into ttempID
       get fIDname(ttempID)
-      put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
+      put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
    

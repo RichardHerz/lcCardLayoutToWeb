@@ -8,6 +8,8 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 
+constant kReporter = "false" -- "true" or "false" - controls reporting to msg box
+
 -----------------------------
 /*
 TAGS DONE -----------
@@ -112,7 +114,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
    put offset("<body>",pHtmlFileData) into tBodyStartChar
    put char 1 to tBodyStartChar-1 of pHtmlFileData into tHeaderData
-   put LF & tHeaderData after msg
+   if kReporter is "true" then put LF & tHeaderData after msg
    put "header" && kKillWord into tHeaderButton
    create button tHeaderButton
    set the label of button tHeaderButton to "header"
@@ -130,29 +132,35 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       put tSkipChar into tNextTagStart
       if offset("!--",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of <!-- comment
-         put LF & "comment found" & LF after msg
+         if kReporter is "true" then put LF & "comment found" & LF after msg
          -- want to skip to end comment in case have commented out some controls
          put offset("-->",pHtmlFileData,tSkipChar) into tEndComment
          add 2 to tEndComment -- include -> of -->
          add tEndComment to tSkipChar
          put tSkipChar into tEndComment
          put char tNextTagStart to tEndComment of pHtmlFileData into tComment
-         -- need to save comments somewhere
+         -- xxx need to save comments somewhere
          -- can't directly add them to header button when editing a group
+         -- for now, add to a variable and then handle at end of this function
          put tComment & LF after tCommentList
+         -- xxx what about adding as a cComment custom prop to last control added
+         -- to card, checked by highest control number (problems if editing group?), then 
+         -- on export write to html file after that control is written to the html file...
+         -- but need to not duplicate comments already added on export, e.g., at end div's
+         -- will still have problems with any comment inside a tag
          next repeat
       end if
       if offset("/div>",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of </div>
-         put LF & "JUST BEFORE get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-         put LF & "JUST BEFORE get fImportGroupEnd, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+         if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+         if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupEnd, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
          get fImportGroupEnd(tSkipChar, tGrpList, tGrpLocList)
          put it into tResult
          put tResult["SkipChar"] into tSkipChar
          put tResult["GrpList"] into tGrpList
          put tResult["GrpLocList"] into tGrpLocList
-         put LF & "JUST AFTER get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-         put LF & "JUST AFTER get fImportGroupEnd, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+         if kReporter is "true" then put LF & "JUST AFTER get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+         if kReporter is "true" then put LF & "JUST AFTER get fImportGroupEnd, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
          next repeat
       end if
       if offset("/",pHtmlFileData,tSkipChar) = 1 then 
@@ -167,23 +175,27 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       put offset(">",pHtmlFileData,tSkipChar) into tNextEndChar
       if tNextEndChar < tNextSpaceChar then
          -- not a tag with an attribute such as type or id
-         put LF & "tNextEndChar < tNextSpaceChar so not a tag with attribute such as type or id" & LF after msg
+         if kReporter is "true" then 
+            put LF & "tNextEndChar < tNextSpaceChar so not a tag with attribute such as type or id" & LF after msg
+         end if
       else
          add tSkipChar to tNextSpaceChar
          put char tNextTagStart + 1 to tNextSpaceChar - 1 of pHtmlFileData into tTagName
-         put LF & "before switch in makeLiveCodeCard, tTagName = " & tTagName & LF after msg
+         if kReporter is "true" then 
+            put LF & "before switch in makeLiveCodeCard, tTagName = " & tTagName & LF after msg
+         end if
          switch tTagName
             case "div"
                -- import div = group
-               put LF & "JUST BEFORE get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-               put LF & "JUST BEFORE get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+               if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+               if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
                get fImportGroupStart(tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGrpLocList)
                put it into tResult
                put tResult["SkipChar"] into tSkipChar
                put tResult["GrpList"] into tGrpList
                put tResult["GrpLocList"] into tGrpLocList
-               put LF & "JUST AFTER get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-               put LF & "JUST AFTER get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+               if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+               if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
                break
             case "p"
                -- import p = locked field
@@ -243,6 +255,7 @@ function fImportCanvas tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tCanvas
    -- "canvas" added in export, others added later might not have it
    if word 1 of tCanvas is "canvas" then delete word 1 of tCanvas
+   put "CANVAS" && tCanvas into tCanvas
    -- xxx for now keep the original id number
    
    -- FOR NOW, AT LEAST, CREATE BUTTON TO REPRESENT HTML CANVAS
@@ -265,7 +278,7 @@ end fImportCanvas
 ----------------------------- 
 
 function fImportLabelTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportLabelTag" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportLabelTag" & LF after msg
    -- tSkipChar points to < of <label
    -- need to return updated tSkipChar
    -- THERE ARE TWO TYPES
@@ -304,7 +317,7 @@ function fImportLabelTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    get fImportCheckOrRadioButton(tSkipChar, tType, pHtmlFileData, pCssFileData, tGrpLocList)
    
-   put LF & "exit fImportLabelTag" & LF after msg
+   if kReporter is "true" then put LF & "exit fImportLabelTag" & LF after msg
    
    -- update tSkipChar here before returning
    put offset("</label>",pHtmlFileData,tSkipChar) into tEndChar
@@ -335,7 +348,7 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    else
       put empty into tTargetValue
    end if
-   put LF & "fGetHtmlAttribute, tTargetValue = " & tTargetValue after msg -- development field
+   if kReporter is "true" then put LF & "fGetHtmlAttribute, tTargetValue = " & tTargetValue after msg -- development field
    return tTargetValue
 end fGetHtmlAttribute
 
@@ -347,7 +360,7 @@ function fGetReporter tSkipChar, pHtmlFileData
    replace "<" with "*" in tReport -- use one char so don't throw off count in report text
    replace ">" with "*" in tReport -- use one char so don't throw off count in report text
    put LF & "+/- 20 of (tSkipChar = " & tSkipChar & ") is: " after msg
-   put LF & "|||" & tReport & "|||" & LF after msg
+   put LF & "---||" & tReport & "||---" & LF after msg
 end fGetReporter
 
 ----------------------------- 
@@ -378,15 +391,17 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
    -- for example, tControlName = button "radio 2"
    -- the long name does not work, at least when control is inside a group
    
-   put LF & LF & "enter function fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
-      
+   if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
+   
    put empty into tCssData
    if pCssFileData is not empty then
       put offset("#" & pID,pCssFileData) into tStartChar
       put offset("}",pCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of pCssFileData into tCssData
-      put LF & tCssData & LF after msg -- development field
+      if kReporter is "true" then 
+         put LF & tCssData & LF after msg
+      end if
    end if
    
    put 0,0 into tTopLeft
@@ -449,9 +464,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                break
             case "transform"
                -- used when rotate horizontal range to vertical in CSS
-               put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
+               if kReporter is "true" then put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
                put "true" into tTransformFlag
-               put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
+               if kReporter is "true" then put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
                break
          end switch
       end repeat
@@ -459,20 +474,22 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
    
    set the itemDelimiter to comma
    
-   put "????tLast????" into tLast 
-   
-   put LF & "---||" & tGrpLocList & "||---" after msg
+   if kReporter is "true" then put LF & "---||" & tGrpLocList & "||---" after msg
    
    if tGrpLocList is not empty then
       put the last line of tGrpLocList into tLast
-      put LF & "tLast = last line of tGrpLocList = " & tLast after msg
+      if kReporter is "true" then 
+         put LF & "tLast = last line of tGrpLocList = " & tLast after msg
+      end if
       add item 1 of tLast to item 1 of tTopLeft
       add item 2 of tLast to item 2 of tTopLeft
    end if
    
    if tTransformFlag is "true" then
       -- CSS/HTML range started out as horiz then transformed by rotation 90 deg about center
-      put LF & "in IF swapping width and height, tTransformFlag is true" after msg
+      if kReporter is "true" then 
+         put LF & "in IF swapping width and height, tTransformFlag is true" after msg
+      end if
       -- swap width and height
       put tWidth into tOldWidth
       put tHeight into tOldHeight
@@ -485,8 +502,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
       put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
    end if
    
-   put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
-   put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
+   if kReporter is "true" then put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
+   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
    
    -- _LABEL in CSS for checkbox and radio buttons may not have width and height values
    if tWidth > 0 then set the width of tControlName to tWidth
@@ -495,14 +512,14 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
    -- set topLeft AFTER set width and height
    set the topLeft of tControlName to tTopLeft
    
-   put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
+   if kReporter is "true" then put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
    return tTransformFlag
 end fGetSetControlProps
 
 -----------------------------  
 
 function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportCheckOrRadioButton" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportCheckOrRadioButton" & LF after msg
    -- fImportCheckOrRadioButton is called by fImportLabelTag
    -- tSkipChar points to < of <label inside which the button is contained
    -- pStyle is "radiobutton" or "checkbox" ***** NOTE pStyle AND NOT tStyle HERE in case merge functions *******
@@ -601,7 +618,7 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    put the long name of button tButton into tControlLongName -- NOTE button tButton   
    get fGetSetControlProps(tID_LABEL, tControlLongName, pCssFileData, tGrpLocList) -- NOTE tID_LABEL
    
-   put LF & "exit fImportCheckOrRadioButton" & LF after msg
+   if kReporter is "true" then put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
 end fImportCheckOrRadioButton
 
@@ -618,13 +635,13 @@ end fImportCheckOrRadioButton
 -- div id's will have id number at end in both cases
 
 function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGrpLocList
-   put LF & "enter fImportGroupStart" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportGroupStart" & LF after msg
    -- <div> = group
    -- tSkipChar points to < of <div
    -- need to return updated tSkipChar
    -- need to return updated tGrpList and tGrpLocList
    
-   -- get fGetReporter(tSkipChar, pHtmlFileData) -- development
+   if kReporter is "true" then get fGetReporter(tSkipChar, pHtmlFileData) -- development
    
    -- THIS NEEDS TO
    --   input list of groups and group topLefts
@@ -651,10 +668,10 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    add 1 to tLines
    put tGroup into line tLines of tGrpList
    
-   put LF & "JUST BEFORE create group " & tIDname after msg
+   if kReporter is "true" then put LF & "JUST BEFORE create group " & tIDname after msg
    create group
    set the name of it to tGroup
-   put LF & "JUST AFTER create group " & tGroup after msg
+   if kReporter is "true" then put LF & "JUST AFTER create group " & tGroup after msg
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -669,9 +686,9 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    set the lockLoc of group tGroup to true -- otherwise will "shrink to fit" contents, which are none at this point
    set the showBorder of group tGroup to true -- xxx so can see it in development
    
-   put LF & "JUST BEFORE start editing group" && tGroup after msg
+   if kReporter is "true" then put LF & "JUST BEFORE start editing group" && tGroup after msg
    start editing group tGroup
-   put LF & "JUST AFTER start editing group" && tGroup & LF after msg
+   if kReporter is "true" then put LF & "JUST AFTER start editing group" && tGroup & LF after msg
    
    -- RETURN RESULTS
    put tSkipChar into tResult["SkipChar"]
@@ -683,7 +700,7 @@ end fImportGroupStart
 -----------------------------
 
 function fImportGroupEnd tSkipChar, tGrpList, tGrpLocList
-   put LF & "enter fImportGroupEnd" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportGroupEnd" & LF after msg
    -- input argument tSkipChar points to < of </div>
    -- need to return updated tSkipChar
    -- char which can occur after </div> is space or < or LF
@@ -700,62 +717,37 @@ function fImportGroupEnd tSkipChar, tGrpList, tGrpLocList
    -- get name of the last group
    put the last line of tGrpList into tGrpName
    
-   put LF & "Before delete last line, tGrpName = " & tGrpName after msg
+   if kReporter is "true" then put LF & "Before delete last line, tGrpName = " & tGrpName after msg
    
-   put LF & "Before delete last line, tGrpList = " & LF & tGrpList after msg
+   if kReporter is "true" then put LF & "Before delete last line, tGrpList = " & LF & tGrpList after msg
    
    -- UPDATE GROUP LIST AND GROUP LOC LIST
-   
-   --   xxx  -- delete the last line with info about group
-   --    if tGrpList is not empty then delete the last line of tGrpList
-   --    if tGrpLocList is not empty then delete the last line of tGrpLocList
    
    delete the last line of tGrpList
    delete the last line of tGrpLocList
    
-   -- FOUND I MUST USE "BACKGROUND" HERE AND NOT "GROUP"
-   -- xxx is this a bug in this LC version = 9 dp 6 ??? 
-   -- xxx group works above when start editing
-   put LF & "the name of this background = " & the name of this background & LF after msg
+   -- I found, at least with LC 9 (dp6), that I had to use background and not group in this next line
+   if kReporter is "true" then put LF & "the name of this background = " & the name of this background & LF after msg
    
-   if tGrpList is empty then
-      -- ending top level group
-      -- when not in a group in a group, can't use group name when stopping
-      put LF & "JUST BEFORE stop editing" & LF after msg
-      stop editing
-      put LF & "stop editing" & LF after msg
-   else
-      -- FOUND I MUST USE "BACKGROUND" HERE WHEN STOPPING EDIT OF GROUP AND NOT "GROUP"
-      -- xxx is this a bug in this LC version = 9 dp 6 ??? 
-      -- xxx group works above when start editing
-      
-      --       put LF & "JUST BEFORE stop editing background" && tGrpName after msg
-      --       stop editing background tGrpName
-      --       put LF & "stop editing background" && tGrpName after msg
-      
-      -- xxx BUT THIS ALSO STOPS EDITING OF THE GROUP IN WHICH THIS GROUP IS LOCATED !!!! 
-      -- xxx WHICH IN THIS CASE IS THE SIMULATION FRAME GROUP
-      -- xxx SINCE DO NOT HAVE 3rd LEVEL NESTING IN HTML EXAMPLE USED HERE...
-      
-      -- xxx SO HAD SAME EFFECT AS "STOP EDITING"
-      
-      stop editing
-      put LF & "stop editing" & LF after msg
-      
-      -- if this group was nested inside a parent group, then go back to editing that parent group
-      -- this has been tested for groups nested 3 deep: grandparent > parent > child
-      if tGrpList is not empty then 
-         put the last line of tGrpList into tGrpName
-         start editing group tGrpName
+   stop editing -- stop editing current group just has same effect as stop editing all
+   
+   if kReporter is "true" then put LF & "stop editing" & LF after msg
+   
+   -- if this group was nested inside a parent group, then go back to editing that parent group
+   -- this has been tested for groups nested 3 deep: grandparent > parent > child
+   if tGrpList is not empty then 
+      put the last line of tGrpList into tGrpName
+      start editing group tGrpName
+      if kReporter is "true" then 
+         put LF & "start editing group" && tGrpName & LF after msg
       end if
-      
    end if
    
    -- get tSkipChar off this </div>
    add 1 to tSkipChar
    
-   put LF & "return tSkipChar = " & tSkipChar after msg
-   put LF & "just before end fImportGroupEnd" & LF after msg
+   if kReporter is "true" then put LF & "return tSkipChar = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "just before end fImportGroupEnd" & LF after msg
    
    -- RETURN RESULT
    put tSkipChar into tResult["SkipChar"]
@@ -767,7 +759,7 @@ end fImportGroupEnd
 -----------------------------
 
 function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportMenuButton" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportMenuButton" & LF after msg
    -- tSkipChar points to < of <select
    -- need to return updated tSkipChar
    
@@ -790,26 +782,18 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tButton
    -- "select" added in export, others added later might not have it
    if word 1 of tButton is "select" then delete word 1 of tButton 
-   put LF & "JUST BEFORE CREATE button tButton  = " & tButton after msg
+   if kReporter is "true" then put LF & "JUST BEFORE CREATE button tButton  = " & tButton after msg
    
    create button tButton
    set the style of button tButton to "menu"
    set the menuMode of button tButton to "option"
    
-   put LF & "JUST AFTER CREATE button tButton  = " & tButton after msg
+   if kReporter is "true" then put LF & "JUST AFTER CREATE button tButton  = " & tButton after msg
    
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
-   
-   --    put offset("value=",pHtmlFileData,tSkipChar) into tIDstartChar
-   --    add tSkipChar to tIDstartChar -- char at i of id=
-   --    add 7 to tIDstartChar -- char just inside " of value=" -- was 4 for id="
-   --    put offset(quote,pHtmlFileData,tIDstartChar) into tIDendChar
-   --    subtract 1 from tIDendChar -- step back before quote
-   --    add tIDstartChar to tIDendChar
-   --    put char tIDstartChar to tIDendChar of pHtmlFileData into tValue
-   
-   put LF & "tValue = " & tValue after msg -- development field
+     
+   if kReporter is "true" then put LF & "tValue = " & tValue after msg -- development field
    
    -- GET OPTION(S)
    --    EXAMPLE: 
@@ -856,7 +840,7 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   put LF & "just before end fImportMenuButton" & LF after msg 
+   if kReporter is "true" then put LF & "just before end fImportMenuButton" & LF after msg 
    -- update tSkipChar
    put offset("</select>",pHtmlFileData,tSkipChar) into tEndSelectTagChar
    add tEndSelectTagChar to tSkipChar
@@ -868,7 +852,7 @@ end fImportMenuButton
 -----------------------------
 
 function fImportImage tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportImage" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportImage" & LF after msg
    -- EXAMPLE: <img id="image_robo_99_png_1059" src="images/robo 99.png"> 
    -- tSkipChar points to < of <img
    -- need to return updated tSkipChar
@@ -880,23 +864,15 @@ function fImportImage tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tImage
    -- "image" added in export, others added later might not have it
    if word 1 of tImage is "image" then delete word 1 of tImage 
-   put LF & "JUST BEFORE CREATE IMAGE tImage = " & tImage after msg
+   if kReporter is "true" then put LF & "JUST BEFORE CREATE IMAGE tImage = " & tImage after msg
    create image tImage
    -- set the showBorder of image tImage to true -- during development if need to see rect
-   put LF & "JUST AFTER CREATE IMAGE tImage = " & tImage after msg
+   if kReporter is "true" then put LF & "JUST AFTER CREATE IMAGE tImage = " & tImage after msg
    
    -- GET SRC ATTRIBUTE 
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "src") into tSRC
-   
-   --    put offset("src=",pHtmlFileData,tSkipChar) into tIDstartChar
-   --    add tSkipChar to tIDstartChar -- char at i of src=
-   --    add 5 to tIDstartChar -- char just inside " of src=" -- was 4 for id="
-   --    put offset(quote,pHtmlFileData,tIDstartChar) into tIDendChar
-   --    subtract 1 from tIDendChar -- step back before quote
-   --    add tIDstartChar to tIDendChar
-   --    put char tIDstartChar to tIDendChar of pHtmlFileData into tSRC
-   
-   put LF & "tSRC = " & tSRC after msg -- development field
+     
+   if kReporter is "true" then put LF & "tSRC = " & tSRC after msg -- development field
    
    set the cFilename of image tImage to tSRC -- xxx may want to use this on export
    
@@ -918,7 +894,7 @@ end fImportImage
 -----------------------------
 
 function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportLockedField" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportLockedField" & LF after msg
    -- <p> tag = locked field
    -- tSkipChar points to < of <p
    -- need to return updated tSkipChar
@@ -930,9 +906,9 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tField
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
-   put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    create field tField
-   put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
+   if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
    set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
    set the lockText of field tField to true
@@ -962,7 +938,7 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    add 16 to item 2 of tTopLeft -- xxx CHANGE TO add variable so changed value in EXPORT appears in IMPORT
    set the topLeft of field tField to tTopLeft 
    
-   put LF & "just before end of fImportLockedField" & LF after msg
+   if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
    
    -- return updated tSkipChar
    -- which was updated above in fImportLockedField
@@ -972,8 +948,8 @@ end fImportLockedField
 --------------------------------- 
 
 function fImportInputTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportInputTag" & LF after msg
-   -- get fGetReporter(tSkipChar, pHtmlFileData)
+   if kReporter is "true" then put LF & "enter fImportInputTag" & LF after msg
+   if kReporter is "true" then  get fGetReporter(tSkipChar, pHtmlFileData)
    -- tSkipChar points to < of <input
    -- imports <input that is not inside <label tags
    -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
@@ -981,40 +957,52 @@ function fImportInputTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- get type attribute if any - if no type then input for unlocked field
    -- attributes can be in any order
    put offset("type",pHtmlFileData,tSkipChar) into tTypeChar
-   put LF & "offset gives tTypeChar before add skip = " & tTypeChar after msg
+   if kReporter is "true" then put LF & "offset gives tTypeChar before add skip = " & tTypeChar after msg
    add tSkipChar to tTypeChar
    put offset(">",pHtmlFileData,tSkipChar) into tEndChar
-   put LF & "offset gives tEndChar before add skip = " & tEndChar after msg
+   if kReporter is "true" then put LF & "offset gives tEndChar before add skip = " & tEndChar after msg
    add tSkipChar to tEndChar -- tEndChar put into tSkipChar at end this function
-   put LF & "tTypeChar = " & tTypeChar && "tEndChar = " & tEndChar after msg
+   if kReporter is "true" then put LF & "tTypeChar = " & tTypeChar && "tEndChar = " & tEndChar after msg
    if tTypeChar > tEndChar or tTypeChar = tSkipChar then -- tTypeChar = 0 if no more types in file
-      put LF & "(tTypeChar > tEndChar or tTypeChar = tSkipChar) so no type" after msg
+      if kReporter is "true" then 
+         put LF & "(tTypeChar > tEndChar or tTypeChar = tSkipChar) so no type" after msg
+      end if
       -- input tag does not have a type attribute
       -- so input tag is for an unlocked field
       get fImportUnlockedField(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList)
       -- don't do anything with return, update tSkipChar below
    else
-      put LF & "(tTypeChar NOT > tEndChar AND tTypeChar NOT = tSkipChar) so there IS a type" after msg
+      if kReporter is "true" then 
+         put LF & "(tTypeChar NOT > tEndChar AND tTypeChar NOT = tSkipChar) so there IS a type" after msg
+      end if
       -- input tag has a type attribute
       -- check what type attribute is
       -- xxx ASSUME type="typename" FOLLOWED BY SPACE OR >
       -- xxx was having problems using offset to find quote
       put offset(space,pHtmlFileData,tTypeChar) into tSpaceChar
-      put LF & "tSpaceChar before add tTypeChar = " & tSpaceChar after msg
+      if kReporter is "true" then 
+         put LF & "tSpaceChar before add tTypeChar = " & tSpaceChar after msg
+      end if
       add tTypeChar to tSpaceChar
       put offset(">",pHtmlFileData,tTypeChar) into tEndChar -- tEndChar changed from that above
-      put LF & "tEndChar before add tTypeChar = " & tEndChar after msg
+      if kReporter is "true" then 
+         put LF & "tEndChar before add tTypeChar = " & tEndChar after msg
+      end if
       add tTypeChar to tEndChar
       if tSpaceChar < tEndChar then
          -- assume have type="typename" immediately followed by space
-         put LF & "tSpaceChar = " & tSpaceChar & " < tEndChar = " & tEndChar after msg
+         if kReporter is "true" then 
+            put LF & "tSpaceChar = " & tSpaceChar & " < tEndChar = " & tEndChar after msg
+         end if
          put char tTypeChar+6 to tSpaceChar-2 of pHtmlFileData into tType
       else
          -- assume have type="typename" immediately followed by >
-         put LF & "tSpaceChar = " & tSpaceChar & " > tEndChar = " & tEndChar after msg
+         if kReporter is "true" then 
+            put LF & "tSpaceChar = " & tSpaceChar & " > tEndChar = " & tEndChar after msg
+         end if
          put char tTypeChar+6 to tEndChar-2 of pHtmlFileData into tType
       end if
-      put LF & "tType = " & tType after msg
+      if kReporter is "true" then put LF & "tType = " & tType after msg
       switch tType
          case "button"
             get fImportButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList)
@@ -1025,11 +1013,11 @@ function fImportInputTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
             -- don't do anything with return, update tSkipChar below
             break
          default
-            -- put LF & "at parent input tag but no known type found" & LF after msg
+            if kReporter is "true" then put LF & "at parent input tag but no known type found" & LF after msg
       end switch
    end if
    
-   put LF & "just before end fImportInputTag" & LF after msg
+   if kReporter is "true" then put LF & "just before end fImportInputTag" & LF after msg
    
    -- return updated tSkipChar
    put tEndChar into tSkipChar -- tEndChar for > found above
@@ -1039,7 +1027,7 @@ end fImportInputTag
 -------------------------------
 
 function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportUnlockedField" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportUnlockedField" & LF after msg
    -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- LC unlocked fields are for HTML input tag with no type attribute for input fields
@@ -1051,20 +1039,22 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
    
-   put LF & "tValue= " & tValue after msg
+   if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
    -- GET ONCHANGE, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onchange") into tOnchange
    
-   put LF & "tOnchange= " & tOnchange after msg
+   if kReporter is "true" then put LF & "tOnchange= " & tOnchange after msg
    
    put tID into tField -- will use both tID and tField below
    replace "_" with space in tField
    -- "input" added in export of unlocked field, others added later might not have it
    if word 1 of tField is "input" then delete word 1 of tField 
-   put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   
    create field tField
-   put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
+   
+   if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
    set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
    set the lockText of field tField to false
@@ -1079,14 +1069,14 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    put the long name of field tField into tControlLongName -- NOTE field tField
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   put LF & "just before end of fImportUnlockedField" & LF after msg
+   if kReporter is "true" then put LF & "just before end of fImportUnlockedField" & LF after msg
    return empty -- no need to return tSkipChar
 end fImportUnlockedField
 
 -------------------------------
 
 function fImportButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportButton" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportButton" & LF after msg
    -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
@@ -1104,12 +1094,12 @@ function fImportButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
    
-   put LF & "tValue= " & tValue after msg
+   if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
    -- GET ONCLICK
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onclick") into tOnclick
    
-   put LF & "tOnclick= " & tOnclick after msg
+   if kReporter is "true" then put LF & "tOnclick= " & tOnclick after msg
    
    -- CREATE BUTTON
    create button
@@ -1126,14 +1116,14 @@ function fImportButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   put LF & "just before end fImportButton" & LF after msg
+   if kReporter is "true" then put LF & "just before end fImportButton" & LF after msg
    return empty -- no need to return tSkipChar
 end fImportButton
 
 ------------------------------- 
 
 function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   put LF & "enter fImportScrollbar" & LF after msg
+   if kReporter is "true" then put LF & "enter fImportScrollbar" & LF after msg
    -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
@@ -1153,30 +1143,30 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
    if tValue is empty then put 50 into tValue
    
-   put LF & "tValue= " & tValue after msg
+   if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
    -- GET MIN, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "min") into tMin
    if tMin is empty then put 0 into tMin
    
-   put LF & "tMin = " & tMin after msg
+   if kReporter is "true" then put LF & "tMin = " & tMin after msg
    
    -- GET MAX, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "max") into tMax
    if tMin is empty then put 100 into tMin
    
-   put LF & "tMax = " & tMax after msg
+   if kReporter is "true" then put LF & "tMax = " & tMax after msg
    
    -- GET STEP, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "step") into tStep
    if tStep is empty then put 1 into tStep
    
-   put LF & "tStep = " & tStep after msg
+   if kReporter is "true" then put LF & "tStep = " & tStep after msg
    
    -- GET ONINPUT, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "oninput") into tOninput 
    
-   put LF & "tOninput= " & tOninput after msg
+   if kReporter is "true" then put LF & "tOninput= " & tOninput after msg
    
    create scrollbar tScrollbar
    set the style of scrollbar tScrollbar to scale
@@ -1188,10 +1178,12 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    put it into tTransformFlag -- returned true if control has a transform flag
    
-   put LF & "in fImportScrollbar, after return from fGetSet... tTransformFlag = " & tTransformFlag after msg 
+   if kReporter is "true" then put LF & "in fImportScrollbar, after return from fGetSet... tTransformFlag = " & tTransformFlag after msg 
    
    if tTransformFlag is true then
-      put LF & "tTransformFlag is TRUE" after msg
+      if kReporter is "true" then 
+         put LF & "tTransformFlag is TRUE" after msg
+      end if
       -- vertical scrollbar
       -- startValue in LC vertical scrollbar is at top
       -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
@@ -1212,7 +1204,7 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
       set the cOninput of scrollbar tScrollbar to tOninput
    end if
    
-   put LF & "just before end fImportScrollbar" & LF after msg
+   if kReporter is "true" then put LF & "just before end fImportScrollbar" & LF after msg
    return empty -- no need to return tSkipChar
 end fImportScrollbar
 
