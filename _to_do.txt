@@ -1,19 +1,27 @@
 ===============================
-Difference between export ORIG > import > export NEW 
 
-USED https://www.diffchecker.com AND CHECKED MY ROBO CARD
-
-export ORIG had background-color: rgb(255,255,0); (for div) WHEREAS export NEW had no entry
-
-export ORIG had border-style: none; (for div) WHEREAS export NEW had border-style: outset;
-
-export ORIG had border-style: outset; (for image) WHEREAS export NEW had border-style: none;
-
-export ORIG had border-width: 0px; (for image) WHEREAS export NEW had border-width: 2px; 
-
-ALSO CHECK CHECKBOX ON EXPORT for adding outlines - if these are added, then are they imported?
+Need to handle header button on import 
 
 ===============================
+
+Need to handle comments better in both html and css 
+
+===============================
+
+Need to merge the two UI stacks 
+
+===============================
+
+How to handle html EVENTS? 
+
+Currently, I assume only (a) onchange for checkbox, radio, unlocked field (b) oninput for scrollbar, (c) onclick for standard button. 
+
+But could see, e.g., someone using ondrag for scrollbar and mouseup for standard button. 
+
+Maybe have an array of event names to check on import and export?
+
+===============================
+
 How to handle LC ID #'s? 
 
 Originally, on export, I add the LC ID # to the html id 
@@ -25,15 +33,6 @@ CHANGE to NOT use the LC ID # and tell user to make all control names unique.
 In fact, my reaction-diffusion web lab seems to have all unique control names. So doesn't seem like a problem to do this...
 
 What happens if do not use LC ID # and have two or more controls with same name? Then export will write a separate listing for each of these controls. The listings will have same ID but WILL have different properties, at least in location coordinate. Import will only see the first one in css file, unless I check for duplicates and use the last one, putting them in same location. Browser probably will only use the last one in css and apply those settings to all of these controls, at least putting them in same location. 
-
-===============================
-How to handle html EVENTS? 
-
-Currently, I assume only (a) onchange for checkbox, radio, unlocked field (b) oninput for scrollbar, (c) onclick for standard button. 
-
-But could see, e.g., someone using ondrag for scrollbar and mouseup for standard button. 
-
-Maybe have an array of event names to check on import and export?
 
 =============================== 
 

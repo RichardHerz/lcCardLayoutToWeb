@@ -431,51 +431,86 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
          if n contains "#" then next repeat
          if n contains "}" then exit repeat
          put word 1 of item 1 of n into tProp -- so don't get spaces
-         put item 2 of n into tPix
+         put item 2 of n into tValue
+         put fGetStripOuterSpace(tValue) into tValue
          
          -- watch out for a calc();
-         if tPix contains "calc" then
-            put offset("+",tPix) into tPlusChar -- assume a space after plus
-            put offset("px",tPix) into tPXChar
-            put char tPlusChar + 2 to tPXChar -1 of tPix into tPix
+         -- EXAMPLE:    top: calc(var(--shift) + 700px);
+         if tValue contains "calc" then
+            put offset("+",tValue) into tPlusChar -- assume a space after plus
+            put offset("px",tValue) into tPXChar
+            put char tPlusChar + 2 to tPXChar -1 of tValue into tValue
             put 50 into tShift -- xxx what I'm using in development
-            add tShift to tPix
+            add tShift to tValue
          else
-            repeat 3 times -- delete px;
-               delete the last char of tPix
-            end repeat
+            delete the last char of tValue -- delete ;
+            replace "px" with empty in tValue -- if any, delete px
          end if
          
-         --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          repeat 3 times -- delete px;
-         --             delete the last char of tPix
-         --          end repeat
+         --          --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
+         --          --             repeat 3 times -- delete px;
+         --          --                delete the last char of tValue
+         --          --             end repeat
+         --          delete the last char of tValue -- delete ;
+         --          replace "px" with empty in tValue -- if any, delete px
          
          -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
          
          switch tProp
             case "width"
-               put tPix into tWidth
+               put tValue into tWidth
                break
             case "height"
-               put tPix into tHeight
+               put tValue into tHeight
                break
             case "left"
                set the itemDelimiter to comma
                -- order in LC topLeft is left,top!
-               put tPix into item 1 of tTopLeft -- save, don't set topLeft yet
+               put tValue into item 1 of tTopLeft -- save, don't set topLeft yet
                -- save, need to add container group left & setting height & width changes topLeft
                set the itemDelimiter to colon
                break
             case "top"
                set the itemDelimiter to comma
                -- order in LC topLeft is left,top!
-               put tPix into item 2 of tTopLeft -- save, don't set topLeft yet
+               put tValue into item 2 of tTopLeft -- save, don't set topLeft yet
                -- save, need to add container group left & setting height & width first changes topLeft
                set the itemDelimiter to colon
                break
             case "font-size"
-               set the textSize of tControlName to tPix
+               set the textSize of tControlName to tValue
+               break
+            case "opacity"
+               put 100*(1 - tValue) into ttemp
+               set the blendLevel of tControlName to ttemp
+               break
+            case "visibility"
+               -- EXAMPLE:  visibility: visible; 
+               if kReporter is "true" then put LF & "VISIBILITY tValue = " & tValue & LF after msg
+               if tValue is "hidden" then 
+                  set the visible of tControlName to false
+               else
+                  set the visible of tControlName to true
+               end if
+               break
+            case "border-style"
+               -- css border styles include: none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
+               -- EXPORT has a checkbox to add CSS dotted when LC showBorder false
+               -- EXPORT otherwise saves LC showBorder true as css outset
+               if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
+                  set the showBorder of tControlName to false
+               else
+                  set the showBorder of tControlName to true
+               end if
+               break
+            case "border-width"
+               set the borderWidth of tControlName to tValue
+               break
+            case "background-color"
+               -- EXAMPLE:  background-color: rgb(102,255,255);
+               replace "rgb(" with empty in tValue
+               delete the last char of tValue -- delete ) where ; already deleted from tValue
+               set the backgroundColor of tControlName to tValue
                break
             case "transform"
                -- used when rotate horizontal range to vertical in CSS
@@ -694,7 +729,8 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    put the topLeft of group tGroup into line tLines of tGrpLocList
    
    set the lockLoc of group tGroup to true -- otherwise will "shrink to fit" contents, which are none at this point
-   set the showBorder of group tGroup to true -- xxx so can see it in development
+   -- set the showBorder of group tGroup to true -- xxx so can see it in development
+   -- xxx setting showBorder here for all to true will cause difference in css when export > import > export
    
    if kReporter is "true" then put LF & "JUST BEFORE start editing group" && tGroup after msg
    start editing group tGroup
