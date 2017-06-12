@@ -272,7 +272,6 @@ function fImportCanvas tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- "canvas" added in export, others added later might not have it
    if word 1 of tCanvas is "canvas" then delete word 1 of tCanvas
    put "CANVAS" && tCanvas into tCanvas
-   -- xxx for now keep the original id number
    
    -- FOR NOW, AT LEAST, CREATE BUTTON TO REPRESENT HTML CANVAS
    create button
@@ -664,11 +663,6 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    --   add to these lists
    --   create a new empty group if possible
    --   return the updated list of groups and group topLefts
-   
-   -- Naming for example
-   -- group "simulation frame" ends up as <div id="div_simulation_frame_1128">
-   -- may want to keep original _1128 by revising export rather than use a new id if can't set
-   -- so that orig javascript still works
    
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
@@ -1064,8 +1058,9 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    
    put tID into tField -- will use both tID and tField below
    replace "_" with space in tField
-   -- "input" added in export of unlocked field, others added later might not have it
+   -- "input_field" added in export of unlocked field, others added later might not have it
    if word 1 of tField is "input" then delete word 1 of tField 
+   if word 1 of tField is "field" then delete word 1 of tField
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    
    create field tField
@@ -1105,7 +1100,6 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    replace "_" with space in tButton
    -- "button" added in export, others added later might not have it
    if word 1 of tButton is "button" then delete word 1 of tButton
-   -- xxx for now keep the original id number
    
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
@@ -1153,7 +1147,6 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tScrollbar
    -- "range" added in export, others added later might not have it
    if word 1 of tScrollbar is "range" then delete word 1 of tScrollbar
-   -- xxx for now keep the original id number
    
    -- GET VALUE, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue

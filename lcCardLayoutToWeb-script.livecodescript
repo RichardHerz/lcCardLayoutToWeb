@@ -637,7 +637,9 @@ function fIDname tControl_ID
       replace space with "_" in t2
       replace quote with empty in t2
       replace "." with "_" in t2
-      put t1 & "_" & t2 & "_" & tControl_ID into tResult
+      -- xxx change to not use LC ID # on export to simplify import
+      -- xxx put t1 & "_" & t2 & "_" & tControl_ID into tResult
+      put t1 & "_" & t2 into tResult
    end if
    return tResult
 end fIDname

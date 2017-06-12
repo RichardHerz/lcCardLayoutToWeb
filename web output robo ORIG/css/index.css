@@ -31,7 +31,7 @@ select {
  position: absolute;
 }
 
-#div_simulation_frame_1128 {
+#div_simulation_frame {
  display: block;
  position: absolute;
  left: 31px;
@@ -44,7 +44,7 @@ select {
  opacity: 1;
 }
 
-#div_OUTER_group_1009 {
+#div_OUTER_group {
  display: block;
  position: absolute;
  left: 33px;
@@ -58,7 +58,7 @@ select {
  opacity: 1;
 }
 
-#button_get_num_controls_1003 {
+#button_get_num_controls {
  left: 6px;
  top: 21px;
  width: 120px;
@@ -69,7 +69,7 @@ select {
  opacity: 1;
 }
 
-#div_INNER_group_02_1006 {
+#div_INNER_group_02 {
  display: block;
  position: absolute;
  left: 138px;
@@ -83,7 +83,7 @@ select {
  opacity: 1;
 }
 
-#button_list_groups_1004 {
+#button_list_groups {
  left: 11px;
  top: 6px;
  width: 82px;
@@ -94,7 +94,7 @@ select {
  opacity: 1;
 }
 
-#field_locked_field_1005 {
+#field_locked_field {
  position: absolute;
  left: 6px;
  top: 37px;
@@ -102,7 +102,7 @@ select {
  height: 21px;
 }
 
-#button_blank_1013 {
+#button_blank {
  left: 30px;
  top: 28px;
  width: 82px;
@@ -113,7 +113,7 @@ select {
  opacity: 1;
 }
 
-#button_Button01-1_1012 {
+#button_Button01-1 {
  left: 42px;
  top: 53px;
  width: 82px;
@@ -124,7 +124,7 @@ select {
  opacity: 1;
 }
 
-#div_EMPTY_group_1017 {
+#div_EMPTY_group {
  display: block;
  position: absolute;
  left: 40px;
@@ -137,7 +137,7 @@ select {
  opacity: 1;
 }
 
-#div_RADIO_group_1045 {
+#div_RADIO_group {
  display: block;
  position: absolute;
  left: 307px;
@@ -150,37 +150,37 @@ select {
  opacity: 1;
 }
 
-#radio_Radio2_1043_LABEL {
+#radio_Radio2_LABEL {
  left: 6px;
  top: 34px;
 }
 
-#radio_Radio2_1043_SPAN {
+#radio_Radio2_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#radio_Radio1_1044_LABEL {
+#radio_Radio1_LABEL {
  left: 7px;
  top: 6px;
 }
 
-#radio_Radio1_1044_SPAN {
+#radio_Radio1_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#checkbox_Check1_1046_LABEL {
+#checkbox_Check1_LABEL {
  left: 180px;
  top: 113px;
 }
 
-#checkbox_Check1_1046_SPAN {
+#checkbox_Check1_SPAN {
  margin-left: 22px;
  line-height: 18px;
 }
 
-#image_robo_99_png_1059 {
+#image_robo_99_png {
  left: 6px;
  top: 166px;
  width: 178px;
@@ -191,7 +191,7 @@ select {
  border-width: 0px;
 }
 
-#input_field_Field_1084 {
+#input_field_unlocked_field_1 {
  position: absolute;
  left: 250px;
  top: 216px;
@@ -199,14 +199,14 @@ select {
  height: 21px;
 }
 
-#range_slider_horiz_1104 {
+#range_slider_horiz {
  left: 313px;
  top: 279px;
  width: 187px;
  height: 22px;
 }
 
-#select_Option_Menu_1105 {
+#select_Option_Menu {
  left: 358px;
  top: 179px;
  width: 102px;
@@ -217,7 +217,7 @@ select {
  opacity: 1;
 }
 
-#select_Pulldown_Menu_1106 {
+#select_Pulldown_Menu {
  left: 445px;
  top: 224px;
  width: 102px;
@@ -228,7 +228,7 @@ select {
  opacity: 1;
 }
 
-#range_slider_vert_1126 {
+#range_slider_vert {
  transform: rotate(270deg);
  left: 186.5px;
  top: 284px;
@@ -236,7 +236,7 @@ select {
  height: 22px;
 }
 
-#input_field_Field_1127 {
+#input_field_unlocked_field_2 {
  position: absolute;
  left: 251px;
  top: 355px;
