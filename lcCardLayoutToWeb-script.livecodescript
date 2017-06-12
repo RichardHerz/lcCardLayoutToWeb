@@ -727,6 +727,11 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put space & "step=" & quote & tStep & quote after tHTML
    put space & "value=" & quote & tThumbPosition & quote after tHTML
+   -- get oninput, if any
+   put the cOninput of control id tControl_ID into tOninput
+   if tOninput is not empty then
+      put space & "oninput=" & quote & tOninput & quote after tHtml
+   end if
    put ">" & LF after tHTML
    put tIndent & "</input>" & LF after tHTML
    -- END HTML
@@ -871,6 +876,11 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
+   -- get onchange, if any
+   put the cOnchange of control id tControl_ID into tOnchange
+   if tOnchange is not empty then
+      put space & "onchange=" & quote & tOnchange & quote after tHtml
+   end if
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with radio button name
@@ -935,6 +945,11 @@ function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
+   -- get onclick, if any
+   put the cOnclick of control id tControl_ID into tOnclick
+   if tOnclick is not empty then
+      put space & "onclick=" & quote & tOnclick & quote after tHtml
+   end if
    put ">" after tHTML
    put "</input>" & LF after tHTML
    -- end html
@@ -964,6 +979,12 @@ function fExportMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
+   -- get onmouseup, if any
+   -- xxx need to check if this is correct place to put this or if it should be in each option...
+   put the cOnmouseup of control id tControl_ID into tOnmouseup
+   if tOnmouseup is not empty then
+      put space & "onmouseup=" & quote & tOnmouseup & quote after tHtml
+   end if
    put ">" & LF after tHTML
    -- now need to enter menu options
    put the text of control id tControl_ID into tOptions
@@ -1007,6 +1028,11 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    put space & "id=" & quote & tIDname & quote after tHTML
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
+   end if
+   -- get onchange, if any
+   put the cOnchange of control id tControl_ID into tOnchange
+   if tOnchange is not empty then
+      put space & "onchange=" & quote & tOnchange & quote after tHtml
    end if
    put ">" & LF after tHTML
    -- end of html for input tag
@@ -1073,8 +1099,14 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
    if tFieldType is "input" then
+      -- unlocked field for user input
       put the text of control id tControl_ID into tValue
       put space & "value=" & quote & tValue & quote after tHTML
+      -- get onchange, if any
+      put the cOnchange of control id tControl_ID into tOnchange
+      if tOnchange is not empty then
+         put space & "onchange=" & quote & tOnchange & quote after tHtml
+      end if
    end if
    put ">" & space after tHTML
    if tFieldType is "p" then

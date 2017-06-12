@@ -123,13 +123,14 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end > of <body>
-   put "<!-- START COMMENT LIST - COLLECTION OF ALL COMMENTS IN HTML BODY -->" & LF into tCommentList
+   put empty into tCommentList
    
    repeat
       put offset("<",pHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
+      -- save comments in body which are outside of other tags
       if offset("!--",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of <!-- comment
          if kReporter is "true" then put LF & "comment found" & LF after msg
@@ -139,16 +140,26 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
          add tEndComment to tSkipChar
          put tSkipChar into tEndComment
          put char tNextTagStart to tEndComment of pHtmlFileData into tComment
+         if tComment contains "end of div div_" then
+            -- export writes end of div comments like this: <!-- end of div div_EMPTY_group_1017 -->
+            -- do not save these
+         else
+            put tComment & LF after tCommentList
+            -- tCommentList will be saved at end fMakeLiveCodeCard
+            -- can not access header button when editing a group
+            -- these are comments in body which are outside of non-div tags
+         end if
+         next repeat
+         /*
          -- xxx need to save comments somewhere
          -- can't directly add them to header button when editing a group
          -- for now, add to a variable and then handle at end of this function
-         put tComment & LF after tCommentList
-         -- xxx what about adding as a cComment custom prop to last control added
+         -- what about adding as a cComment custom prop to last control added
          -- to card, checked by highest control number (problems if editing group?), then 
          -- on export write to html file after that control is written to the html file...
          -- but need to not duplicate comments already added on export, e.g., at end div's
          -- will still have problems with any comment inside a tag
-         next repeat
+         */
       end if
       if offset("/div>",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of </div>
@@ -230,11 +241,16 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       end if
    end repeat
    
-   -- save comment list
-   put "<!-- END COMMENT LIST - COLLECTION OF ALL COMMENTS IN HTML BODY -->" & LF after tCommentList
-   put the cHtmlData of button tHeaderButton into tHeaderData
-   put LF & tCommentList after tHeaderData
-   set the cHtmlData of button tHeaderButton to tHeaderData
+   -- save comment list, if any
+   if tCommentList is empty then
+      -- no comments found in body outside of non-div tags, other than end of div
+   else
+      put "<!-- *** START COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF before tCommentList
+      put "<!-- *** END COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF after tCommentList
+      put the cHtmlData of button tHeaderButton into tHeaderData
+      put LF & tCommentList after tHeaderData
+      set the cHtmlData of button tHeaderButton to tHeaderData
+   end if
    
 end fMakeLiveCodeCard
 
@@ -952,7 +968,7 @@ function fImportInputTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if kReporter is "true" then  get fGetReporter(tSkipChar, pHtmlFileData)
    -- tSkipChar points to < of <input
    -- imports <input that is not inside <label tags
-   -- uses 3 functions: fImportUnlockedField, fImportButton, fImportScrollbar
+   -- uses 3 functions: fImportUnlockedField, fImportStandardButton, fImportScrollbar
    
    -- get type attribute if any - if no type then input for unlocked field
    -- attributes can be in any order
@@ -1005,7 +1021,7 @@ function fImportInputTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
       if kReporter is "true" then put LF & "tType = " & tType after msg
       switch tType
          case "button"
-            get fImportButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList)
+            get fImportStandardButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList)
             -- don't do anything with return, update tSkipChar below
             break
          case "range"
@@ -1075,8 +1091,8 @@ end fImportUnlockedField
 
 -------------------------------
 
-function fImportButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   if kReporter is "true" then put LF & "enter fImportButton" & LF after msg
+function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
+   if kReporter is "true" then put LF & "enter fImportStandardButton" & LF after msg
    -- tSkipChar points to < of parent <input, no need to return, updated at end fImportInputTag
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
@@ -1116,9 +1132,9 @@ function fImportButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   if kReporter is "true" then put LF & "just before end fImportButton" & LF after msg
+   if kReporter is "true" then put LF & "just before end fImportStandardButton" & LF after msg
    return empty -- no need to return tSkipChar
-end fImportButton
+end fImportStandardButton
 
 ------------------------------- 
 
