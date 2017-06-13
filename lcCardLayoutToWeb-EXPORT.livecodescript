@@ -1,4 +1,4 @@
-﻿script "lcCardLayoutToWeb-script"
+﻿script "lcCardLayoutToWeb-EXPORT"
 /*
 Design, text, images and code by Richard K. Herz, 2017
 Copyrights held by Richard K. Herz
@@ -6,8 +6,29 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
+constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+-- make sure value of constant kKillWord is the same in both script files
+
+constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+-- make sure value of constant kFieldShift is the same in both script files
+
+-- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
+constant kWebOutputFolder = "web output"
+-- images should be added to LiveCode stack only BY REFERENCE
+--      to image file which should be located in images folder kImagesFolder
+--      and not imported into LC stack
+constant kImagesFolder = "images"
+constant kCssFolder = "css"
+constant kCssFileName = "index.css"
+constant kJavascriptFolder = "js"
+constant kHtmlFileName = "index.html"
+-- set number of spaces to indent
+--      used to increase and decrease indents
+--      not only makes html look nice but text editors use indents to fold/unfold sections
+constant kIndentSpaces = 3
+
 /* 
-WARNING - output files for same LiveCard card will be written over each time saveToWebPage runs, 
+WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
 so save copies of the output files you want to keep
 
 WARNING - use LF line endings when constructing text and write to file with file opened for binary write,
@@ -51,7 +72,8 @@ Then can delete the button to leave empty group.
 -----------------------------------------------
 
 on openCard
-   if the short name of the topStack is "lcCardLayoutToWeb-stack" then
+   if the short name of the topStack is "lcCardLayoutToWeb" then
+      set the backgroundColor of this card to 255,255,255
       if there is a field "lcCardLayoutToWeb card name" then
          put the name of the current card into tName
          if tName contains "card id" & space then
@@ -66,29 +88,14 @@ end openCard
 
 -----------------------------------------------
 
-on saveToWebPage
+on exportWebPage
    
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
    
-   set the defaultStack to "lcCardLayoutToWeb-stack"
+   set the defaultStack to "lcCardLayoutToWeb"
    
    ---------- START INPUT DATA ------------
-   
-   -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
-   constant kWebOutputFolder = "web output"
-   -- images should be added to LiveCode stack only BY REFERENCE
-   --      to image file which should be located in images folder kImagesFolder
-   --      and not imported into LC stack
-   constant kImagesFolder = "images"
-   constant kCssFolder = "css"
-   constant kJavascriptFolder = "js"
-   constant kHtmlFileName = "index.html"
-   constant kCssFileName = "index.css"
-   -- set number of spaces to indent
-   --      used to increase and decrease indents
-   --      not only makes html look nice but text editors use indents to fold/unfold sections
-   constant kIndentSpaces = 3
    
    -- SET ARRAY WITH CONVERSION BETWEEN LIVECODE AND CSS PROPERTIES
    -- keys of array aCSSprops are LiveCode properties
@@ -117,14 +124,14 @@ on saveToWebPage
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
    
-   -- uses function fHandleGroup
-   -- uses function fHandleImage
-   -- uses function fHandleStandardButton
-   -- uses function fHandleRadioButton
-   -- uses function fHandleCheckBox
-   -- uses function fHandleMenuButton
-   -- uses function fHandleField
-   -- uses function fHandleScrollbar
+   -- uses function fExportGroup
+   -- uses function fExportImage
+   -- uses function fExportStandardButton
+   -- uses function fExportRadioButton
+   -- uses function fExportCheckBox
+   -- uses function fExportMenuButton
+   -- uses function fExportField
+   -- uses function fExportScrollBar
    -- uses function fIDname
    -- uses function fReturnCSSprops
    
@@ -164,7 +171,6 @@ on saveToWebPage
    end if
    -- tCssFolder worked when this script in design stack but change to tCssFolderPath when
    -- in script-only stack in use by design stack
-   -- put tCssFolder & "/" & kCssFileName into tCssFilePath -- also used at end this handler
    put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- also used at end this handler
    -- xxx probably don't want to make js folder unless put some stuff there...
    --    -- create folder for javascript
@@ -186,11 +192,20 @@ on saveToWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
-   put "<!-- load style sheets for this lab  -->" & LF after tHTML
-   put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & LF after tHTML
-   -- need to add links for javascript files
-   put "</head>" & LF & "<body>" & LF after tHTML
+   if the cHeaderData of this card is not empty then
+      -- this should have been set during import of an html file
+      put the cHeaderData of this card after tHTML
+      put "<body>" & LF after tHTML
+   else
+      -- write new header data for a new html file
+      put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
+      put "<!-- load style sheets for this lab  -->" & LF after tHTML
+      -- use relative path to css file here:  kCssFolder & "/" & kCssFileName 
+      -- and NOT full path so that it works both on web and in LC project
+      put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF after tHTML
+      -- need to add links for javascript files
+      put "</head>" & LF & "<body>" & LF after tHTML
+   end if
    
    -- start building the css
    -- input
@@ -254,7 +269,7 @@ on saveToWebPage
    
    repeat with tControlNumber = 1 to the number of controls
       
-      if the short name of control tControlNumber contains "lcCardLayoutToWeb" then
+      if the short name of control tControlNumber contains kKillWord then
          -- skip these development controls
          next repeat
       end if
@@ -270,7 +285,7 @@ on saveToWebPage
       
       -- lists of current groups and locations are in variables
       -- tGrpList and tGrpLocList, which are added to in
-      -- function fHandleGroup
+      -- function fExportGroup
       
       -- when a group terminates, its group name in the
       -- last line of tGrpList will disappear from next control's long name
@@ -312,7 +327,7 @@ on saveToWebPage
             put the long name of ttemp into ttemp
             put the id of ttemp into ttempID
             get fIDname(ttempID)
-            put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
+            put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
             put tNewLine after tHTML
             
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
@@ -337,9 +352,9 @@ on saveToWebPage
       switch tType
          case "group"
             -- start of a group
-            get fHandleGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
+            get fExportGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
             put it into tResult
-            -- also get other items modified by fHandleGroup
+            -- also get other items modified by fExportGroup
             put tResult["tGrpList"] into tGrpList
             put tResult["tGrpLocList"] into tGrpLocList
             put tResult["tIndent"] into tIndent
@@ -353,19 +368,19 @@ on saveToWebPage
             -- get the html for this style of button
             switch tStyle
                case "standard"
-                  get fHandleStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                case "radiobutton"
-                  get fHandleRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
+                  get fExportRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "checkbox"
-                  get fHandleCheckBox(tControl_ID, tGrp, tGrpLoc, tIndent)
+                  get fExportCheckBox(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "menu"
-                  get fHandleMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                  get fHandleStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
             end switch
             -- put the button result after tHTML and tCSS
             put it into tResult
@@ -373,21 +388,21 @@ on saveToWebPage
             put tResult["css"] after tCSS
             break
          case "field"
-            get fHandleField(tControl_ID, tGrp, tGrpLoc,tIndent)
+            get fExportField(tControl_ID, tGrp, tGrpLoc,tIndent)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "image"
-            get fHandleImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
+            get fExportImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "scrollbar"
-            get fHandleScrollbar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
+            get fExportScrollBar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
@@ -417,7 +432,7 @@ on saveToWebPage
       put the long name of ttemp into ttemp
       put the id of ttemp into ttempID
       get fIDname(ttempID)
-      put tIndent & "</div>" && "<!-- end of div" & space & it & "-->" & LF into tNewLine
+      put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
    
@@ -449,7 +464,7 @@ on saveToWebPage
    write tCSS to file tCssFilePath
    close file tCssFilePath
    
-end saveToWebPage
+end exportWebPage
 
 -----------------------------------------------
 
@@ -626,6 +641,7 @@ function fIDname tControl_ID
    if t2 is "id" then
       -- no name assigned by user, use LC control id
       -- reference in long names will be, e.g., field id 3333
+      -- after export, on subsquent import, the short name will be, e.g., field_3333
       put word 1 to 3 of the long name of control id tControl_ID into t3
       delete word 2 of t3 -- delete "id"
       replace space with "_" in t3
@@ -637,14 +653,14 @@ function fIDname tControl_ID
       replace space with "_" in t2
       replace quote with empty in t2
       replace "." with "_" in t2
-      put t1 & "_" & t2 & "_" & tControl_ID into tResult
+      put t1 & "_" & t2 into tResult
    end if
    return tResult
 end fIDname
 
 -----------------------------------------------
 
-function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSprops
+function fExportImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- images should be added to LiveCode stack as a NEW REFERENCED CONTROL only
@@ -652,9 +668,10 @@ function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put tIndent & "<img" after tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
-   put space & "src=" & quote & tImagesFolder & "/" & the short name of control id tControl_ID & quote & ">" & LF after tHTML
+   put the filename of control id tControl_ID into tFileName
+   put space & "src=" & quote & tFileName & quote & ">" & LF after tHTML
    -- end of html
-    -- write css
+   -- write css
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
@@ -665,11 +682,11 @@ function fHandleImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleImage
+end fExportImage
 
 -----------------------------------------------
 
-function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    put the style of control id tControl_ID into tStyle
    -- LiveCode styles of scrollbars are: progress, scale, scrollbar
@@ -691,15 +708,10 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    put the startValue of control id tControl_ID into tStartValue
    put the endValue of control id tControl_ID into tEndValue
    put the thumbPosition of control id tControl_ID into tThumbPosition
-   put the style of control id tControl_ID into tStyle
    put the pageInc of control id tControl_ID into tStep
-   put space & "min=" & quote & tStartValue & quote after tHTML
-   put space & "max=" & quote & tEndValue & quote after tHTML
-   put space & "step=" & quote & tStep & quote after tHTML
-   put space & "value=" & quote & tThumbPosition & quote after tHTML
-   put ">" & LF after tHTML
-   -- end html
-   -- write css
+   -- WILL WRITE SOME MORE HTML BELOW
+   
+   -- WRITE CSS (AND SOME MORE HTML) 
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
@@ -717,21 +729,50 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
+   
+   if tHt < tWd then
+      -- horizontal scrollbar
+      put space & "min=" & quote & tStartValue & quote after tHTML
+      put space & "max=" & quote & tEndValue & quote after tHTML
+   else
+      -- vertical scrollbar
+      -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
+      -- ALSO SEE if below
+      -- swap LC start and end values
+      put space & "min=" & quote & tEndValue & quote after tHTML
+      put space & "max=" & quote & tStartValue & quote after tHTML
+   end if
+   put space & "step=" & quote & tStep & quote after tHTML
+   put space & "value=" & quote & tThumbPosition & quote after tHTML
+   -- get oninput, if any
+   put the cOninput of control id tControl_ID into tOninput
+   if tOninput is not empty then
+      put space & "oninput=" & quote & tOninput & quote after tHtml
+   end if
+   put ">" & LF after tHTML
+   put tIndent & "</input>" & LF after tHTML
+   -- END HTML
+   
+   -- CONTINUE WITH CSS
    if tHt > tWd then
       -- vertical scrollbar when height > width
       -- default in html and css is horizontal, so need to do something special to get vertical
-      -- xxx need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
-      -- xxx rotate appears to work in Google browser on Andoid phone
-      -- xxx there are a variety of techniques
-      -- xxx see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
-      -- xxx also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
+      -- need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
+      -- rotate appears to work in Google browser on Andoid phone
+      -- there are a variety of techniques
+      -- see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
+      -- also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
       -- HERE USE CSS ROTATE, need to swap height and width from LC, i.e.,
-      -- make horizontal, then rotate (270deg to get higher values at top)
+      -- make horizontal, then rotate
+      -- NOTE: IN LC vertical scales, startValue is at top and endValue at bottom
+      -- ASSUME LC has startValue at top GREATER THAN endValue at bottom - see if above
+      -- AND THEN ROTATE IN CSS by 270 deg to get min value at bottom, max at top
       -- save both old values for modify positioning below
       put tWd into tOldWd
       put tHt into tOldHt
       put tOldWd into tHt
       put tOldHt into tWd
+      -- need to rotate by 270 deg to get CSS/HTML with min value at bottom, max at top
       put space & "transform: rotate(270deg);" & LF after tCSS
       -- now need to modify positioning left and top
       -- as if you rotate original vertical about roughly its
@@ -748,16 +789,17 @@ function fHandleScrollbar tControl_ID, tGrp, tGrpLoc, tIndent
    put space & "height:" && tHt & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
-   -- end of css
+   -- END CSS
+   
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleScrollbar
+end fExportScrollBar
 
 -----------------------------------------------
 
-function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
+function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- these inputs are not modified: tControl_ID, tOneIndent
@@ -817,10 +859,10 @@ function fHandleGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    put tGrpLocList into tResult["tGrpLocList"]
    put tIndent into tResult["tIndent"]
    return tResult
-end fHandleGroup
+end fExportGroup
 -----------------------------------------------
 
-function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -851,6 +893,11 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
+   -- get onchange, if any
+   put the cOnchange of control id tControl_ID into tOnchange
+   if tOnchange is not empty then
+      put space & "onchange=" & quote & tOnchange & quote after tHtml
+   end if
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with radio button name
@@ -865,6 +912,10 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
+   put the width of control id tControl_ID into tWd
+   put the height of control id tControl_ID into tHt
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -895,16 +946,16 @@ function fHandleRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleRadioButton
+end fExportRadioButton
 
 -----------------------------------------------
 
-function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fIDname
    -- uses function fReturnCSSprops
    -- There are different types of buttons
    -- The types you click to run a script are Javascript input type="button"
-   -- This function is for the types you click to run a script
+   -- This function is for the type you click to run a script
    -- <input type="button" value="button label">
    put "button" into tType
    put tIndent & "<input type=" & quote & tType & quote into tHTML
@@ -915,6 +966,11 @@ function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
+   -- get onclick, if any
+   put the cOnclick of control id tControl_ID into tOnclick
+   if tOnclick is not empty then
+      put space & "onclick=" & quote & tOnclick & quote after tHtml
+   end if
    put ">" after tHTML
    put "</input>" & LF after tHTML
    -- end html
@@ -929,11 +985,11 @@ function fHandleStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleStandardButton
+end fExportStandardButton
 
 -----------------------------------------------
 
-function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+function fExportMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    put tIndent & "<select" into tHTML
@@ -944,6 +1000,12 @@ function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
+   -- get onmouseup, if any
+   -- xxx need to check if this is correct place to put this or if it should be in each option...
+   put the cOnmouseup of control id tControl_ID into tOnmouseup
+   if tOnmouseup is not empty then
+      put space & "onmouseup=" & quote & tOnmouseup & quote after tHtml
+   end if
    put ">" & LF after tHTML
    -- now need to enter menu options
    put the text of control id tControl_ID into tOptions
@@ -965,11 +1027,11 @@ function fHandleMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleMenuButton
+end fExportMenuButton
 
 -----------------------------------------------
 
-function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -988,6 +1050,11 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
+   -- get onchange, if any
+   put the cOnchange of control id tControl_ID into tOnchange
+   if tOnchange is not empty then
+      put space & "onchange=" & quote & tOnchange & quote after tHtml
+   end if
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with checkbox name
@@ -1002,6 +1069,10 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    -- write css for label tag
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
+   put the width of control id tControl_ID into tWd
+   put the height of control id tControl_ID into tHt
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1032,11 +1103,11 @@ function fHandleCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleCheckBox
+end fExportCheckBox
 
 -----------------------------------------------
 
-function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    -- uses function fIDname
    -- the long name of control id tControl_ID is the full name of the control
    -- tGrp = for example, "of group 1045" or empty
@@ -1053,8 +1124,14 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
    if tFieldType is "input" then
+      -- unlocked field for user input
       put the text of control id tControl_ID into tValue
       put space & "value=" & quote & tValue & quote after tHTML
+      -- get onchange, if any
+      put the cOnchange of control id tControl_ID into tOnchange
+      if tOnchange is not empty then
+         put space & "onchange=" & quote & tOnchange & quote after tHtml
+      end if
    end if
    put ">" & space after tHTML
    if tFieldType is "p" then
@@ -1095,7 +1172,7 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
    if tFieldType is "p" then
       -- xxx having trouble locating fields, so try a subtraction here...
       -- xxx maybe location of text inside field differs and may depend on font size?
-      subtract 16 from tTop -- was 16
+      subtract kFieldShift from tTop
    end if
    -- need position: absolute here but not for general <p>
    -- because that messes up text added to HTML later
@@ -1117,6 +1194,6 @@ function fHandleField tControl_ID, tGrp, tGrpLoc, tIndent
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
    return tResult
-end fHandleField
+end fExportField
 
 -----------------------------------------------
