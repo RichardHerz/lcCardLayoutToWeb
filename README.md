@@ -19,7 +19,7 @@ My use of this project is to develop web apps that are interactive simulations o
 
 HOW TO USE: 
 
-Two stacks are used together: (1) a regular LiveCode stack "lcCardLayoutToWeb.livecode", (2) a script-only stack "lcCardLayoutToWeb-EXPORT.livecodescript" and (3) a script-only stack "lcCardLayoutToWeb-IMPORT.livecodescript"
+Three LiveCode stacks are used together: (1) a regular LiveCode stack "lcCardLayoutToWeb.livecode", (2) a script-only stack "lcCardLayoutToWeb-EXPORT.livecodescript" and (3) a script-only stack "lcCardLayoutToWeb-IMPORT.livecodescript"
 
 Open stack (1) first in the LiveCode IDE. When stack (1) in the distribution is opened, its openStack command places stacks (2) and (3) in use.  
 
