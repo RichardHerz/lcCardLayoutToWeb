@@ -1,4 +1,4 @@
-﻿script "lcCardLayoutToWeb-script"
+﻿script "lcCardLayoutToWeb-EXPORT"
 /*
 Design, text, images and code by Richard K. Herz, 2017
 Copyrights held by Richard K. Herz
@@ -6,8 +6,29 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
+constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+-- make sure value of constant kKillWord is the same in both script files
+
+constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+-- make sure value of constant kFieldShift is the same in both script files
+
+-- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
+constant kWebOutputFolder = "web output"
+-- images should be added to LiveCode stack only BY REFERENCE
+--      to image file which should be located in images folder kImagesFolder
+--      and not imported into LC stack
+constant kImagesFolder = "images"
+constant kCssFolder = "css"
+constant kCssFileName = "index.css"
+constant kJavascriptFolder = "js"
+constant kHtmlFileName = "index.html"
+-- set number of spaces to indent
+--      used to increase and decrease indents
+--      not only makes html look nice but text editors use indents to fold/unfold sections
+constant kIndentSpaces = 3
+
 /* 
-WARNING - output files for same LiveCard card will be written over each time saveToWebPage runs, 
+WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
 so save copies of the output files you want to keep
 
 WARNING - use LF line endings when constructing text and write to file with file opened for binary write,
@@ -51,7 +72,8 @@ Then can delete the button to leave empty group.
 -----------------------------------------------
 
 on openCard
-   if the short name of the topStack is "lcCardLayoutToWeb-stack" then
+   if the short name of the topStack is "lcCardLayoutToWeb" then
+      set the backgroundColor of this card to 255,255,255
       if there is a field "lcCardLayoutToWeb card name" then
          put the name of the current card into tName
          if tName contains "card id" & space then
@@ -66,29 +88,14 @@ end openCard
 
 -----------------------------------------------
 
-on saveToWebPage
+on exportWebPage
    
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
    
-   set the defaultStack to "lcCardLayoutToWeb-stack"
+   set the defaultStack to "lcCardLayoutToWeb"
    
    ---------- START INPUT DATA ------------
-   
-   -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
-   constant kWebOutputFolder = "web output"
-   -- images should be added to LiveCode stack only BY REFERENCE
-   --      to image file which should be located in images folder kImagesFolder
-   --      and not imported into LC stack
-   constant kImagesFolder = "images"
-   constant kCssFolder = "css"
-   constant kJavascriptFolder = "js"
-   constant kHtmlFileName = "index.html"
-   constant kCssFileName = "index.css"
-   -- set number of spaces to indent
-   --      used to increase and decrease indents
-   --      not only makes html look nice but text editors use indents to fold/unfold sections
-   constant kIndentSpaces = 3
    
    -- SET ARRAY WITH CONVERSION BETWEEN LIVECODE AND CSS PROPERTIES
    -- keys of array aCSSprops are LiveCode properties
@@ -164,7 +171,6 @@ on saveToWebPage
    end if
    -- tCssFolder worked when this script in design stack but change to tCssFolderPath when
    -- in script-only stack in use by design stack
-   -- put tCssFolder & "/" & kCssFileName into tCssFilePath -- also used at end this handler
    put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- also used at end this handler
    -- xxx probably don't want to make js folder unless put some stuff there...
    --    -- create folder for javascript
@@ -186,11 +192,20 @@ on saveToWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
-   put "<!-- load style sheets for this lab  -->" & LF after tHTML
-   put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & tCssFilePath & quote & ">" & LF after tHTML
-   -- need to add links for javascript files
-   put "</head>" & LF & "<body>" & LF after tHTML
+   if the cHeaderData of this card is not empty then
+      -- this should have been set during import of an html file
+      put the cHeaderData of this card after tHTML
+      put "<body>" & LF after tHTML
+   else
+      -- write new header data for a new html file
+      put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
+      put "<!-- load style sheets for this lab  -->" & LF after tHTML
+      -- use relative path to css file here:  kCssFolder & "/" & kCssFileName 
+      -- and NOT full path so that it works both on web and in LC project
+      put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF after tHTML
+      -- need to add links for javascript files
+      put "</head>" & LF & "<body>" & LF after tHTML
+   end if
    
    -- start building the css
    -- input
@@ -254,7 +269,7 @@ on saveToWebPage
    
    repeat with tControlNumber = 1 to the number of controls
       
-      if the short name of control tControlNumber contains "lcCardLayoutToWeb" then
+      if the short name of control tControlNumber contains kKillWord then
          -- skip these development controls
          next repeat
       end if
@@ -337,7 +352,7 @@ on saveToWebPage
       switch tType
          case "group"
             -- start of a group
-           get fExportGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
+            get fExportGroup(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
             put it into tResult
             -- also get other items modified by fExportGroup
             put tResult["tGrpList"] into tGrpList
@@ -353,19 +368,19 @@ on saveToWebPage
             -- get the html for this style of button
             switch tStyle
                case "standard"
-                 get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                case "radiobutton"
-                 get fExportRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
+                  get fExportRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "checkbox"
                   get fExportCheckBox(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
                case "menu"
-                 get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                 get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
             end switch
             -- put the button result after tHTML and tCSS
             put it into tResult
@@ -373,21 +388,21 @@ on saveToWebPage
             put tResult["css"] after tCSS
             break
          case "field"
-           get fExportField(tControl_ID, tGrp, tGrpLoc,tIndent)
+            get fExportField(tControl_ID, tGrp, tGrpLoc,tIndent)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "image"
-           get fExportImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
+            get fExportImage(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder, aCSSprops)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
             put tResult["css"] after tCSS
             break
          case "scrollbar"
-           get fExportScrollBar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
+            get fExportScrollBar(tControl_ID, tGrp, tGrpLoc, tIndent, kImagesFolder)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
@@ -449,7 +464,7 @@ on saveToWebPage
    write tCSS to file tCssFilePath
    close file tCssFilePath
    
-end saveToWebPage
+end exportWebPage
 
 -----------------------------------------------
 
@@ -626,6 +641,7 @@ function fIDname tControl_ID
    if t2 is "id" then
       -- no name assigned by user, use LC control id
       -- reference in long names will be, e.g., field id 3333
+      -- after export, on subsquent import, the short name will be, e.g., field_3333
       put word 1 to 3 of the long name of control id tControl_ID into t3
       delete word 2 of t3 -- delete "id"
       replace space with "_" in t3
@@ -637,8 +653,6 @@ function fIDname tControl_ID
       replace space with "_" in t2
       replace quote with empty in t2
       replace "." with "_" in t2
-      -- xxx change to not use LC ID # on export to simplify import
-      -- xxx put t1 & "_" & t2 & "_" & tControl_ID into tResult
       put t1 & "_" & t2 into tResult
    end if
    return tResult
@@ -654,9 +668,10 @@ function fExportImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put tIndent & "<img" after tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
-   put space & "src=" & quote & tImagesFolder & "/" & the short name of control id tControl_ID & quote & ">" & LF after tHTML
+   put the filename of control id tControl_ID into tFileName
+   put space & "src=" & quote & tFileName & quote & ">" & LF after tHTML
    -- end of html
-    -- write css
+   -- write css
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
@@ -897,6 +912,10 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
+   put the width of control id tControl_ID into tWd
+   put the height of control id tControl_ID into tHt
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1050,6 +1069,10 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    -- write css for label tag
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
+   put the width of control id tControl_ID into tWd
+   put the height of control id tControl_ID into tHt
+   put space & "width:" && tWd & "px;" & LF after tCSS
+   put space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1149,7 +1172,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    if tFieldType is "p" then
       -- xxx having trouble locating fields, so try a subtraction here...
       -- xxx maybe location of text inside field differs and may depend on font size?
-      subtract 16 from tTop -- was 16
+      subtract kFieldShift from tTop
    end if
    -- need position: absolute here but not for general <p>
    -- because that messes up text added to HTML later

@@ -1,14 +1,10 @@
 ===============================
 
-Need to handle header button on import 
+Need to write "how to use" documentation
 
 ===============================
 
 Need to handle comments better in both html and css 
-
-===============================
-
-Need to merge the two UI stacks 
 
 ===============================
 

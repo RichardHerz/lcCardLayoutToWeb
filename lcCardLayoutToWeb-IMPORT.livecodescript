@@ -1,4 +1,4 @@
-﻿script "maker-script"
+﻿script "lcCardLayoutToWeb-IMPORT"
 /*
 Design, text, images and code by Richard K. Herz, 2017 
 Copyrights held by Richard K. Herz
@@ -7,6 +7,13 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+-- make sure value of constant kKillWord is the same in both script files
+
+constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+-- make sure value of constant kFieldShift is the same in both script files
+
+constant kCssTopShift = 50 -- value used in css file for computed shift of elements
+-- make sure value of constant kCssTopShift is the same in both script files
 
 constant kReporter = "false" -- "true" or "false" - controls reporting to msg box
 
@@ -38,11 +45,47 @@ maybe save as custom prop of previous or next LC control, then handle in save to
 or maybe each as custom prop of a button created for each in order handled, whose
 names include save to web kill word? - can just put these in same place on card and pile them up...
 */
+
 -----------------------------
 
-on importWebPage
+on deleteNonDevControls
+   -- this can be run before importing html and css data to make a new card layout
+   -- if card has old controls on it
+   answer "WARNING: DELETE ALL GROUPS AND CONTROLS OTHER THAN DEVELOPMENT CONTROLS?" with "yes" or "NO!"
+   if it is "NO!" then exit to top
+   repeat with tControlNumber = the number of controls down to 1
+      if the short name of control tControlNumber contains kKillWord then
+         -- skip these development controls
+         next repeat
+      end if
+      delete control tControlNumber
+   end repeat
+end deleteNonDevControls
+   
+   -----------------------------
+   
+   on importWebPage
+   
+   -- xxx NEED TO CHECK IF OTHER CONTROLS ON CURRENT CARD
+   -- xxx AND WARN USER IF THERE ARE
    
    -- calls function fMakeLiveCodeCard
+   
+   set the defaultStack to "lcCardLayoutToWeb"
+   
+   -- CHECK IF CARD HAS NO CONTROLS OTHER THAN DEVELOPMENT CONTROLS
+   put "true" into tCleanOfControls
+   repeat with tControlNumber = 1 to the number of controls
+      if the short name of control tControlNumber contains kKillWord then
+         -- skip these development controls
+         next repeat
+      end if
+      put "false" into tCleanOfControls
+   end repeat
+   if tCleanOfControls is not "true" then
+      answer "WARNING: DELETE ALL GROUPS AND CONTROLS OTHER THAN DEVELOPMENT CONTROLS"
+      exit to top
+   end if
    
    -- Note on LC syntax: "answer file" only allows one file to be selected
    -- "answer files" allows more than one file to be selected and returns paths on separate lines
@@ -94,6 +137,8 @@ on importWebPage
    
    get fMakeLiveCodeCard(tHtmlFileData, tCssFileData) 
    
+   select empty
+   
 end importWebPage
 
 -----------------------------
@@ -103,10 +148,6 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    -- uses constant kKillWord
    -- is called by command importWebPage
    
-   -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
-   -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
-   put empty into msg
-   
    put empty into tGrpList
    put empty into tGrpLocList
    
@@ -114,12 +155,12 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
    put offset("<body>",pHtmlFileData) into tBodyStartChar
    put char 1 to tBodyStartChar-1 of pHtmlFileData into tHeaderData
-   if kReporter is "true" then put LF & tHeaderData after msg
-   put "header" && kKillWord into tHeaderButton
-   create button tHeaderButton
-   set the label of button tHeaderButton to "header"
-   set the topLeft of button tHeaderButton to "0,16"
-   set the cHtmlData of button tHeaderButton to tHeaderData 
+   set the cHeaderData of this card to tHeaderData
+   
+   -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
+   -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
+   -- do not do a "put empty into msg" because will open msg box unnecessarily if kReporter is "false"
+   if kReporter is "true" then put LF & tHeaderData into msg -- NOTE "INTO" FOR FIRST ONE
    
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end > of <body>
@@ -434,28 +475,21 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
          put item 2 of n into tValue
          put fGetStripOuterSpace(tValue) into tValue
          
-         -- watch out for a calc();
-         -- EXAMPLE:    top: calc(var(--shift) + 700px);
+         -- watch out for a calc(), which I've used in earlier development for quick fix
+         -- EXAMPLE:    :root {--shift: 50px;}
+         -- USED IN ELEMENT PROP:   top: calc(var(--shift) + 700px);
          if tValue contains "calc" then
             put offset("+",tValue) into tPlusChar -- assume a space after plus
             put offset("px",tValue) into tPXChar
             put char tPlusChar + 2 to tPXChar -1 of tValue into tValue
-            put 50 into tShift -- xxx what I'm using in development
-            add tShift to tValue
+            -- see top of this file for constant value
+            add kCssTopShift to tValue
          else
+            -- NEED TO DO THIS IF THERE IS NO CALC
             delete the last char of tValue -- delete ;
             replace "px" with empty in tValue -- if any, delete px
          end if
-         
-         --          --          -- xxx NEED TO DO THIS IF DO NOT CHECK FOR CALC()
-         --          --             repeat 3 times -- delete px;
-         --          --                delete the last char of tValue
-         --          --             end repeat
-         --          delete the last char of tValue -- delete ;
-         --          replace "px" with empty in tValue -- if any, delete px
-         
-         -- xxx NEED TO CHECK FOR OTHER PROPS SUCH AS FONT SIZE 
-         
+                  
          switch tProp
             case "width"
                put tValue into tWidth
@@ -483,6 +517,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
             case "opacity"
                put 100*(1 - tValue) into ttemp
                set the blendLevel of tControlName to ttemp
+               if tValue > 0 then
+                  set the opaque of tControlName to true
+               end if
                break
             case "visibility"
                -- EXAMPLE:  visibility: visible; 
@@ -510,7 +547,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                -- EXAMPLE:  background-color: rgb(102,255,255);
                replace "rgb(" with empty in tValue
                delete the last char of tValue -- delete ) where ; already deleted from tValue
-               set the backgroundColor of tControlName to tValue
+               set the backColor of tControlName to tValue
                break
             case "transform"
                -- used when rotate horizontal range to vertical in CSS
@@ -642,6 +679,9 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    create button
    set the name of it to tButton
    set the style of button tButton to pStyle -- pStyle is input argument to this function
+   -- was getting the hiliteBorder set to true when export original had it false,
+   -- causes border to show when selected, property in icons panel of LC control properties 
+   set the hiliteBorder of button tButton to false 
    if tOnchange is not empty then
       set the cOnchange of button tButton to tOnchange
    end if
@@ -956,8 +996,9 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    create field tField
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
-   set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
+   set the textAlign of field tField to left -- xxx may be set in p { } in css, also include in switch below
    set the lockText of field tField to true
+   set the fixedLineHeight of field tField to false -- xxx not set on export, so check this if text shifted
    
    -- get <p> tag (locked field) contents
    put offset(">",pHtmlFileData,tSkipChar) into tPendChar
@@ -977,11 +1018,11 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the long name of field tField into tControlLongName -- NOTE field tField
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   -- xxx for locked fields only, EXPORT subtracts a constant (16) from top  
-   -- xxx      before writing <p> to CSS
-   -- xxx      reverse here
+   -- for locked fields only, EXPORT subtracts a constant kFieldShift from top  
+   --      before writing <p> to CSS
+   --      reverse here
    put the topLeft of field tField into tTopLeft
-   add 16 to item 2 of tTopLeft -- xxx CHANGE TO add variable so changed value in EXPORT appears in IMPORT
+   add kFieldShift to item 2 of tTopLeft
    set the topLeft of field tField to tTopLeft 
    
    if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg

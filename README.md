@@ -3,7 +3,7 @@ Design a card layout in LiveCode, then export the layout to HTML and CSS files
 
 Project code name "parakeet"
 
-_**New, under construction**_ - we are working on going from html and css files to a LiveCode card layout - stacks maker-stack and maker-script are development stacks.
+_**New**_ - The project now is "reversible" in that exported cards can be modified to add Javascript function calls in HTML events, and then imported with the Javascript function calls preserved.
 
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 

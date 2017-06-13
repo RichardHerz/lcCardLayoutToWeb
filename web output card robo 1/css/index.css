@@ -151,6 +151,8 @@ select {
 }
 
 #radio_Radio2_LABEL {
+ width: 82px;
+ height: 23px;
  left: 6px;
  top: 34px;
 }
@@ -161,6 +163,8 @@ select {
 }
 
 #radio_Radio1_LABEL {
+ width: 82px;
+ height: 23px;
  left: 7px;
  top: 6px;
 }
@@ -171,6 +175,8 @@ select {
 }
 
 #checkbox_Check1_LABEL {
+ width: 82px;
+ height: 23px;
  left: 180px;
  top: 113px;
 }
