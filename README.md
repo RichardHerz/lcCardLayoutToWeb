@@ -1,9 +1,9 @@
 # lcCardLayoutToWeb
-Design a card layout in LiveCode, then export the layout to HTML and CSS files
+Design a card layout in LiveCode, then export the layout to HTML and CSS files. Import, revision and re-export is supported.
 
 Project code name "parakeet"
 
-_**New**_ - The project now is "reversible" in that exported files can be modified to add Javascript and CSS file references in the html header and add function calls in HTML events, and then imported with the file references and function calls preserved.
+_**New**_ - The project now is "reversible" in that exported files can be modified to add Javascript and CSS file references in the html header and function calls in HTML events, and then imported back into the project with the file references and function calls preserved. Thus, a card/page layout which has had file and function references added can imported and edited (controls moved, added and deleted), and then exported back to a revised web page.
 
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 
