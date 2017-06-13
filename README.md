@@ -9,7 +9,7 @@ _**New**_ - The project now is "reversible" in that exported files can be modifi
 
 This project is being built with the open-source, Community Edition of LiveCode. Get it at www.LiveCode.org.
 
-Contributors are welcome. You need to use the LiveCode IDE, version 8 or higher, in order to use this software. 
+Contributors are welcome. You need to use the LiveCode IDE, version 8 or higher, in order to use this software. See this project's WIKI in the tab above for help.
 
 Each LiveCode control is referenced in CSS by id only, thus cascading is limited. LiveCode controls include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and sliders (range inputs). 
 
