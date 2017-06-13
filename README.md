@@ -3,7 +3,7 @@ Design a card layout in LiveCode, then export the layout to HTML and CSS files
 
 Project code name "parakeet"
 
-_**New**_ - The project now is "reversible" in that exported cards can be modified to add Javascript function calls in HTML events, and then imported with the Javascript function calls preserved.
+_**New**_ - The project now is "reversible" in that exported files can be modified to add Javascript and CSS file references in the html header and add function calls in HTML events, and then imported with the file references and function calls preserved.
 
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 
