@@ -1,5 +1,5 @@
 # lcCardLayoutToWeb
-Design a card layout in LiveCode, then export the layout to HTML and CSS files. 
+Design a card layout in LiveCode, then export the layout to HTML and CSS files. Drag and drop web page design!
 
 The project is "reversible" - an exported web page, which has changes such as addition of file and event function references, can be imported back into to the project, edited (controls moved, added and deleted), and then exported back to a revised web page with the file and event references preserved.
 
