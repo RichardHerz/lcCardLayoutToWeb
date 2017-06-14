@@ -15,4 +15,4 @@ Each LiveCode control is referenced in CSS by id only, thus cascading is limited
 
 SEE THIS PROJECT'S WIKI IN THE TAB ABOVE FOR MORE INFO. 
 
-SEE www.ReactorLab.net FOR CONTACT INFO 
+CONTACT INFO for Richard Herz IS AT www.ReactorLab.net ( Richard K. Herz ) 
