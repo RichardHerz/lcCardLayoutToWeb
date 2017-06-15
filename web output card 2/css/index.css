@@ -34,21 +34,22 @@ select {
 #div_simulation_frame {
  display: block;
  position: absolute;
- left: 31px;
- top: 46px;
- width: 611px;
- height: 641px;
+ left: 39px;
+ top: 30px;
+ width: 569px;
+ height: 498px;
  visibility: visible;
  border-width: 2px;
- border-style: outset;
+ border-style: none;
  opacity: 1;
+ LCvScrollbar: true;
 }
 
 #div_OUTER_group {
  display: block;
  position: absolute;
- left: 33px;
- top: 6px;
+ left: 31px;
+ top: 4px;
  width: 262px;
  height: 93px;
  visibility: visible;
@@ -56,6 +57,7 @@ select {
  background-color: rgb(0,255,255);
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #button_get_num_controls {
@@ -81,6 +83,7 @@ select {
  background-color: rgb(255,255,0);
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #button_list_groups {
@@ -135,19 +138,21 @@ select {
  border-width: 2px;
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_RADIO_group {
  display: block;
  position: absolute;
- left: 307px;
- top: 30px;
+ left: 305px;
+ top: 28px;
  width: 95px;
  height: 63px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #radio_Radio2_LABEL {
@@ -177,8 +182,8 @@ select {
 #checkbox_Check1_LABEL {
  width: 82px;
  height: 23px;
- left: 180px;
- top: 113px;
+ left: 178px;
+ top: 111px;
 }
 
 #checkbox_Check1_SPAN {
@@ -187,8 +192,8 @@ select {
 }
 
 #image_robo_99_png {
- left: 6px;
- top: 166px;
+ left: 4px;
+ top: 164px;
  width: 178px;
  height: 193px;
  visibility: visible;
@@ -199,22 +204,49 @@ select {
 
 #input_field_unlocked_field_1 {
  position: absolute;
- left: 250px;
- top: 216px;
+ left: 248px;
+ top: 214px;
  width: 100px;
  height: 21px;
 }
 
 #range_slider_horiz {
- left: 313px;
- top: 279px;
+ left: 311px;
+ top: 277px;
  width: 187px;
  height: 22px;
 }
 
+#range_slider_vert {
+ transform: rotate(270deg);
+ left: 184.5px;
+ top: 282px;
+ width: 120px;
+ height: 22px;
+}
+
+#input_field_unlocked_field_2 {
+ position: absolute;
+ left: 249px;
+ top: 353px;
+ width: 100px;
+ height: 21px;
+}
+
+#button_BOTTOM_BUTTON {
+ left: 210px;
+ top: 830px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
 #select_Option_Menu {
- left: 358px;
- top: 179px;
+ left: 356px;
+ top: 177px;
  width: 102px;
  height: 22px;
  visibility: visible;
@@ -224,8 +256,8 @@ select {
 }
 
 #select_Pulldown_Menu {
- left: 445px;
- top: 224px;
+ left: 443px;
+ top: 222px;
  width: 102px;
  height: 22px;
  visibility: visible;
@@ -234,29 +266,3 @@ select {
  opacity: 1;
 }
 
-#range_slider_vert {
- transform: rotate(270deg);
- left: 186.5px;
- top: 284px;
- width: 120px;
- height: 22px;
-}
-
-#input_field_unlocked_field_2 {
- position: absolute;
- left: 251px;
- top: 355px;
- width: 100px;
- height: 21px;
-}
-
-#button_ZZZ {
- left: 306px;
- top: 721px;
- width: 82px;
- height: 23px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
-}

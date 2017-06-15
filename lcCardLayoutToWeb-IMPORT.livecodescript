@@ -17,6 +17,8 @@ constant kCssTopShift = 50 -- value used in css file for computed shift of eleme
 
 constant kReporter = "false" -- "true" or "false" - controls reporting to msg box
 
+local oScrollbarList -- used to set the vScrollbar of groups
+
 -----------------------------
 /*
 TAGS DONE -----------
@@ -150,6 +152,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
    put empty into tGrpList
    put empty into tGrpLocList
+   put empty into oScrollbarList
    
    -- get all data above <body>
    
@@ -291,6 +294,21 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       put the cHtmlData of button tHeaderButton into tHeaderData
       put LF & tCommentList after tHeaderData
       set the cHtmlData of button tHeaderButton to tHeaderData
+   end if
+   
+   -- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
+   -- xxx in fGetSetControlProps changed in some unknown way the left value
+   -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
+   -- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
+   -- local oScrollbarList -- put tControlName & "$" & tValue & LF after oScrollbarList
+   if tScrollerList is not empty then
+      set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
+      repeat for each line tLine in oScrollbarList
+         put item 1 of tLine into tControlName
+         put item 2 of tLine into tValue
+         set the vScrollbar of tControlName to tValue
+      end repeat
+      set the itemDelimiter to comma
    end if
    
 end fMakeLiveCodeCard
@@ -437,7 +455,7 @@ end fGetStripOuterSpace
 
 function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
    -- returns true if css has a transform property
-   -- which will be the case for vertical scrollbars
+   -- which will be the case for vertical sliders (scales, ranges)
    
    -- xxx problems if "#" & tID mentioned in a comment in CSS file
    
@@ -489,7 +507,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
             delete the last char of tValue -- delete ;
             replace "px" with empty in tValue -- if any, delete px
          end if
-                  
+         
          switch tProp
             case "width"
                put tValue into tWidth
@@ -555,6 +573,18 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                put "true" into tTransformFlag
                if kReporter is "true" then put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
                break
+            case "LCvScrollbar"
+               -- this is for vScrollbar property of scrolling groups, not for scrollbar controls
+               -- special property added on export - not a standard CSS property
+               -- usually used for scrolling parent groups used in making long web pages
+               -- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
+               -- xxx in fGetSetControlProps changed in some unknown way the left value
+               -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
+               -- xxx saving the vScrollbar property value in fGetSetControlProps and then
+               -- xxx setting at the end of fMakeLiveCodeCard works
+               put tControlName & "$" & tValue & LF after oScrollbarList  -- need delimiter that does not appear in a file name
+               -- xxx set the vScrollbar of tControlName to tValue
+               break
          end switch
       end repeat
    end if
@@ -589,15 +619,24 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
       put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
    end if
    
-   if kReporter is "true" then put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
-   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
+   if kReporter is "true" then put LF & "JUST BEFORE set the width of tControlName to tWidth" after msg
+   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tWidth = " & tWidth after msg
+   if kReporter is "true" then put LF & "JUST BEFORE set the height of tControlName to tHeight = " & tHeight after msg
+   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tHeight = " & tHeight after msg
    
    -- _LABEL in CSS for checkbox and radio buttons may not have width and height values
    if tWidth > 0 then set the width of tControlName to tWidth
    if tHeight > 0 then set the height of tControlName to tHeight
    
    -- set topLeft AFTER set width and height
+   
+   if kReporter is "true" then put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
+   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
+   
    set the topLeft of tControlName to tTopLeft
+   
+   if kReporter is "true" then put LF & "JUST AFTER set the topLeft of tControlName to tTopLeft" after msg
+   if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "topLeft = " & the topLeft of tControlName after msg
    
    if kReporter is "true" then put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
    return tTransformFlag
@@ -742,7 +781,7 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
    
-   -- tID example is div_simulation_frame_1128
+   -- tID example:  div_simulation_frame
    put tID into tGroup -- will use both tID and tGroup below
    replace "_" with space in tGroup
    -- "div" added in export, others added later might not have it
@@ -769,11 +808,14 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    put the topLeft of group tGroup into line tLines of tGrpLocList
    
    set the lockLoc of group tGroup to true -- otherwise will "shrink to fit" contents, which are none at this point
+   
    -- set the showBorder of group tGroup to true -- xxx so can see it in development
    -- xxx setting showBorder here for all to true will cause difference in css when export > import > export
    
    if kReporter is "true" then put LF & "JUST BEFORE start editing group" && tGroup after msg
+   
    start editing group tGroup
+   
    if kReporter is "true" then put LF & "JUST AFTER start editing group" && tGroup & LF after msg
    
    -- RETURN RESULTS
@@ -807,18 +849,20 @@ function fImportGroupEnd tSkipChar, tGrpList, tGrpLocList
    
    if kReporter is "true" then put LF & "Before delete last line, tGrpList = " & LF & tGrpList after msg
    
-   -- UPDATE GROUP LIST AND GROUP LOC LIST
+   if kReporter is "true" then put LF & "Before delete last line, tGrpLocList = " & LF & tGrpLocList after msg
    
+   -- UPDATE GROUP LIST AND GROUP LOC LIST
+      
    delete the last line of tGrpList
    delete the last line of tGrpLocList
-   
+    
    -- I found, at least with LC 9 (dp6), that I had to use background and not group in this next line
-   if kReporter is "true" then put LF & "the name of this background = " & the name of this background & LF after msg
-   
+   if kReporter is "true" then put LF & "JUST BEFORE STOP EDITING, the name of this background = " & the name of this background & LF after msg
+     
    stop editing -- stop editing current group just has same effect as stop editing all
    
-   if kReporter is "true" then put LF & "stop editing" & LF after msg
-   
+   if kReporter is "true" then put LF & "JUST AFTER stop editing" & LF after msg
+      
    -- if this group was nested inside a parent group, then go back to editing that parent group
    -- this has been tested for groups nested 3 deep: grandparent > parent > child
    if tGrpList is not empty then 
