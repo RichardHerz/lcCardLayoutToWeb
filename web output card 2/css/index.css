@@ -233,10 +233,10 @@ select {
  height: 21px;
 }
 
-#button_BOTTOM_BUTTON {
- left: 210px;
- top: 830px;
- width: 82px;
+#button_BUTTON_AT_BOTTOM_PAGE {
+ left: 196px;
+ top: 831px;
+ width: 243px;
  height: 23px;
  visibility: visible;
  border-width: 2px;
