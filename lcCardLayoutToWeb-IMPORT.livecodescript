@@ -15,7 +15,9 @@ constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> 
 constant kCssTopShift = 50 -- value used in css file for computed shift of elements
 -- make sure value of constant kCssTopShift is the same in both script files
 
-constant kReporter = "false" -- "true" or "false" - controls reporting to msg box
+-- use kReporter "true" to activate all reports below to msg box
+-- or use a special value to activate only selected reports below
+constant kReporter = "false"
 
 local oScrollbarList -- used to set the vScrollbar of groups
 
@@ -140,6 +142,8 @@ end deleteNonDevControls
    get fMakeLiveCodeCard(tHtmlFileData, tCssFileData) 
    
    select empty
+   
+   beep
    
 end importWebPage
 
@@ -291,9 +295,9 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    else
       put "<!-- *** START COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF before tCommentList
       put "<!-- *** END COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF after tCommentList
-      put the cHtmlData of button tHeaderButton into tHeaderData
+      put the cHeaderData of this card into tHeaderData
       put LF & tCommentList after tHeaderData
-      set the cHtmlData of button tHeaderButton to tHeaderData
+      set the cHeaderData of this card to tHeaderData
    end if
    
    -- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
@@ -406,23 +410,37 @@ end fImportLabelTag
 function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    -- ASSUMES no spaces outside of quotes in, e.g., pTargetName="target value"
    -- ASSUMES tSkipChar points to < of <parentTag
+   
+   -- previously had trouble for this:  target=""
+   -- so revised original script to a more complex script below
+   
    -- get end of parent tag to make sure this attribute inside this tag
-   put offset(">",pFileData,tSkipChar) into tTagEndChar
-   put pTargetName & "=" into tTarget
-   put offset(tTarget,pFileData,tSkipChar) into tTargetStartChar
-   if tTargetStartChar > 0 and tTargetStartChar < tTagEndChar then
-      add tSkipChar to tTargetStartChar
+   put offset(">", pFileData, tSkipChar) into tTagEndChar
+   add tSkipChar to tTagEndChar
+   -- search below only in this tag
+   put char tSkipChar to tTagEndChar of pFileData into tTagData
+   
+   -- ASSUME no space between pTargetName and ="
+   put offset(pTargetName & "=" & quote, tTagData) into tTargetStartChar
+   if tTargetStartChar = 0 then
+      put empty into tTargetValue
+   else
       put the number of chars of pTargetName into tNum
       add 2 to tNum -- + 2 to step inside ="
       add tNum to tTargetStartChar -- move inside first quote
-      put offset(quote,pFileData,tTargetStartChar) into tTargetEndChar
-      add tTargetStartChar to tTargetEndChar
-      subtract 1 from tTargetEndChar -- step back before second quote
-      put char tTargetStartChar to tTargetEndChar of pFileData into tTargetValue 
-   else
-      put empty into tTargetValue
+      put offset(quote, tTagData, tTargetStartChar) into tTargetEndChar
+      if tTargetEndChar = 0 then
+         -- can get this for target="" looking from inside first quote
+         put empty into tTargetValue
+      else
+         subtract 1 from tTargetEndChar -- step back before second quote
+         add tTargetStartChar to tTargetEndChar
+         put char tTargetStartChar to tTargetEndChar of tTagData into tTargetValue 
+      end if
    end if
+   
    if kReporter is "true" then put LF & "fGetHtmlAttribute, tTargetValue = " & tTargetValue after msg -- development field
+   
    return tTargetValue
 end fGetHtmlAttribute
 
@@ -466,16 +484,42 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
    -- the long name does not work, at least when control is inside a group
    
    if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
+   if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, pID = " & LF & pID & LF after msg
    
    put empty into tCssData
    if pCssFileData is not empty then
-      put offset("#" & pID,pCssFileData) into tStartChar
+      
+      -- check complete CSS line matches because, e.g., 
+      -- may have "button_1" 1st in file and "button" 2nd in file
+      -- and don't want to find "button_1" with simple search for "button"
+      
+      put 0 into tLineSkip
+      repeat
+         put lineoffset("#" & pID, pCssFileData, tLineSkip) into tLineNum
+         if tLineNum = 0 then exit repeat
+         add tLineNum to tLineSkip
+         put tLineSkip into tLineNum
+         put line tLineNum of pCssFileData into tLineDataOrig
+         put tLineDataOrig into tLineDataStripped
+         replace space with empty in tLineDataStripped
+         replace "{" with empty in tLineDataStripped
+         replace "#" with empty in tLineDataStripped
+         replace LF with empty in tLineDataStripped
+         if tLineDataStripped = pID then
+            -- got a hit, need char offset
+            put offset(tLineDataOrig, pCssFileData) into tStartChar
+            exit repeat
+         end if
+      end repeat
+      
       put offset("}",pCssFileData,tStartChar) into tEndChar
       add tStartChar to tEndChar
       put char tStartChar to tEndChar of pCssFileData into tCssData
+      
       if kReporter is "true" then 
          put LF & tCssData & LF after msg
       end if
+      
    end if
    
    put 0,0 into tTopLeft

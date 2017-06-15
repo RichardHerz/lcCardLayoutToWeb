@@ -466,6 +466,8 @@ on exportWebPage
    write tCSS to file tCssFilePath
    close file tCssFilePath
    
+   beep
+   
 end exportWebPage
 
 -----------------------------------------------
@@ -577,7 +579,6 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                case "vScrollbar"
                   -- for special, non-standard CSS property LCvScrollbar
                   put aControlProps[tKey] into tValue
-                  answer "case vScrollbar, aControlProps[tKey] = " & aControlProps[tKey]
                   break
                default
                   put empty into tValue
