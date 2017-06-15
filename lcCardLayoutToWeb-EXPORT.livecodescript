@@ -117,6 +117,8 @@ on exportWebPage
    -- put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
    put "background-color" into aCSSprops["backColor"]
    -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
+   -- SPECIAL FOR GROUP SCROLLBAR - LCvScrollbar not a standard CSS property
+   put "LCvScrollbar" into aCSSprops["vScrollbar"]
    
    ---------- END INPUT DATA ------------
    
@@ -571,6 +573,11 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                case "backColor"
                   -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
                   put "rgb(" & aControlProps[tKey] & ")" into tValue
+                  break
+               case "vScrollbar"
+                  -- for special, non-standard CSS property LCvScrollbar
+                  put aControlProps[tKey] into tValue
+                  answer "case vScrollbar, aControlProps[tKey] = " & aControlProps[tKey]
                   break
                default
                   put empty into tValue
