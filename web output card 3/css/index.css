@@ -69,15 +69,6 @@ canvas {
  height: 100px;
 }
 
-#field_run_counter {
- position: absolute;
- font-size: 14;
- left: 678px;
- top: -12px;
- width: 120px;
- height: 20px;
-}
-
 #field_Field_1_1176 {
  position: absolute;
  font-size: 14;
@@ -486,10 +477,13 @@ canvas {
 #field_reactor_label_1228 {
  position: absolute;
  font-size: 12;
- left: 355px;
- top: 299px;
+ left: 349px;
+ top: 294px;
  width: 37px;
  height: 243px;
+ text-align: center;
+ border-style: solid;
+ border-width: 2px;
 }
 
 #field_outlet_arrow_field_1229 {
@@ -583,5 +577,14 @@ canvas {
  background-color: rgb(0,255,0);
  border-style: outset;
  opacity: 1;
+}
+
+#field_run_counter {
+ position: absolute;
+ font-size: 14;
+ left: 678px;
+ top: -12px;
+ width: 120px;
+ height: 20px;
 }
 

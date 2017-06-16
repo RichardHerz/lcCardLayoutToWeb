@@ -9,10 +9,10 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
 
-constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
 
-constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract on import
+constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
@@ -35,6 +35,8 @@ constant kIndentSpaces = 3
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
 constant kReporter = "false"
+
+local oBorderFlag -- used to show borders of fields on mouseEnter during development
 
 /* 
 WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
@@ -94,6 +96,38 @@ on openCard
    end if
    pass openCard
 end openCard
+
+-----------------------------------------------
+
+on mouseEnter
+   -- show borders of fields without borders during development
+   put the name of this stack into tStack
+   if kKillWord is not in tStack then exit mouseEnter
+   put the long name of the target into tLongName
+   if word 1 of tLongName is "field" then
+      -- put "stack = " & tStack & " ; tLongName = " & tLongName into msg
+      set the showFocusBorder of tLongName to false
+      if the showBorder of tLongName is false then
+         set the showBorder of tLongName to true
+         put true into oBorderFlag
+      end if
+   end if
+end mouseEnter
+
+-----------------------------------------------
+
+on mouseLeave
+   put the name of this stack into tStack
+   if kKillWord is not in tStack then exit mouseLeave
+   put the long name of the target into tLongName
+   if word 1 of tLongName is "field" then
+      -- put empty into msg
+      if oBorderFlag is true then
+         set the showBorder of tLongName to false
+      end if
+   end if
+   put false into oBorderFlag
+end mouseLeave
 
 -----------------------------------------------
 
@@ -1269,6 +1303,17 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    put the textAlign of control id tControl_ID into tTextAlign
    if tTextAlign is not "left" then
       put space & "text-align:" & space & tTextAlign & ";" & LF after tCSS
+   end if
+   put the showBorder of control id tControl_ID into tShowBorder
+   put the borderWidth of control id tControl_ID into tBorderWidth
+   put the threeD of control id tControl_ID into tThreeD
+   if tShowBorder is true then
+      if tThreeD is true then
+         put space & "border-style: outset;" & LF after tCSS
+      else
+         put space & "border-style: solid;" & LF after tCSS
+      end if
+      put space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
    end if
    -- conclude css
    put "}" & LF & LF after tCSS

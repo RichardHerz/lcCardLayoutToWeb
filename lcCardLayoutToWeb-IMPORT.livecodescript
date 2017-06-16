@@ -9,13 +9,13 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
 
-constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
 
 constant kCssTopShift = 50 -- value used in css file for computed shift of elements
 -- make sure value of constant kCssTopShift is the same in both script files
 
-constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract on import
+constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
 -- use kReporter "true" to activate all reports below to msg box
@@ -618,7 +618,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                -- css border styles include: none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                -- EXPORT has a checkbox to add CSS dotted when LC showBorder false
                -- EXPORT otherwise saves LC showBorder true as css outset
-               if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
+              if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
                   set the showBorder of tControlName to false
                else
                   set the showBorder of tControlName to true
@@ -1108,9 +1108,12 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   
    create field tField
+   
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
+   set the showFocusBorder of field tField to false
    set the textAlign of field tField to left -- xxx may be set in p { } in css, also include in switch below
    set the lockText of field tField to true
    set the fixedLineHeight of field tField to false -- xxx not set on export, so check this if text shifted
@@ -1256,6 +1259,7 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    
    create field tField
+   set the showFocusBorder of field tField to false
    
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
