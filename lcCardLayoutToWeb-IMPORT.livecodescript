@@ -22,7 +22,7 @@ constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract
 -- or use a special value to activate only selected reports below
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
-constant kReporter = "TEST"
+constant kReporter = "false"
 
 local oScrollbarList -- used to set the vScrollbar of groups
 
@@ -741,14 +741,16 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    put tIDname into tID_SPAN
    put space & "SPAN" after tID_SPAN
    replace space with "_" in tID_SPAN
+   
    delete the first word of tIDname -- delete the type (checkbox or radio) 
+   put tIDname into tButton -- use this as short name of the button, label set by span tag
    
    -- NOW HAVE: tID_LABEL, tIDname, tID_SPAN
    -- UNDER ASSUMED NAMING CONVENTION
    
    -- GET WHETHER OR NOT INPUT HAS CHECKED ATTRIBUTE
    -- AND SAVE AS CUSTOM PROP OF LC CONTROL
-   -- xxx and add on EXPORT
+   -- NOTE CHECKED ATTRIBUTE IS IN INPUT UNDER THIS LABEL: <LABEL <INPUT
    put offset("<input",pHtmlFileData,tSkipChar) into tInputTagStart 
    add tSkipChar to tInputTagStart
    put offset(">",pHtmlFileData,tInputTagStart) into tInputTagEnd
@@ -761,13 +763,15 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    end if
    -- BELOW, set the hilited of the control to tCheckedFlag
    
-   -- GET ONCHANGE ATTRIBUTE, IF ANY
-   -- IN ORDER TO SAVE AS CUSTOM PROP OF LC CONTROL
-   -- xxx and add on EXPORT
-   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onchange") into tOnchange
+   -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
+   -- AND SAVE AS CUSTOM PROP OF LC CONTROL
+   -- NOTE ONCHANGE ATTRIBUTE IS IN INPUT UNDER THIS LABEL: <LABEL <INPUT
+   put offset("<input",pHtmlFileData,tSkipChar) into tInputTagStart 
+   add tSkipChar to tInputTagStart
+   put fGetHtmlAttribute(tInputTagStart, pHtmlFileData, "onchange") into tOnchange 
    
    -- GET TEXT BETWEEN <span AND </span>
-   -- AND SET AS SHORT NAME OF THE LC CONTROL
+   -- AND SET AS LABEL OF THE LC CONTROL
    -- ASSUME THERE IS A SPAN TAG WITH TEXT INSIDE LABEL TAG
    put offset("<span",pHtmlFileData,tSkipChar) into tSpanTagStart
    add tSkipChar to tSpanTagStart
@@ -777,12 +781,13 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    add tSkipChar to tSpanTagEnd
    add 1 to tSpanTagStart
    subtract 1 from tSpanTagEnd
-   put char tSpanTagStart to tSpanTagEnd of pHtmlFileData into tButton -- tButton used below in CSS
-   -- BELOW set the short name of the LC control to tButton
+   put char tSpanTagStart to tSpanTagEnd of pHtmlFileData into tButtonLabel -- tButton used below in CSS
+   -- BELOW set the label of the LC control to tButtonLabel
    
    -- CREATE LC CONTROL
    create button
    set the name of it to tButton
+   set the label of button tButton to tButtonLabel
    set the style of button tButton to pStyle -- pStyle is input argument to this function
    -- was getting the hiliteBorder set to true when export original had it false,
    -- causes border to show when selected, property in icons panel of LC control properties 

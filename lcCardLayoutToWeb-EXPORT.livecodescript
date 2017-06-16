@@ -35,6 +35,7 @@ constant kIndentSpaces = 3
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
 constant kReporter = "TEST"
+constant kReporter = "false"
 
 /* 
 WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
@@ -266,6 +267,12 @@ on exportWebPage
    put space & "display: block;" & LF after tCSS
    put space &  "position: absolute;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for select
+   -- canvas - html canvas element
+   put "canvas {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put space &  "text-align: left;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for input
    
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
@@ -948,10 +955,10 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put ">" & LF after tHTML
    -- end of html for input tag
-   -- write html for span tag with radio button name
+   -- write html for span tag with radio button label
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put tRadioButtonName after tHTML
+   put the label of control id tControl_ID after tHTML
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
@@ -1134,7 +1141,7 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- write html for span tag with checkbox name
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put tCheckBoxName after tHTML
+   put the label of control id tControl_ID after tHTML
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag

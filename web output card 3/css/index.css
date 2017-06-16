@@ -31,6 +31,12 @@ select {
  position: absolute;
 }
 
+canvas {
+ display: block;
+ position: absolute;
+ text-align: left;
+}
+
 #field_Field_0_1173 {
  position: absolute;
  font-size: 14;
@@ -104,26 +110,26 @@ select {
  LCvScrollbar: false;
 }
 
-#radio_Model_1:_AS_&#8640;_B_+_S_LABEL {
+#radio_Model_1_LABEL {
  width: 128px;
  height: 32px;
  left: 6px;
  top: 6px;
 }
 
-#radio_Model_1:_AS_&#8640;_B_+_S_SPAN {
+#radio_Model_1_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#radio_Model_2:_AS_+_S_&#8640;_B_+_2S_LABEL {
+#radio_Model_2_LABEL {
  width: 128px;
  height: 32px;
  left: 6px;
  top: 33px;
 }
 
-#radio_Model_2:_AS_+_S_&#8640;_B_+_2S_SPAN {
+#radio_Model_2_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
@@ -357,50 +363,50 @@ select {
  LCvScrollbar: false;
 }
 
-#radio_Sine_LABEL {
+#radio_Sine_1214_LABEL {
  width: 128px;
  height: 32px;
  left: 6px;
  top: 33px;
 }
 
-#radio_Sine_SPAN {
+#radio_Sine_1214_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#radio_Constant_LABEL {
+#radio_Constant_1215_LABEL {
  width: 128px;
  height: 32px;
  left: 6px;
  top: 6px;
 }
 
-#radio_Constant_SPAN {
+#radio_Constant_1215_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#radio_Square_LABEL {
+#radio_Square_1216_LABEL {
  width: 128px;
  height: 32px;
  left: 6px;
  top: 59px;
 }
 
-#radio_Square_SPAN {
+#radio_Square_1216_SPAN {
  margin-left: 22px;
  line-height: 22px;
 }
 
-#checkbox_on_LABEL {
+#checkbox_on_1231_LABEL {
  width: 128px;
  height: 32px;
  left: 92px;
  top: 8px;
 }
 
-#checkbox_on_SPAN {
+#checkbox_on_1231_SPAN {
  margin-left: 22px;
  line-height: 18px;
 }
