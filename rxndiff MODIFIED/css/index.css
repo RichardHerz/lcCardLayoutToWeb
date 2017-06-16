@@ -1,0 +1,581 @@
+/*
+  Design and code by Richard K. Herz, 2017
+  Copyrights held by Richard K. Herz
+  Licensed for use under the GNU General Public License v3.0
+  https://www.gnu.org/licenses/gpl-3.0.en.html
+*/
+
+:root {
+  --shift: 50px;
+}
+
+/*
+  do NOT apply shift to elements inside divisions, since those locations
+     are relative to the div
+  shift is used to insert Model 1,2 radio buttons (#div_RADIO_group_Model)
+     into previous design
+  https://developers.google.com/web/updates/2016/02/css-variables-why-should-you-care
+*/
+
+input {
+ display: block;
+ position: absolute;
+ text-align: left;
+}
+
+input, button {
+ text-align: center;
+}
+
+/* do NOT write general style for div since interferes
+    with plotting by jquery.flot.js */
+
+p {
+ display: block;
+ text-align: left;
+}
+
+label {
+ display: block;
+ position: absolute;
+}
+
+img {
+ display: block;
+ position: absolute;
+}
+
+select {
+ display: block;
+ position: absolute;
+}
+
+#field_Field_0_1173 {
+ font-size: 14px;
+ position: absolute;
+ left: 14px;
+ top: 7px;
+ width: 780px;
+ height: 24px;
+}
+
+#div_simulation_frame_1174 {
+ display: block;
+ position: absolute;
+ left: 13px;
+ top: 52px;
+ width: 901px;
+ height: 630px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: none;
+ opacity: 1;
+ LCvScrollbar: true;
+}
+
+/* DEV FIELDS TO DISPLAY DATA DURING DEVELOPMENT */
+
+#dev00 {
+ display: block;
+ position: absolute;
+ word-wrap: break-word;
+ left: 10px;
+ top: 820px;
+ width: 800px;
+ height: 100px;
+ text-align: left;
+ font-size: 14px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: none;
+}
+
+#field_run_counter {
+  font-size: 14px;
+  /* line-height: 100%; */
+  position: absolute;
+  left: 680px;
+  top: -10px;
+  width: 120px;
+  height: 20px;
+}
+
+#field_Field_1_1176 {
+ font-size: 14px;
+ /* line-height: 100%; */
+ position: absolute;
+ left: 6px;
+ top: -10px;
+ width: 780px;
+ height: 167px;
+}
+
+#field_Field_1a_1176a {
+ font-size: 14px;
+ /* line-height: 100%; */
+ position: absolute;
+ left: 300px;
+ top: 70px;
+ width: 600px;
+ height: 52px;
+}
+
+#div_RADIO_group_Model {
+ display: block;
+ position: absolute;
+ left: 32px;
+ top: 77px;
+ width: 250px;
+ height: 58px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#radio_Model_1_LABEL {
+ left: 6px;
+ top: 6px;
+}
+
+#radio_Model_1_SPAN {
+ margin-left: 22px;
+ line-height: 22px;
+}
+
+#radio_Model_2_LABEL {
+ left: 6px;
+ top: 33px;
+}
+
+#radio_Model_2_SPAN {
+ margin-left: 22px;
+ line-height: 22px;
+}
+
+#button_resetButton_1177 {
+ left: 95px;
+ top: calc(var(--shift) + 124px);
+ width: 72px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#button_runButton_1178 {
+ left: 19px;
+top: calc(var(--shift) + 125px);
+ width: 72px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#div_plotCanvasInlet_1195 {
+ display: block;
+ position: absolute;
+ left: 355px;
+top: calc(var(--shift) + 131px);
+ width: 440px;
+ height: 120px;
+ visibility: visible;
+ border-width: 2px;
+ background-color: rgb(102,255,255);
+ border-style: none;
+ opacity: 1;
+}
+
+#div_plotCanvasOutlet_1196 {
+ display: block;
+ position: absolute;
+ left: 355px;
+top: calc(var(--shift) + 525px);
+ width: 440px;
+ height: 120px;
+ visibility: visible;
+ border-width: 2px;
+ background-color: rgb(102,255,255);
+ border-style: none;
+ opacity: 1;
+}
+
+#div_plotCanvasSurface_1189 {
+ display: block;
+ position: absolute;
+ left: 401px;
+top: calc(var(--shift) + 392px);
+ width: 300px;
+ height: 120px;
+ visibility: visible;
+ border-width: 2px;
+ background-color: rgb(102,255,255);
+ border-style: none;
+ opacity: 1;
+}
+
+#div_plotCanvasGas_1192 {
+ display: block;
+ position: absolute;
+ left: 401px;
+top: calc(var(--shift) + 263px);
+ width: 300px;
+ height: 120px;
+ visibility: visible;
+ border-width: 2px;
+ background-color: rgb(102,255,255);
+ border-style: none;
+ opacity: 1;
+}
+
+#field_setCmax_label_1198 {
+ position: absolute;
+ left: 21px;
+top: calc(var(--shift) + 143px);
+ width: 181px;
+ height: 23px;
+}
+
+#field_setCmax_value_1199 {
+ position: absolute;
+ left: 205px;
+top: calc(var(--shift) + 143px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#range_setCmax_slider_1200 {
+ left: 26px;
+top: calc(var(--shift) + 183px);
+ width: 249px;
+ height: 24px;
+}
+
+#field_enterKflow_label_1201 {
+ position: absolute;
+ left: 21px;
+ top: calc(var(--shift) + 363px);
+ width: 198px;
+ height: 25px;
+}
+
+#field_enterKads_label_1202 {
+ position: absolute;
+ left: 21px;
+top: calc(var(--shift) + 429px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterKflow_1203 {
+ position: absolute;
+ left: 225px;
+top: calc(var(--shift) + 376px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#input_field_enterKads_1204 {
+ position: absolute;
+ left: 225px;
+top: calc(var(--shift) + 443px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_enterKdiff_label_1205 {
+ position: absolute;
+ left: 21px;
+top: calc(var(--shift) + 396px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterKdiff_1206 {
+ position: absolute;
+ left: 225px;
+top: calc(var(--shift) + 410px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_enterThieleMod_label_1207 {
+ position: absolute;
+ left: 21px;
+top: calc(var(--shift) + 463px);
+ width: 198px;
+ height: 25px;
+}
+
+#field_enterAlpha_label_1208 {
+ position: absolute;
+ left: 21px;
+ top: calc(var(--shift) + 525px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterThieleMod_1209 {
+ position: absolute;
+ left: 225px;
+ top: calc(var(--shift) + 476px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#input_field_enterAlpha_1210 {
+ position: absolute;
+ left: 225px;
+ top: calc(var(--shift) + 539px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_enterBscale_label_1211 {
+ position: absolute;
+ left: 21px;
+ top: calc(var(--shift) + 558px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterBscale_1212 {
+ position: absolute;
+ left: 225px;
+ top: calc(var(--shift) + 572px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#div_RADIO_group_1213 {
+ display: block;
+ position: absolute;
+ left: 32px;
+ top: calc(var(--shift) + 208px);
+ width: 150px;
+ height: 88px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#radio_Sine_1214_LABEL {
+ left: 6px;
+ top: 33px;
+}
+
+#radio_Sine_1214_SPAN {
+ margin-left: 22px;
+ line-height: 22px;
+}
+
+#radio_Constant_1215_LABEL {
+ left: 6px;
+ top: 6px;
+}
+
+#radio_Constant_1215_SPAN {
+ margin-left: 22px;
+ line-height: 22px;
+}
+
+#radio_Square_1216_LABEL {
+ left: 6px;
+ top: 59px;
+}
+
+#radio_Square_1216_SPAN {
+ margin-left: 22px;
+ line-height: 22px;
+}
+
+#checkbox_on_1231_LABEL {
+ left: 92px;
+ top: 8px;
+}
+
+#checkbox_on_1231_SPAN {
+ margin-left: 22px;
+ line-height: 18px;
+}
+
+#field_enterCyclePeriod_label_1217 {
+ position: absolute;
+ left: 59px;
+top: calc(var(--shift) + 288px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterDuty_1218 {
+ position: absolute;
+ left: 264px;
+ top: calc(var(--shift) + 337px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_enterDuty_label_1219 {
+ position: absolute;
+ left: 59px;
+ top: calc(var(--shift) + 321px);
+ width: 198px;
+ height: 25px;
+}
+
+#input_field_enterCyclePeriod_1220 {
+ position: absolute;
+ left: 264px;
+ top: calc(var(--shift) + 303px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_Krxn_label_1222 {
+ position: absolute;
+ left: 86px;
+top: calc(var(--shift) + 496px);
+ width: 75px;
+ height: 21px;
+}
+
+#field_Krxn_1223 {
+ font-family: "Arial", sans-serif;
+ font-size: 12px;
+ position: absolute;
+ left: 147px;
+top: calc(var(--shift) + 503px);
+ width: 68px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_profile_label_gas_1226 {
+ position: absolute;
+ left: 709px;
+top: calc(var(--shift) + 249px);
+ width: 112px;
+ height: 120px;
+}
+
+#field_profile_label_surface_1227 {
+ position: absolute;
+ left: 709px;
+top: calc(var(--shift) + 376px);
+ width: 112px;
+ height: 120px;
+}
+
+#field_reactor_label_1228 {
+ position: absolute;
+ border-style: solid;
+ border-width: 2px;
+ font-family: "Arial", sans-serif;
+ font-size: 12px;
+ text-align: center;
+ left: 357px;
+ top: calc(var(--shift) + 251px);
+ width: 37px;
+ height: 243px;
+ }
+
+ #field_outlet_arrow_field_1229 {
+ position: absolute;
+ left: 356px;
+top: calc(var(--shift) + 489px);
+ width: 41px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_inlet_arrow_field_1230 {
+ position: absolute;
+ left: 356px;
+top: calc(var(--shift) + 228px);
+ width: 44px;
+ height: 17px;
+ text-align: center;
+}
+
+#field_aveRate_label_1236 {
+ position: absolute;
+ left: 78px;
+top: calc(var(--shift) + 720px);
+ width: 332px;
+ height: 25px;
+}
+
+#field_aveRate_1237 {
+ position: absolute;
+ left: 409px;
+top: calc(var(--shift) + 720px);
+ width: 87px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_aveConversion_1238 {
+ position: absolute;
+ left: 710px;
+top: calc(var(--shift) + 720px);
+ width: 75px;
+ height: 21px;
+ text-align: center;
+}
+
+#field_aveConverion_label_1239 {
+ position: absolute;
+ left: 531px;
+top: calc(var(--shift) + 720px);
+ width: 198px;
+ height: 25px;
+}
+
+#field_spaceTimeTop_label_1240 {
+ position: absolute;
+ left: 190px;
+top: calc(var(--shift) + 628px);
+ width: 240px;
+ height: 25px;
+}
+
+#field_spaceTimeMiddle_label_1241 {
+ position: absolute;
+ left: 160px;
+ top: calc(var(--shift) + 660px);
+ width: 240px;
+ height: 25px;
+ color: blue;
+}
+
+#field_spaceTimeBtm_label_1242 {
+ position: absolute;
+ left: 236px;
+ top: calc(var(--shift) + 695px);
+ width: 198px;
+ height: 25px;
+}
+
+#canvas_CANVAS_rate {
+  position: absolute;
+  top: 698px;
+  left: 380px;
+  width: 414px;
+  height: 80px;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px;
+}
