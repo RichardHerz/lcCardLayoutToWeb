@@ -15,8 +15,13 @@ constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> 
 constant kCssTopShift = 50 -- value used in css file for computed shift of elements
 -- make sure value of constant kCssTopShift is the same in both script files
 
+constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract on import
+-- make sure value of constant kTextFontExportAdd is the same in both script files 
+
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
+-- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
+-- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
 constant kReporter = "false"
 
 local oScrollbarList -- used to set the vScrollbar of groups
@@ -166,7 +171,8 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
    -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
    -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
-   -- do not do a "put empty into msg" because will open msg box unnecessarily if kReporter is "false"
+   -- do not always put empty into msg here because will open msg box even if not used
+   if kReporter is not "false" then put empty into msg 
    if kReporter is "true" then put LF & tHeaderData into msg -- NOTE "INTO" FOR FIRST ONE
    
    put tBodyStartChar into tSkipChar
@@ -281,7 +287,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
                put fImportLabelTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
                break
             case "canvas"
-               put fImportCanvas(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+               put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
                break
             default
                -- xxx ignore for now
@@ -319,12 +325,11 @@ end fMakeLiveCodeCard
 
 ----------------------------- 
 
-function fImportCanvas tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   -- need to return updated tSkipChar
-   -- EXAMPLE: <canvas id="canvas_rate"></canvas> 
+function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
+   -- this is to import an LC button that represents the area of an HTML CANVAS element
    -- used for generating images on HTML canvas by Javascript
-   
-   -- xxx NEED TO ADD HTML CANVAS TO EXPORT SCRIPT
+   -- need to return updated tSkipChar
+   -- EXAMPLE: <canvas id="canvas_CANVAS_rate"></canvas> 
    
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
@@ -332,14 +337,20 @@ function fImportCanvas tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- tID used below in GET CSS
    put tID into tCanvas
    replace "_" with space in tCanvas
-   -- "canvas" added in export, others added later might not have it
+   -- prefix "canvas" added in export, others added later might not have it
    if word 1 of tCanvas is "canvas" then delete word 1 of tCanvas
-   put "CANVAS" && tCanvas into tCanvas
+   -- USE "CANVAS" as first word of short name of LC button to identify an html canvas element
+   if word 1 of tCanvas is not "CANVAS" then put "CANVAS" and space before tCanvas
    
-   -- FOR NOW, AT LEAST, CREATE BUTTON TO REPRESENT HTML CANVAS
+   -- CREATE BUTTON TO REPRESENT HTML CANVAS
    create button
    set the name of it to tCanvas
-   
+   -- below are special properties for the button
+   set the style of button tCanvas to rectangle
+   set the showBorder of button tCanvas to true
+   set the borderWidth of button tCanvas to 2
+   set the backColor of button tCanvas to 0,255,0
+     
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of button tCanvas into tControlLongName -- NOTE button tCanvas
@@ -351,7 +362,7 @@ function fImportCanvas tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put offset(">",pHtmlFileData,tSkipChar) into tEndChar
    add tEndChar to tSkipChar
    return tSkipChar
-end fImportCanvas
+end fImportCANVAS
 
 ----------------------------- 
 
@@ -420,16 +431,26 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    -- search below only in this tag
    put char tSkipChar to tTagEndChar of pFileData into tTagData
    
+   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, pTargetName = " & pTargetName after msg -- development field
+   
+   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, tTagData = " & tTagData after msg -- development field
+   
    -- ASSUME no space between pTargetName and ="
    put offset(pTargetName & "=" & quote, tTagData) into tTargetStartChar
    if tTargetStartChar = 0 then
       put empty into tTargetValue
+      if kReporter is "TEST" then 
+         put LF & "fGetHtmlAttribute, tTargetStartChar = 0" after msg -- development field
+      end if
    else
       put the number of chars of pTargetName into tNum
       add 2 to tNum -- + 2 to step inside ="
       add tNum to tTargetStartChar -- move inside first quote
       put offset(quote, tTagData, tTargetStartChar) into tTargetEndChar
       if tTargetEndChar = 0 then
+         if kReporter is "TEST" then 
+            put LF & "fGetHtmlAttribute, tTargetEndChar = 0" after msg -- development field
+         end if
          -- can get this for target="" looking from inside first quote
          put empty into tTargetValue
       else
@@ -439,7 +460,7 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
       end if
    end if
    
-   if kReporter is "true" then put LF & "fGetHtmlAttribute, tTargetValue = " & tTargetValue after msg -- development field
+   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, tTargetValue to RETURN = " & tTargetValue & LF after msg -- development field
    
    return tTargetValue
 end fGetHtmlAttribute
@@ -574,6 +595,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                set the itemDelimiter to colon
                break
             case "font-size"
+               subtract kTextFontExportAdd from tValue -- xxx better check if this is <p>
                set the textSize of tControlName to tValue
                break
             case "opacity"
@@ -719,14 +741,16 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    put tIDname into tID_SPAN
    put space & "SPAN" after tID_SPAN
    replace space with "_" in tID_SPAN
+   
    delete the first word of tIDname -- delete the type (checkbox or radio) 
+   put tIDname into tButton -- use this as short name of the button, label set by span tag
    
    -- NOW HAVE: tID_LABEL, tIDname, tID_SPAN
    -- UNDER ASSUMED NAMING CONVENTION
    
    -- GET WHETHER OR NOT INPUT HAS CHECKED ATTRIBUTE
    -- AND SAVE AS CUSTOM PROP OF LC CONTROL
-   -- xxx and add on EXPORT
+   -- NOTE CHECKED ATTRIBUTE IS IN INPUT UNDER THIS LABEL: <LABEL <INPUT
    put offset("<input",pHtmlFileData,tSkipChar) into tInputTagStart 
    add tSkipChar to tInputTagStart
    put offset(">",pHtmlFileData,tInputTagStart) into tInputTagEnd
@@ -739,13 +763,15 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    end if
    -- BELOW, set the hilited of the control to tCheckedFlag
    
-   -- GET ONCHANGE ATTRIBUTE, IF ANY
-   -- IN ORDER TO SAVE AS CUSTOM PROP OF LC CONTROL
-   -- xxx and add on EXPORT
-   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onchange") into tOnchange
+   -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
+   -- AND SAVE AS CUSTOM PROP OF LC CONTROL
+   -- NOTE ONCHANGE ATTRIBUTE IS IN INPUT UNDER THIS LABEL: <LABEL <INPUT
+   put offset("<input",pHtmlFileData,tSkipChar) into tInputTagStart 
+   add tSkipChar to tInputTagStart
+   put fGetHtmlAttribute(tInputTagStart, pHtmlFileData, "onchange") into tOnchange 
    
    -- GET TEXT BETWEEN <span AND </span>
-   -- AND SET AS SHORT NAME OF THE LC CONTROL
+   -- AND SET AS LABEL OF THE LC CONTROL
    -- ASSUME THERE IS A SPAN TAG WITH TEXT INSIDE LABEL TAG
    put offset("<span",pHtmlFileData,tSkipChar) into tSpanTagStart
    add tSkipChar to tSpanTagStart
@@ -755,12 +781,13 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    add tSkipChar to tSpanTagEnd
    add 1 to tSpanTagStart
    subtract 1 from tSpanTagEnd
-   put char tSpanTagStart to tSpanTagEnd of pHtmlFileData into tButton -- tButton used below in CSS
-   -- BELOW set the short name of the LC control to tButton
+   put char tSpanTagStart to tSpanTagEnd of pHtmlFileData into tButtonLabel -- tButton used below in CSS
+   -- BELOW set the label of the LC control to tButtonLabel
    
    -- CREATE LC CONTROL
    create button
    set the name of it to tButton
+   set the label of button tButton to tButtonLabel
    set the style of button tButton to pStyle -- pStyle is input argument to this function
    -- was getting the hiliteBorder set to true when export original had it false,
    -- causes border to show when selected, property in icons panel of LC control properties 
@@ -1323,13 +1350,13 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "min") into tMin
    if tMin is empty then put 0 into tMin
    
-   if kReporter is "true" then put LF & "tMin = " & tMin after msg
+   if kReporter is "TEST" then put LF & "fImportScrollbar, tMin = " & tMin after msg
    
    -- GET MAX, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "max") into tMax
    if tMin is empty then put 100 into tMin
    
-   if kReporter is "true" then put LF & "tMax = " & tMax after msg
+   if kReporter is "TEST" then put LF & "fImportScrollbar, tMax = " & tMax after msg
    
    -- GET STEP, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "step") into tStep

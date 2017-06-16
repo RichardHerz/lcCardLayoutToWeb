@@ -12,6 +12,9 @@ constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't wr
 constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
 
+constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract on import
+-- make sure value of constant kTextFontExportAdd is the same in both script files 
+
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
 constant kWebOutputFolder = "web output"
 -- images should be added to LiveCode stack only BY REFERENCE
@@ -26,6 +29,12 @@ constant kHtmlFileName = "index.html"
 --      used to increase and decrease indents
 --      not only makes html look nice but text editors use indents to fold/unfold sections
 constant kIndentSpaces = 3
+
+-- use kReporter "true" to activate all reports below to msg box
+-- or use a special value to activate only selected reports below
+-- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
+-- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
+constant kReporter = "false"
 
 /* 
 WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
@@ -56,7 +65,7 @@ I ADDED LIGHT BLUE VERTICAL LINE TO PAGE AT 640px AS MOBILE LAYOUT GUIDE
 */
 
 /* 
-HOW TO CREATE EMPTY GROUP FOR A PLOT CANVAS 
+HOW TO CREATE EMPTY GROUP FOR A PLOT DIVISION 
 
 BEST WAY: Add one button the size of the group and add the word "lcCardLayoutToWeb" to the button name, 
 then select and group the button and name the group. When saved to web, the button will not appear in the output. 
@@ -136,6 +145,11 @@ on exportWebPage
    -- uses function fExportScrollBar
    -- uses function fIDname
    -- uses function fReturnCSSprops
+   
+   -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
+   -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
+   -- do not always put empty into msg here because will open msg box even if not used
+   if kReporter is not "false" then put empty into msg 
    
    -- indents not only makes html look nice but text editors use indents to fold/unfold sections
    repeat kIndentSpaces times
@@ -252,6 +266,12 @@ on exportWebPage
    put space & "display: block;" & LF after tCSS
    put space &  "position: absolute;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for select
+   -- canvas - html canvas element
+   put "canvas {" & LF after tCSS
+   put space & "display: block;" & LF after tCSS
+   put space &  "position: absolute;" & LF after tCSS
+   put space &  "text-align: left;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for input
    
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
@@ -382,7 +402,13 @@ on exportWebPage
                   get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  -- check for button used to represent an HTML CANVAS element
+                  if the first word of the short name of control tControlNumber is "CANVAS" then
+                     get fExportCANVAS(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  else
+                     -- a standard button
+                     get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  end if
             end switch
             -- put the button result after tHTML and tCSS
             put it into tResult
@@ -642,7 +668,13 @@ function fIDname tControl_ID
                put "select" into t1
                break
             default
-               put "button" into t1
+               -- check for button representing an HTML CANVAS element
+               if word 1 of the short name of control id tControl_ID is "CANVAS" then
+                  put "canvas" into t1
+               else
+                  -- this is a standard button
+                  put "button" into t1
+               end if
          end switch
    end switch
    put word 2 of the long name of control id tControl_ID into t2
@@ -713,8 +745,22 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put tIndent & "<input type=" & quote & tType & quote into tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
+   
    put the startValue of control id tControl_ID into tStartValue
+   
+   if kReporter is "TEST" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
+   
+   -- at least in LC 9(dp 7) getting empty for startValue even when property inspector
+   -- shows 0 but if manually increment and decrement value in prop inspec then
+   -- will get 0 here....
+   if tStartValue is empty then put 0 into tStartValue
+   
+   if kReporter is "TEST" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
+   
    put the endValue of control id tControl_ID into tEndValue
+   
+   if kReporter is "TEST" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
+   
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put the pageInc of control id tControl_ID into tStep
    -- WILL WRITE SOME MORE HTML BELOW
@@ -908,10 +954,10 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put ">" & LF after tHTML
    -- end of html for input tag
-   -- write html for span tag with radio button name
+   -- write html for span tag with radio button label
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put tRadioButtonName after tHTML
+   put the label of control id tControl_ID after tHTML
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
@@ -997,6 +1043,32 @@ end fExportStandardButton
 
 -----------------------------------------------
 
+function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+   -- uses function fIDname
+   -- uses function fReturnCSSprops
+   -- this is for an LC button representing the area of an HTML CANVAS element
+   -- (elsewhere I may have used "plotCanvas" for groups/divs for use with flot.js plotting)
+   -- HTML EXAMPLE:  <canvas id="canvas_CANVAS_rate"></canvas>
+   put tIndent & "<canvas" into tHTML
+   put fIDname(tControl_ID) into tIDname
+   put space & "id=" & quote & tIDname & quote & ">" after tHTML
+   put "</canvas>" & LF after tHTML
+   -- end html
+   -- write css
+   put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
+   put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
+   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
+   -- conclude css
+   put "}" & LF & LF after tCSS
+   -- end of css
+   -- finally return the result
+   put tHTML into tResult["html"]
+   put tCSS into tResult["css"]
+   return tResult
+end fExportCANVAS
+
+-----------------------------------------------
+
 function fExportMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
@@ -1068,7 +1140,7 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- write html for span tag with checkbox name
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put tCheckBoxName after tHTML
+   put the label of control id tControl_ID after tHTML
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
@@ -1185,6 +1257,9 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    -- need position: absolute here but not for general <p>
    -- because that messes up text added to HTML later
    put space &  "position: absolute;" & LF after tCSS
+   put the textSize of control id tControl_ID into tTextSize
+   add kTextFontExportAdd to tTextSize
+   put space & "font-size:" && tTextSize & ";" & LF after tCSS
    put space & "left:" && tLeft & "px;" & LF after tCSS
    put space & "top:" && tTop & "px;" & LF after tCSS
    put the width of control id tControl_ID into tWd
