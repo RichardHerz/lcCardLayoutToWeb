@@ -1,7 +1,7 @@
 input {
  display: block;
  position: absolute;
- text-align: left;
+ text-align: center;
 }
 
 input, button {
@@ -39,7 +39,7 @@ canvas {
 
 #field_Field_0_1173 {
  position: absolute;
- font-size: 14;
+ font-size: 14px;
  left: 14px;
  top: 7px;
  width: 780px;
@@ -62,7 +62,7 @@ canvas {
 
 #field_dev00 {
  position: absolute;
- font-size: 14;
+ font-size: 14px;
  left: 8px;
  top: 818px;
  width: 800px;
@@ -71,7 +71,7 @@ canvas {
 
 #field_Field_1_1176 {
  position: absolute;
- font-size: 14;
+ font-size: 14px;
  left: 4px;
  top: -12px;
  width: 780px;
@@ -80,7 +80,7 @@ canvas {
 
 #field_Field_1a_1176a {
  position: absolute;
- font-size: 14;
+ font-size: 14px;
  left: 298px;
  top: 68px;
  width: 600px;
@@ -91,9 +91,9 @@ canvas {
  display: block;
  position: absolute;
  left: 30px;
- top: 75px;
+ top: 74px;
  width: 250px;
- height: 58px;
+ height: 60px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
@@ -102,7 +102,7 @@ canvas {
 }
 
 #radio_Model_1_LABEL {
- width: 128px;
+ width: 235px;
  height: 32px;
  left: 6px;
  top: 6px;
@@ -114,7 +114,7 @@ canvas {
 }
 
 #radio_Model_2_LABEL {
- width: 128px;
+ width: 235px;
  height: 32px;
  left: 6px;
  top: 33px;
@@ -209,7 +209,7 @@ canvas {
 
 #field_setCmax_label_1198 {
  position: absolute;
- font-size: 3;
+ font-size: 15px;
  left: 19px;
  top: 191px;
  width: 181px;
@@ -218,7 +218,7 @@ canvas {
 
 #field_setCmax_value_1199 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 203px;
  top: 191px;
  width: 68px;
@@ -234,7 +234,7 @@ canvas {
 
 #field_enterKflow_label_1201 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 411px;
  width: 198px;
@@ -243,7 +243,7 @@ canvas {
 
 #field_enterKads_label_1202 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 477px;
  width: 198px;
@@ -252,25 +252,25 @@ canvas {
 
 #input_field_enterKflow_1203 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 424px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #input_field_enterKads_1204 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 491px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #field_enterKdiff_label_1205 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 444px;
  width: 198px;
@@ -279,16 +279,16 @@ canvas {
 
 #input_field_enterKdiff_1206 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 458px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #field_enterThieleMod_label_1207 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 511px;
  width: 198px;
@@ -297,7 +297,7 @@ canvas {
 
 #field_enterAlpha_label_1208 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 573px;
  width: 198px;
@@ -306,25 +306,25 @@ canvas {
 
 #input_field_enterThieleMod_1209 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 524px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #input_field_enterAlpha_1210 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 587px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #field_enterBscale_label_1211 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 19px;
  top: 606px;
  width: 198px;
@@ -333,11 +333,11 @@ canvas {
 
 #input_field_enterBscale_1212 {
  position: absolute;
- font-size: 3;
  left: 223px;
  top: 620px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #div_RADIO_group_1213 {
@@ -404,7 +404,7 @@ canvas {
 
 #field_enterCyclePeriod_label_1217 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 57px;
  top: 336px;
  width: 198px;
@@ -413,16 +413,16 @@ canvas {
 
 #input_field_enterDuty_1218 {
  position: absolute;
- font-size: 3;
  left: 262px;
  top: 385px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #field_enterDuty_label_1219 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 57px;
  top: 369px;
  width: 198px;
@@ -431,16 +431,16 @@ canvas {
 
 #input_field_enterCyclePeriod_1220 {
  position: absolute;
- font-size: 3;
  left: 262px;
  top: 351px;
  width: 68px;
  height: 21px;
+ text-align: center;
 }
 
 #field_Krxn_label_1222 {
  position: absolute;
- font-size: 3;
+ font-size: 14px;
  left: 84px;
  top: 544px;
  width: 75px;
@@ -449,16 +449,16 @@ canvas {
 
 #field_Krxn_1223 {
  position: absolute;
- font-size: 12;
+ font-size: 14px;
  left: 145px;
- top: 551px;
+ top: 545px;
  width: 68px;
  height: 21px;
 }
 
 #field_profile_label_gas_1226 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 707px;
  top: 297px;
  width: 112px;
@@ -467,7 +467,7 @@ canvas {
 
 #field_profile_label_surface_1227 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 707px;
  top: 424px;
  width: 112px;
@@ -476,8 +476,8 @@ canvas {
 
 #field_reactor_label_1228 {
  position: absolute;
- font-size: 12;
- left: 349px;
+ font-size: 12px;
+ left: 355px;
  top: 294px;
  width: 37px;
  height: 243px;
@@ -488,25 +488,27 @@ canvas {
 
 #field_outlet_arrow_field_1229 {
  position: absolute;
- font-size: 3;
- left: 354px;
+ font-size: 16px;
+ left: 357px;
  top: 537px;
  width: 41px;
  height: 21px;
+ text-align: center;
 }
 
 #field_inlet_arrow_field_1230 {
  position: absolute;
- font-size: 3;
- left: 354px;
+ font-size: 16px;
+ left: 356px;
  top: 276px;
  width: 44px;
  height: 17px;
+ text-align: center;
 }
 
 #field_aveRate_label_1236 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 76px;
  top: 768px;
  width: 332px;
@@ -515,25 +517,16 @@ canvas {
 
 #field_aveRate_1237 {
  position: absolute;
- font-size: 3;
- left: 407px;
+ font-size: 16px;
+ left: 412px;
  top: 768px;
  width: 87px;
  height: 21px;
 }
 
-#field_aveConversion_1238 {
- position: absolute;
- font-size: 3;
- left: 708px;
- top: 768px;
- width: 75px;
- height: 21px;
-}
-
 #field_aveConverion_label_1239 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 529px;
  top: 768px;
  width: 198px;
@@ -542,7 +535,7 @@ canvas {
 
 #field_spaceTimeTop_label_1240 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 188px;
  top: 676px;
  width: 240px;
@@ -551,7 +544,7 @@ canvas {
 
 #field_spaceTimeMiddle_label_1241 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 158px;
  top: 708px;
  width: 240px;
@@ -560,7 +553,7 @@ canvas {
 
 #field_spaceTimeBtm_label_1242 {
  position: absolute;
- font-size: 3;
+ font-size: 16px;
  left: 234px;
  top: 743px;
  width: 198px;
@@ -581,10 +574,19 @@ canvas {
 
 #field_run_counter {
  position: absolute;
- font-size: 14;
+ font-size: 14px;
  left: 678px;
  top: -12px;
  width: 120px;
  height: 20px;
+}
+
+#field_aveConversion_1238 {
+ position: absolute;
+ font-size: 16px;
+ left: 713px;
+ top: 768px;
+ width: 75px;
+ height: 21px;
 }
 

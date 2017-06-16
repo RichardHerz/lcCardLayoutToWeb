@@ -104,12 +104,14 @@ on mouseEnter
    put the name of this stack into tStack
    if kKillWord is not in tStack then exit mouseEnter
    put the long name of the target into tLongName
-   if word 1 of tLongName is "field" then
-      -- put "stack = " & tStack & " ; tLongName = " & tLongName into msg
-      set the showFocusBorder of tLongName to false
-      if the showBorder of tLongName is false then
-         set the showBorder of tLongName to true
-         put true into oBorderFlag
+   if there is tLongName then -- was getting errors when property panel open
+      if word 1 of tLongName is "field" then
+         -- put "stack = " & tStack & " ; tLongName = " & tLongName into msg
+         set the showFocusBorder of tLongName to false
+         if the showBorder of tLongName is false then
+            set the showBorder of tLongName to true
+            put true into oBorderFlag
+         end if
       end if
    end if
 end mouseEnter
@@ -120,10 +122,18 @@ on mouseLeave
    put the name of this stack into tStack
    if kKillWord is not in tStack then exit mouseLeave
    put the long name of the target into tLongName
-   if word 1 of tLongName is "field" then
-      -- put empty into msg
-      if oBorderFlag is true then
-         set the showBorder of tLongName to false
+   if there is tLongName then -- was getting errors when property panel open
+      if word 1 of tLongName is "field" then
+         -- put empty into msg
+         if oBorderFlag is true then
+            set the showBorder of tLongName to false
+            --  -- if below used in development
+            --          if the commandKey is down then
+            --             -- leave border set
+            --          else
+            --             set the showBorder of tLongName to false
+            --          end if
+         end if
       end if
    end if
    put false into oBorderFlag
@@ -262,11 +272,11 @@ on exportWebPage
    put "input {" & LF after tCSS
    put space & "display: block;" & LF after tCSS
    put space &  "position: absolute;" & LF after tCSS
-   put space &  "text-align: left;" & LF after tCSS
+   put space &  "text-align: center;" & LF after tCSS -- override LC textAlign setting for input fields
    put "}" & LF & LF after tCSS -- finish css for input
-   -- override "text-align: left;" for input type="button"
+   -- button
    put "input, button {" & LF after tCSS
-   put space &  "text-align: center;" & LF after tCSS
+   put space &  "text-align: center;" & LF after tCSS -- override LC textAlign setting for buttons
    put "}" & LF & LF after tCSS -- finish css for input, button
    -- WARNING: write notice NOT to make general div style since
    -- interferes with plotting by flot.js
@@ -782,18 +792,18 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    
    put the startValue of control id tControl_ID into tStartValue
    
-   if kReporter is "TEST" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
+   if kReporter is "true" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
    
    -- at least in LC 9(dp 7) getting empty for startValue even when property inspector
    -- shows 0 but if manually increment and decrement value in prop inspec then
    -- will get 0 here....
    if tStartValue is empty then put 0 into tStartValue
    
-   if kReporter is "TEST" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
+   if kReporter is "true" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
    
    put the endValue of control id tControl_ID into tEndValue
    
-   if kReporter is "TEST" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
+   if kReporter is "true" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
    
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put the pageInc of control id tControl_ID into tStep
@@ -1267,8 +1277,10 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
       put LF & tTempText after tHTML
    end if
    put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
+   
    -- write css
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
+   
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
@@ -1291,9 +1303,20 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    -- need position: absolute here but not for general <p>
    -- because that messes up text added to HTML later
    put space &  "position: absolute;" & LF after tCSS
-   put the textSize of control id tControl_ID into tTextSize
-   add kTextFontExportAdd to tTextSize
-   put space & "font-size:" && tTextSize & ";" & LF after tCSS
+   if tFieldType is "p" then
+      -- set LC textSize as font-size for locked fields, let unlocked input fields get default html size
+      if kReporter is "TEST" then put LF & "tIDname =" && tIDname after msg
+      if kReporter is "TEST" then put LF & "name of control id tControl_ID =" && the name of control id tControl_ID after msg
+      put the textSize of control id tControl_ID into tTextSize
+      -- xxx at least in LC 9 (dp7) the textSize of fields is coming up empty 
+      -- xxx even though property palette shows  default of 12 unless user purposely sets the value
+      if tTextSize is empty then put 13 into tTextSize -- will get incremented below by kTextFontExportAdd
+      if kReporter is "TEST" then put LF & "tTextSize =" && tTextSize & LF after msg
+      add kTextFontExportAdd to tTextSize
+      if kReporter is "TEST" then put LF & "tTextSize AFTER kTextFontExportAdd =" && tTextSize after msg
+      put space & "font-size:" && tTextSize & "px;" & LF after tCSS
+      if kReporter is "TEST" then put LF & "font-size just written to tCSS, font-size =" && tTextSize & LF after msg
+   end if -- end of if tFieldType is "p" then
    put space & "left:" && tLeft & "px;" & LF after tCSS
    put space & "top:" && tTop & "px;" & LF after tCSS
    put the width of control id tControl_ID into tWd
@@ -1307,7 +1330,8 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    put the showBorder of control id tControl_ID into tShowBorder
    put the borderWidth of control id tControl_ID into tBorderWidth
    put the threeD of control id tControl_ID into tThreeD
-   if tShowBorder is true then
+   if tFieldType is "p" and tShowBorder is true then
+      -- input tag fields in html show a default border so use that
       if tThreeD is true then
          put space & "border-style: outset;" & LF after tCSS
       else

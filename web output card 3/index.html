@@ -45,8 +45,8 @@
    <p id="field_Field_1_1176"> 
       <i><b>Dynamic diffusion and reaction in a porous solid catalyst layer</b></i>       
       <br>
-      <br>      The overall reaction is A &#8640; B and is far from equilibrium under conditions here.       Reactant A adsorbs reversibly over catalyst surface 
-      <br> sites S:  A + S &#8652; AS.       Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).       
+      <br>The overall reaction is A &#8640; B and is far from equilibrium under conditions here. Reactant A adsorbs reversibly over catalyst surface 
+      <br> sites S:  A + S &#8652; AS. Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).       
       <br>      
       <br>      
       <br>      
@@ -56,7 +56,7 @@
    <p id="field_Field_1a_1176a"> 
       <a href="info.html">Click here for more information</a> (opens in new tab)     
       <br>    
-      <br>    <font color="#FF0000">    <b>See space-time plot of rate, and average rate and conversion at bottom of page.</b>     </font>
+      <br><b><font color="#FF0000">See space-time plot of rate, and average rate and conversion at bottom of page.</font></b><font color="#FF0000">     </font>
    </p>
    <div id="div_RADIO_group_Model">
       <label id="radio_Model_1_LABEL" name="radio_of_group_RADIO_group_Model">
@@ -118,11 +118,11 @@
    </input>
    <div id="div_RADIO_group_1213">
       <label id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group_1213">
-            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
+            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" checked onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Sine_1214_SPAN">Sine</span>
       </label>
       <label id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group_1213">
-            <input type="radio" id="radio_Constant_1215" name="radio_of_group_RADIO_group_1213" checked onchange="puCatalystLayer.updateUIparams()">
+            <input type="radio" id="radio_Constant_1215" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Constant_1215_SPAN">Constant</span>
       </label>
       <label id="radio_Square_1216_LABEL" name="radio_of_group_RADIO_group_1213">
@@ -145,7 +145,7 @@
    <input id="input_field_enterCyclePeriod_1220" value="500" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
    <p id="field_Krxn_label_1222"> 
-      Krxn
+      Krxn =
    </p>
    <p id="field_Krxn_1223"> 
       1
@@ -184,9 +184,6 @@
    <p id="field_aveRate_1237"> 
       2
    </p>
-   <p id="field_aveConversion_1238"> 
-      2
-   </p>
    <p id="field_aveConverion_label_1239"> 
       Average Conversion of A =
    </p>
@@ -202,6 +199,9 @@
    <canvas id="canvas_CANVAS_rate"></canvas>
    <p id="field_run_counter"> 
       
+   </p>
+   <p id="field_aveConversion_1238"> 
+      0
    </p>
 </div> <!-- end of div div_simulation_frame_1174 -->
 </body>
