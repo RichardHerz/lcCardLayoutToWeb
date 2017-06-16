@@ -111,6 +111,7 @@ canvas {
 #radio_Model_1_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 15px;
 }
 
 #radio_Model_2_LABEL {
@@ -123,6 +124,7 @@ canvas {
 #radio_Model_2_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 15px;
 }
 
 #button_resetButton_1177 {
@@ -364,6 +366,7 @@ canvas {
 #radio_Sine_1214_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 16px;
 }
 
 #radio_Constant_1215_LABEL {
@@ -376,6 +379,7 @@ canvas {
 #radio_Constant_1215_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 16px;
 }
 
 #radio_Square_1216_LABEL {
@@ -388,6 +392,7 @@ canvas {
 #radio_Square_1216_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 16px;
 }
 
 #checkbox_on_1231_LABEL {
@@ -400,6 +405,7 @@ canvas {
 #checkbox_on_1231_SPAN {
  margin-left: 22px;
  line-height: 18px;
+ font-size: 16px;
 }
 
 #field_enterCyclePeriod_label_1217 {
@@ -474,22 +480,10 @@ canvas {
  height: 120px;
 }
 
-#field_reactor_label_1228 {
- position: absolute;
- font-size: 12px;
- left: 355px;
- top: 294px;
- width: 37px;
- height: 243px;
- text-align: center;
- border-style: solid;
- border-width: 2px;
-}
-
 #field_outlet_arrow_field_1229 {
  position: absolute;
  font-size: 16px;
- left: 357px;
+ left: 355px;
  top: 537px;
  width: 41px;
  height: 21px;
@@ -499,7 +493,7 @@ canvas {
 #field_inlet_arrow_field_1230 {
  position: absolute;
  font-size: 16px;
- left: 356px;
+ left: 354px;
  top: 276px;
  width: 44px;
  height: 17px;
@@ -590,3 +584,14 @@ canvas {
  height: 21px;
 }
 
+#field_reactor_label_1228 {
+ position: absolute;
+ font-size: 12px;
+ left: 355px;
+ top: 298px;
+ width: 37px;
+ height: 243px;
+ text-align: center;
+ border-style: solid;
+ border-width: 2px;
+}

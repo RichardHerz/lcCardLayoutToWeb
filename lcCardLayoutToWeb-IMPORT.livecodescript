@@ -2,6 +2,7 @@
 /*
 Design, text, images and code by Richard K. Herz, 2017 
 Copyrights held by Richard K. Herz
+https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0 
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
@@ -492,7 +493,8 @@ end fGetStripOuterSpace
 
 -----------------------------
 
-function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
+function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, pSpanFlag
+   
    -- returns true if css has a transform property
    -- which will be the case for vertical sliders (scales, ranges)
    
@@ -573,6 +575,13 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
             replace "px" with empty in tValue -- if any, delete px
          end if
          
+         -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
+         if pSpanFlag is "true" then
+            if tProp is not "font-size" then 
+               next repeat
+            end if
+         end if
+         
          switch tProp
             case "width"
                put tValue into tWidth
@@ -598,6 +607,13 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                subtract kTextFontExportAdd from tValue -- xxx better check if this is <p>
                set the textSize of tControlName to tValue
                break
+            case "text-align"
+               put "before try to set textAlign, tContolName = " & tControlName & " ; tValue  = " & tValue into msg
+               set the textAlign of tControName to tValue
+               --                if there is the textAlign of tControName then
+               --                   set the textAlign of tControName to tValue
+               --                end if
+               --                break
             case "opacity"
                put 100*(1 - tValue) into ttemp
                set the blendLevel of tControlName to ttemp
@@ -618,10 +634,13 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                -- css border styles include: none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                -- EXPORT has a checkbox to add CSS dotted when LC showBorder false
                -- EXPORT otherwise saves LC showBorder true as css outset
-              if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
+               if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
                   set the showBorder of tControlName to false
                else
                   set the showBorder of tControlName to true
+               end if
+               if tValue is "solid" then
+                  set the threeD of tControlName to false
                end if
                break
             case "border-width"
@@ -654,6 +673,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
          end switch
       end repeat
    end if
+   
+   -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
+   if pSpanFlag is "true" then exit fGetSetControlProps
    
    set the itemDelimiter to comma
    
@@ -809,14 +831,19 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    --    }
    
    --    #checkbox_Check1_1046_SPAN {
-   --    margin-left: 22px;
-   --    line-height: 18px;
+   --     margin-left: 22px;
+   --     line-height: 18px;
+   --     font-size: 15px;
    --    }
    
    -- FOR NOW, ONLY GET _LABEL FOR BUTTON LOCATION
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton   
    get fGetSetControlProps(tID_LABEL, tControlLongName, pCssFileData, tGrpLocList) -- NOTE tID_LABEL
+   
+   -- BUT _SPAN HAS FONT SIZE SO USE SPECIAL FLAG TO CHECK AND SET IT
+   put "true" into pSpanFlag
+   get fGetSetControlProps(tID_SPAN, tControlLongName, pCssFileData, tGrpLocList, pSpanFlag) -- NOTE tID_SPAN
    
    if kReporter is "true" then put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
@@ -1113,10 +1140,11 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
-   set the showFocusBorder of field tField to false
-   set the textAlign of field tField to left -- xxx may be set in p { } in css, also include in switch below
    set the lockText of field tField to true
-   set the fixedLineHeight of field tField to false -- xxx not set on export, so check this if text shifted
+   set the showFocusBorder of field tField to false
+   set the showBorder of field tField to false -- default for locked fields - can be changed by fGetSetControlProps
+   set the textAlign of field tField to left -- xxx may be set in p { } in css
+   -- setting textHeight and fixedLineHeight does not work here - set below
    
    -- get <p> tag (locked field) contents
    put offset(">",pHtmlFileData,tSkipChar) into tPendChar
@@ -1142,6 +1170,11 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the topLeft of field tField into tTopLeft
    add kFieldShift to item 2 of tTopLeft
    set the topLeft of field tField to tTopLeft 
+   
+   -- did not work to set these above
+   -- set them here to try to get better correspondence
+   set the textHeight of field tField to 16
+   set the fixedLineHeight of field tField to true
    
    if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
    
@@ -1259,14 +1292,16 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    
    create field tField
-   set the showFocusBorder of field tField to false
    
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
-   set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
+   set the showBorder of field tField to true -- default for unlocked fields for input - can be changed by fGetSetControlProps
+   set the showFocusBorder of field tField to false   
+   set the textAlign of field tField to "center" -- default for unlocked fields for input - can be changed by fGetSetControlProps
    set the lockText of field tField to false
    
    set the text of field tField to tValue
+   
    if tOnchange is not empty then
       set the cOnchange of field tField to tOnchange -- xxx need to add this to EXPORT script
    end if

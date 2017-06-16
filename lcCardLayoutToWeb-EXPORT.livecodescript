@@ -2,6 +2,7 @@
 /*
 Design, text, images and code by Richard K. Herz, 2017
 Copyrights held by Richard K. Herz
+https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
@@ -1037,6 +1038,10 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
    put space & "margin-left: 22px;" & LF after tCSS
    put space & "line-height: 22px;" & LF after tCSS
+   put the textSize of control id tControl_ID into tTextSize
+   if tTextSize is empty then put 13 into tTextSize -- textSize does not get value if default shown in prop inspector
+   add kTextFontExportAdd to tTextSize
+   put space & "font-size:" && tTextSize & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end css for span tag
@@ -1220,6 +1225,10 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
    put space & "margin-left: 22px;" & LF after tCSS
    put space & "line-height: 18px;" & LF after tCSS
+   put the textSize of control id tControl_ID into tTextSize
+   if tTextSize is empty then put 13 into tTextSize -- textSize does not get value if default shown in prop inspector
+   add kTextFontExportAdd to tTextSize
+   put space & "font-size:" && tTextSize & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end css for span tag
