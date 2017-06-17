@@ -1,26 +1,7 @@
-/*
-  Design and code by Richard K. Herz, 2017
-  Copyrights held by Richard K. Herz
-  Licensed for use under the GNU General Public License v3.0
-  https://www.gnu.org/licenses/gpl-3.0.en.html
-*/
-
-:root {
-  --shift: 50px;
-}
-
-/*
-  do NOT apply shift to elements inside divisions, since those locations
-     are relative to the div
-  shift is used to insert Model 1,2 radio buttons (#div_RADIO_group_Model)
-     into previous design
-  https://developers.google.com/web/updates/2016/02/css-variables-why-should-you-care
-*/
-
 input {
  display: block;
  position: absolute;
- text-align: left;
+ text-align: center;
 }
 
 input, button {
@@ -50,9 +31,15 @@ select {
  position: absolute;
 }
 
-#field_Field_0_1173 {
- font-size: 14px;
+canvas {
+ display: block;
  position: absolute;
+ text-align: left;
+}
+
+#field_Field_0_1173 {
+ position: absolute;
+ font-size: 14px;
  left: 14px;
  top: 7px;
  width: 780px;
@@ -73,49 +60,29 @@ select {
  LCvScrollbar: true;
 }
 
-/* DEV FIELDS TO DISPLAY DATA DURING DEVELOPMENT */
-
-#dev00 {
- display: block;
+#field_dev00 {
  position: absolute;
- word-wrap: break-word;
- left: 10px;
- top: 820px;
+ font-size: 14px;
+ left: 8px;
+ top: 818px;
  width: 800px;
  height: 100px;
- text-align: left;
- font-size: 14px;
- visibility: visible;
- border-width: 2px;
- border-style: none;
-}
-
-#field_run_counter {
-  font-size: 14px;
-  /* line-height: 100%; */
-  position: absolute;
-  left: 680px;
-  top: -10px;
-  width: 120px;
-  height: 20px;
 }
 
 #field_Field_1_1176 {
- font-size: 14px;
- /* line-height: 100%; */
  position: absolute;
- left: 6px;
- top: -10px;
+ font-size: 14px;
+ left: 4px;
+ top: -12px;
  width: 780px;
  height: 167px;
 }
 
 #field_Field_1a_1176a {
- font-size: 14px;
- /* line-height: 100%; */
  position: absolute;
- left: 300px;
- top: 70px;
+ font-size: 14px;
+ left: 298px;
+ top: 68px;
  width: 600px;
  height: 52px;
 }
@@ -123,17 +90,20 @@ select {
 #div_RADIO_group_Model {
  display: block;
  position: absolute;
- left: 32px;
- top: 77px;
+ left: 30px;
+ top: 74px;
  width: 250px;
- height: 58px;
+ height: 60px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #radio_Model_1_LABEL {
+ width: 235px;
+ height: 32px;
  left: 6px;
  top: 6px;
 }
@@ -144,6 +114,8 @@ select {
 }
 
 #radio_Model_2_LABEL {
+ width: 235px;
+ height: 32px;
  left: 6px;
  top: 33px;
 }
@@ -154,8 +126,8 @@ select {
 }
 
 #button_resetButton_1177 {
- left: 95px;
- top: calc(var(--shift) + 124px);
+ left: 93px;
+ top: 172px;
  width: 72px;
  height: 23px;
  visibility: visible;
@@ -165,8 +137,8 @@ select {
 }
 
 #button_runButton_1178 {
- left: 19px;
-top: calc(var(--shift) + 125px);
+ left: 17px;
+ top: 173px;
  width: 72px;
  height: 23px;
  visibility: visible;
@@ -178,8 +150,8 @@ top: calc(var(--shift) + 125px);
 #div_plotCanvasInlet_1195 {
  display: block;
  position: absolute;
- left: 355px;
-top: calc(var(--shift) + 131px);
+ left: 353px;
+ top: 179px;
  width: 440px;
  height: 120px;
  visibility: visible;
@@ -187,13 +159,14 @@ top: calc(var(--shift) + 131px);
  background-color: rgb(102,255,255);
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_plotCanvasOutlet_1196 {
  display: block;
  position: absolute;
- left: 355px;
-top: calc(var(--shift) + 525px);
+ left: 353px;
+ top: 573px;
  width: 440px;
  height: 120px;
  visibility: visible;
@@ -201,13 +174,14 @@ top: calc(var(--shift) + 525px);
  background-color: rgb(102,255,255);
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_plotCanvasSurface_1189 {
  display: block;
  position: absolute;
- left: 401px;
-top: calc(var(--shift) + 392px);
+ left: 399px;
+ top: 440px;
  width: 300px;
  height: 120px;
  visibility: visible;
@@ -215,13 +189,14 @@ top: calc(var(--shift) + 392px);
  background-color: rgb(102,255,255);
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_plotCanvasGas_1192 {
  display: block;
  position: absolute;
- left: 401px;
-top: calc(var(--shift) + 263px);
+ left: 399px;
+ top: 311px;
  width: 300px;
  height: 120px;
  visibility: visible;
@@ -229,52 +204,56 @@ top: calc(var(--shift) + 263px);
  background-color: rgb(102,255,255);
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #field_setCmax_label_1198 {
  position: absolute;
- left: 21px;
-top: calc(var(--shift) + 143px);
+ font-size: 15px;
+ left: 19px;
+ top: 191px;
  width: 181px;
  height: 23px;
 }
 
 #field_setCmax_value_1199 {
  position: absolute;
- left: 205px;
-top: calc(var(--shift) + 143px);
+ font-size: 16px;
+ left: 203px;
+ top: 191px;
  width: 68px;
  height: 21px;
- text-align: center;
 }
 
 #range_setCmax_slider_1200 {
- left: 26px;
-top: calc(var(--shift) + 183px);
+ left: 24px;
+ top: 231px;
  width: 249px;
  height: 24px;
 }
 
 #field_enterKflow_label_1201 {
  position: absolute;
- left: 21px;
- top: calc(var(--shift) + 363px);
+ font-size: 16px;
+ left: 19px;
+ top: 411px;
  width: 198px;
  height: 25px;
 }
 
 #field_enterKads_label_1202 {
  position: absolute;
- left: 21px;
-top: calc(var(--shift) + 429px);
+ font-size: 16px;
+ left: 19px;
+ top: 477px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterKflow_1203 {
  position: absolute;
- left: 225px;
-top: calc(var(--shift) + 376px);
+ left: 223px;
+ top: 424px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -282,8 +261,8 @@ top: calc(var(--shift) + 376px);
 
 #input_field_enterKads_1204 {
  position: absolute;
- left: 225px;
-top: calc(var(--shift) + 443px);
+ left: 223px;
+ top: 491px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -291,16 +270,17 @@ top: calc(var(--shift) + 443px);
 
 #field_enterKdiff_label_1205 {
  position: absolute;
- left: 21px;
-top: calc(var(--shift) + 396px);
+ font-size: 16px;
+ left: 19px;
+ top: 444px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterKdiff_1206 {
  position: absolute;
- left: 225px;
-top: calc(var(--shift) + 410px);
+ left: 223px;
+ top: 458px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -308,24 +288,26 @@ top: calc(var(--shift) + 410px);
 
 #field_enterThieleMod_label_1207 {
  position: absolute;
- left: 21px;
-top: calc(var(--shift) + 463px);
+ font-size: 16px;
+ left: 19px;
+ top: 511px;
  width: 198px;
  height: 25px;
 }
 
 #field_enterAlpha_label_1208 {
  position: absolute;
- left: 21px;
- top: calc(var(--shift) + 525px);
+ font-size: 16px;
+ left: 19px;
+ top: 573px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterThieleMod_1209 {
  position: absolute;
- left: 225px;
- top: calc(var(--shift) + 476px);
+ left: 223px;
+ top: 524px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -333,8 +315,8 @@ top: calc(var(--shift) + 463px);
 
 #input_field_enterAlpha_1210 {
  position: absolute;
- left: 225px;
- top: calc(var(--shift) + 539px);
+ left: 223px;
+ top: 587px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -342,16 +324,17 @@ top: calc(var(--shift) + 463px);
 
 #field_enterBscale_label_1211 {
  position: absolute;
- left: 21px;
- top: calc(var(--shift) + 558px);
+ font-size: 16px;
+ left: 19px;
+ top: 606px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterBscale_1212 {
  position: absolute;
- left: 225px;
- top: calc(var(--shift) + 572px);
+ left: 223px;
+ top: 620px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -360,17 +343,20 @@ top: calc(var(--shift) + 463px);
 #div_RADIO_group_1213 {
  display: block;
  position: absolute;
- left: 32px;
- top: calc(var(--shift) + 208px);
+ left: 30px;
+ top: 256px;
  width: 150px;
  height: 88px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #radio_Sine_1214_LABEL {
+ width: 128px;
+ height: 32px;
  left: 6px;
  top: 33px;
 }
@@ -381,6 +367,8 @@ top: calc(var(--shift) + 463px);
 }
 
 #radio_Constant_1215_LABEL {
+ width: 128px;
+ height: 32px;
  left: 6px;
  top: 6px;
 }
@@ -391,6 +379,8 @@ top: calc(var(--shift) + 463px);
 }
 
 #radio_Square_1216_LABEL {
+ width: 128px;
+ height: 32px;
  left: 6px;
  top: 59px;
 }
@@ -401,6 +391,8 @@ top: calc(var(--shift) + 463px);
 }
 
 #checkbox_on_1231_LABEL {
+ width: 128px;
+ height: 32px;
  left: 92px;
  top: 8px;
 }
@@ -412,16 +404,17 @@ top: calc(var(--shift) + 463px);
 
 #field_enterCyclePeriod_label_1217 {
  position: absolute;
- left: 59px;
-top: calc(var(--shift) + 288px);
+ font-size: 16px;
+ left: 57px;
+ top: 336px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterDuty_1218 {
  position: absolute;
- left: 264px;
- top: calc(var(--shift) + 337px);
+ left: 262px;
+ top: 385px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -429,16 +422,17 @@ top: calc(var(--shift) + 288px);
 
 #field_enterDuty_label_1219 {
  position: absolute;
- left: 59px;
- top: calc(var(--shift) + 321px);
+ font-size: 16px;
+ left: 57px;
+ top: 369px;
  width: 198px;
  height: 25px;
 }
 
 #input_field_enterCyclePeriod_1220 {
  position: absolute;
- left: 264px;
- top: calc(var(--shift) + 303px);
+ left: 262px;
+ top: 351px;
  width: 68px;
  height: 21px;
  text-align: center;
@@ -446,56 +440,45 @@ top: calc(var(--shift) + 288px);
 
 #field_Krxn_label_1222 {
  position: absolute;
- left: 86px;
-top: calc(var(--shift) + 496px);
+ font-size: 14px;
+ left: 84px;
+ top: 544px;
  width: 75px;
  height: 21px;
 }
 
 #field_Krxn_1223 {
- font-family: "Arial", sans-serif;
- font-size: 12px;
  position: absolute;
- left: 147px;
-top: calc(var(--shift) + 503px);
+ font-size: 14px;
+ left: 145px;
+ top: 545px;
  width: 68px;
  height: 21px;
- text-align: center;
 }
 
 #field_profile_label_gas_1226 {
  position: absolute;
- left: 709px;
-top: calc(var(--shift) + 249px);
+ font-size: 16px;
+ left: 707px;
+ top: 297px;
  width: 112px;
  height: 120px;
 }
 
 #field_profile_label_surface_1227 {
  position: absolute;
- left: 709px;
-top: calc(var(--shift) + 376px);
+ font-size: 16px;
+ left: 707px;
+ top: 424px;
  width: 112px;
  height: 120px;
 }
 
-#field_reactor_label_1228 {
+#field_outlet_arrow_field_1229 {
  position: absolute;
- border-style: solid;
- border-width: 2px;
- font-family: "Arial", sans-serif;
- font-size: 12px;
- text-align: center;
- left: 357px;
- top: calc(var(--shift) + 251px);
- width: 37px;
- height: 243px;
- }
-
- #field_outlet_arrow_field_1229 {
- position: absolute;
- left: 356px;
-top: calc(var(--shift) + 489px);
+ font-size: 16px;
+ left: 355px;
+ top: 537px;
  width: 41px;
  height: 21px;
  text-align: center;
@@ -503,8 +486,9 @@ top: calc(var(--shift) + 489px);
 
 #field_inlet_arrow_field_1230 {
  position: absolute;
- left: 356px;
-top: calc(var(--shift) + 228px);
+ font-size: 16px;
+ left: 354px;
+ top: 276px;
  width: 44px;
  height: 17px;
  text-align: center;
@@ -512,70 +496,97 @@ top: calc(var(--shift) + 228px);
 
 #field_aveRate_label_1236 {
  position: absolute;
- left: 78px;
-top: calc(var(--shift) + 720px);
+ font-size: 16px;
+ left: 76px;
+ top: 768px;
  width: 332px;
  height: 25px;
 }
 
 #field_aveRate_1237 {
  position: absolute;
- left: 409px;
-top: calc(var(--shift) + 720px);
+ font-size: 16px;
+ left: 412px;
+ top: 768px;
  width: 87px;
  height: 21px;
- text-align: center;
-}
-
-#field_aveConversion_1238 {
- position: absolute;
- left: 710px;
-top: calc(var(--shift) + 720px);
- width: 75px;
- height: 21px;
- text-align: center;
 }
 
 #field_aveConverion_label_1239 {
  position: absolute;
- left: 531px;
-top: calc(var(--shift) + 720px);
+ font-size: 16px;
+ left: 529px;
+ top: 768px;
  width: 198px;
  height: 25px;
 }
 
 #field_spaceTimeTop_label_1240 {
  position: absolute;
- left: 190px;
-top: calc(var(--shift) + 628px);
+ font-size: 16px;
+ left: 188px;
+ top: 676px;
  width: 240px;
  height: 25px;
 }
 
 #field_spaceTimeMiddle_label_1241 {
  position: absolute;
- left: 160px;
- top: calc(var(--shift) + 660px);
+ font-size: 16px;
+ left: 158px;
+ top: 708px;
  width: 240px;
  height: 25px;
- color: blue;
 }
 
 #field_spaceTimeBtm_label_1242 {
  position: absolute;
- left: 236px;
- top: calc(var(--shift) + 695px);
+ font-size: 16px;
+ left: 234px;
+ top: 743px;
  width: 198px;
  height: 25px;
 }
 
 #canvas_CANVAS_rate {
-  position: absolute;
-  top: 698px;
-  left: 380px;
-  width: 414px;
-  height: 80px;
-  border-style: solid;
-  border-color: black;
-  border-width: 0px;
+ left: 378px;
+ top: 696px;
+ width: 414px;
+ height: 80px;
+ visibility: visible;
+ border-width: 0px;
+ background-color: rgb(0,255,0);
+ border-style: outset;
+ opacity: 1;
 }
+
+#field_run_counter {
+ position: absolute;
+ font-size: 14px;
+ left: 678px;
+ top: -12px;
+ width: 120px;
+ height: 20px;
+}
+
+#field_aveConversion_1238 {
+ position: absolute;
+ font-size: 16px;
+ left: 713px;
+ top: 768px;
+ width: 75px;
+ height: 21px;
+}
+
+#field_reactor_label_1228 {
+ position: absolute;
+ font-size: 12px;
+ left: 355px;
+ top: 298px;
+ width: 37px;
+ height: 243px;
+ text-align: center;
+ border-style: solid;
+ border-width: 2px;
+}
+

@@ -2,6 +2,7 @@
 /*
 Design, text, images and code by Richard K. Herz, 2017 
 Copyrights held by Richard K. Herz
+https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0 
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
@@ -9,13 +10,13 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
 
-constant kFieldShift = 16 -- subtract to shift locked fields when exporting <p> tags, add on import 
+constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
 
 constant kCssTopShift = 50 -- value used in css file for computed shift of elements
 -- make sure value of constant kCssTopShift is the same in both script files
 
-constant kTextFontExportAdd = 3 -- value to add to font size on export, subtract on import
+constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
 -- use kReporter "true" to activate all reports below to msg box
@@ -74,9 +75,6 @@ end deleteNonDevControls
    -----------------------------
    
    on importWebPage
-   
-   -- xxx NEED TO CHECK IF OTHER CONTROLS ON CURRENT CARD
-   -- xxx AND WARN USER IF THERE ARE
    
    -- calls function fMakeLiveCodeCard
    
@@ -290,7 +288,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
                put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
                break
             default
-               -- xxx ignore for now
+               --  ignore for now
          end switch
       end if
    end repeat
@@ -310,7 +308,6 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    -- xxx in fGetSetControlProps changed in some unknown way the left value
    -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
    -- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
-   -- local oScrollbarList -- put tControlName & "$" & tValue & LF after oScrollbarList
    if tScrollerList is not empty then
       set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
       repeat for each line tLine in oScrollbarList
@@ -492,7 +489,8 @@ end fGetStripOuterSpace
 
 -----------------------------
 
-function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
+function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, pSpanFlag
+   
    -- returns true if css has a transform property
    -- which will be the case for vertical sliders (scales, ranges)
    
@@ -573,6 +571,13 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
             replace "px" with empty in tValue -- if any, delete px
          end if
          
+         -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
+         if pSpanFlag is "true" then
+            if tProp is not "font-size" then 
+               next repeat
+            end if
+         end if
+         
          switch tProp
             case "width"
                put tValue into tWidth
@@ -598,6 +603,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                subtract kTextFontExportAdd from tValue -- xxx better check if this is <p>
                set the textSize of tControlName to tValue
                break
+            case "text-align"
+               set the textAlign of tControlName to tValue
+               break
             case "opacity"
                put 100*(1 - tValue) into ttemp
                set the blendLevel of tControlName to ttemp
@@ -622,6 +630,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
                   set the showBorder of tControlName to false
                else
                   set the showBorder of tControlName to true
+               end if
+               if tValue is "solid" then
+                  set the threeD of tControlName to false
                end if
                break
             case "border-width"
@@ -654,6 +665,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList
          end switch
       end repeat
    end if
+   
+   -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
+   if pSpanFlag is "true" then exit fGetSetControlProps
    
    set the itemDelimiter to comma
    
@@ -809,14 +823,19 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    --    }
    
    --    #checkbox_Check1_1046_SPAN {
-   --    margin-left: 22px;
-   --    line-height: 18px;
+   --     margin-left: 22px;
+   --     line-height: 18px;
+   --     font-size: 15px;
    --    }
    
    -- FOR NOW, ONLY GET _LABEL FOR BUTTON LOCATION
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton   
    get fGetSetControlProps(tID_LABEL, tControlLongName, pCssFileData, tGrpLocList) -- NOTE tID_LABEL
+   
+   -- BUT _SPAN HAS FONT SIZE SO USE SPECIAL FLAG TO CHECK AND SET IT
+   put "true" into pSpanFlag
+   get fGetSetControlProps(tID_SPAN, tControlLongName, pCssFileData, tGrpLocList, pSpanFlag) -- NOTE tID_SPAN
    
    if kReporter is "true" then put LF & "exit fImportCheckOrRadioButton" & LF after msg
    -- do not return tSkipChar here
@@ -1108,12 +1127,16 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
+   
    create field tField
+   
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
-   set the textAlign of field tField to left -- xxx may be set in p { } in css, also include in switch below
    set the lockText of field tField to true
-   set the fixedLineHeight of field tField to false -- xxx not set on export, so check this if text shifted
+   set the showFocusBorder of field tField to false
+   set the showBorder of field tField to false -- default for locked fields - can be changed by fGetSetControlProps
+   set the textAlign of field tField to left -- xxx may be set in p { } in css
+   -- setting textHeight and fixedLineHeight does not work here - set below
    
    -- get <p> tag (locked field) contents
    put offset(">",pHtmlFileData,tSkipChar) into tPendChar
@@ -1126,8 +1149,8 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
    
    set the htmlText of field tField to tPcontents
-   -- xxx BUT WHAT WILL HAPPEN WITH LINKS WHEN EXPORTED?
-   
+   -- Note: this preserves links <a> tags but won't appear in LC with same color, etc., as in web browser
+    
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of field tField into tControlLongName -- NOTE field tField
@@ -1140,6 +1163,11 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    add kFieldShift to item 2 of tTopLeft
    set the topLeft of field tField to tTopLeft 
    
+   -- did not work to set these above
+   -- set them here to try to get better correspondence
+   set the textHeight of field tField to 16
+   set the fixedLineHeight of field tField to true
+      
    if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
    
    -- return updated tSkipChar
@@ -1259,12 +1287,15 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    
    if kReporter is "true" then put LF & "JUST AFTER CREATE FIELD tField = " & tField after msg
    
-   set the textAlign of field tField to left -- xxx may be set in p {} in css, also include in switch below
+   set the showBorder of field tField to true -- default for unlocked fields for input - can be changed by fGetSetControlProps
+   set the showFocusBorder of field tField to false   
+   set the textAlign of field tField to "center" -- default for unlocked fields for input - can be changed by fGetSetControlProps
    set the lockText of field tField to false
    
    set the text of field tField to tValue
+   
    if tOnchange is not empty then
-      set the cOnchange of field tField to tOnchange -- xxx need to add this to EXPORT script
+      set the cOnchange of field tField to tOnchange
    end if
    
    -- GET CSS & SET CONTROL PROPERTIES
@@ -1310,7 +1341,7 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
       set the label of button tButton to tValue
    end if
    if tOnclick is not empty then
-      set the cOnclick of button tButton to tOnclick -- xxx add this to EXPORT
+      set the cOnclick of button tButton to tOnclick
    end if
    
    -- GET CSS & SET CONTROL PROPERTIES

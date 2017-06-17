@@ -29,169 +29,181 @@
 <script language="javascript" src="js/flot_library/jquery.flot.axislabels.js" type="text/javascript"></script>
 
 </head>
-<body>
 
-<p id="field_Field_0_1173">
-  <a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
+<!-- *** START COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->
+<!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
+<!-- SAMPLE USE OF DEV FIELD: document.getElementById("dev00").innerHTML = "text = " + value -->
+<!-- *** END COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->
+<body>
+<p id="field_Field_0_1173"> 
+<a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
 </p>
 <div id="div_simulation_frame_1174">
-
-  <!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
-  <p id="dev00"></p>
-  <!-- SAMPLE USE OF DEV FIELD: document.getElementById("dev00").innerHTML = "text = " + value -->
-
-  <p id="field_run_counter"></p>
-  <p id="field_Field_1_1176">
-      <i><b>Dynamic diffusion and reaction in a porous solid catalyst layer</b></i>
-      <br><br>
-      The overall reaction is A &#8640; B and is far from equilibrium under conditions here.
-      Reactant A adsorbs reversibly over catalyst surface <br> sites S:  A + S &#8652; AS.
-      Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
-  </p>
-  <p id="field_Field_1a_1176a">
-    <a href="info.html" target="new">Click here for more information</a> (opens in new tab)
-    <br>
-    <br>
-    <font color="#FF0000">
-    <b>See space-time plot of rate, and average rate and conversion at bottom of page.</b>
-    </font>
-</p>
-
- <div id="div_RADIO_group_Model">
-    <label id="radio_Model_1_LABEL" name="radio_of_group_RADIO_group_Model">
-          <input type="radio" id="radio_Model_1" name="radio_of_group_RADIO_group_Model" onchange="puCatalystLayer.updateUIparams()">
-          <span id="radio_Model_1_SPAN">Model 1: AS &#8640; B + S</span>
-    </label>
-    <label id="radio_Model_2_LABEL" name="radio_of_group_RADIO_group_Model">
-          <input type="radio" id="radio_Model_2" name="radio_of_group_RADIO_group_Model" checked onchange="puCatalystLayer.updateUIparams()">
-          <span id="radio_Model_2_SPAN">Model 2: AS + S &#8640; B + 2S</span>
-    </label>
-</div> <!-- end of div div_RADIO_group_Model-->
-
+   <p id="field_dev00"> 
+      
+   </p>
+   <p id="field_Field_1_1176"> 
+      <i><b>Dynamic diffusion and reaction in a porous solid catalyst layer</b></i>              
+      <br>      
+      <br>The overall reaction is A &#8640; B and is far from equilibrium under conditions here. Reactant A adsorbs reversibly over catalyst surface        
+      <br> sites S:  A + S &#8652; AS. Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).              
+      <br>             
+      <br>             
+      <br>             
+      <br>             
+      <br>      <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+   </p>
+   <p id="field_Field_1a_1176a"> 
+      <a href="info.html">Click here for more information</a> (opens in new tab)            
+      <br>           
+      <br><b><font color="#FF0000">See space-time plot of rate, and average rate and conversion at bottom of page.</font></b><font color="#FF0000">     </font>
+   </p>
+   <div id="div_RADIO_group_Model">
+      <label id="radio_Model_1_LABEL" name="radio_of_group_RADIO_group_Model">
+            <input type="radio" id="radio_Model_1" name="radio_of_group_RADIO_group_Model" onchange="puCatalystLayer.updateUIparams()">
+            <span id="radio_Model_1_SPAN">Model 1: AS &#8640; B + S</span>
+      </label>
+      <label id="radio_Model_2_LABEL" name="radio_of_group_RADIO_group_Model">
+            <input type="radio" id="radio_Model_2" name="radio_of_group_RADIO_group_Model" checked onchange="puCatalystLayer.updateUIparams()">
+            <span id="radio_Model_2_SPAN">Model 2: AS + S &#8640; B + 2S</span>
+      </label>
+   </div> <!-- end of div div_RADIO_group_Model -->
    <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
    <input type="button" id="button_runButton_1178" value="Run" onclick="runThisLab()"></input>
    <div id="div_plotCanvasInlet_1195">
-   </div> <!-- end of div div_plotCanvasInlet_1195-->
+   </div> <!-- end of div div_plotCanvasInlet_1195 -->
    <div id="div_plotCanvasOutlet_1196">
-   </div> <!-- end of div div_plotCanvasOutlet_1196-->
+   </div> <!-- end of div div_plotCanvasOutlet_1196 -->
    <div id="div_plotCanvasSurface_1189">
-   </div> <!-- end of div div_plotCanvasSurface_1189-->
+   </div> <!-- end of div div_plotCanvasSurface_1189 -->
    <div id="div_plotCanvasGas_1192">
-   </div> <!-- end of div div_plotCanvasGas_1192-->
-   <p id="field_setCmax_label_1198">
+   </div> <!-- end of div div_plotCanvasGas_1192 -->
+   <p id="field_setCmax_label_1198"> 
       Slide to set inlet A conc:
    </p>
-   <p id="field_setCmax_value_1199">
+   <p id="field_setCmax_value_1199"> 
       1
    </p>
-   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
-        oninput="puCatalystLayer.updateUIparams()">
-   <p id="field_enterKflow_label_1201">
+   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.1" value="1" oninput="puCatalystLayer.updateUIparams()">
+   </input>
+   <p id="field_enterKflow_label_1201"> 
       Enter Kflow
    </p>
-   <p id="field_enterKads_label_1202">
+   <p id="field_enterKads_label_1202"> 
       Enter Kads
    </p>
-   <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterKflow_1203" value="0.04" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <input id="input_field_enterKads_1204" value="100" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterKads_1204" value="100" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <p id="field_enterKdiff_label_1205">
+   <p id="field_enterKdiff_label_1205"> 
       Enter Kdiff
    </p>
-   <input id="input_field_enterKdiff_1206" value="0.003" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterKdiff_1206" value="0.003" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <p id="field_enterThieleMod_label_1207">
+   <p id="field_enterThieleMod_label_1207"> 
       Enter Thiele Modulus
    </p>
-   <p id="field_enterAlpha_label_1208">
+   <p id="field_enterAlpha_label_1208"> 
       Enter alpha
    </p>
-   <input id="input_field_enterThieleMod_1209" value="34" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterThieleMod_1209" value="34" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <input id="input_field_enterAlpha_1210" value="10" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterAlpha_1210" value="10" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <p id="field_enterBscale_label_1211">
+   <p id="field_enterBscale_label_1211"> 
       Enter B out scale factor
    </p>
-   <input id="input_field_enterBscale_1212" value="4" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterBscale_1212" value="4" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
    <div id="div_RADIO_group_1213">
-      <label id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group">
-            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group" checked onchange="puCatalystLayer.updateUIparams()">
+      <label id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group_1213">
+            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" checked onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Sine_1214_SPAN">Sine</span>
       </label>
-      <label id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group">
-            <input type="radio" id="radio_Constant_1215" name="radio_of_group_RADIO_group" onchange="puCatalystLayer.updateUIparams()">
+      <label id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group_1213">
+            <input type="radio" id="radio_Constant_1215" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Constant_1215_SPAN">Constant</span>
       </label>
-      <label id="radio_Square_1216_LABEL" name="radio_of_group_RADIO_group">
-            <input type="radio" id="radio_Square_1216" name="radio_of_group_RADIO_group" onchange="puCatalystLayer.updateUIparams()">
+      <label id="radio_Square_1216_LABEL" name="radio_of_group_RADIO_group_1213">
+            <input type="radio" id="radio_Square_1216" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Square_1216_SPAN">Square</span>
       </label>
       <label id="checkbox_on_1231_LABEL">
             <input type="checkbox" id="checkbox_on_1231" checked onchange="puCatalystLayer.updateUIparams()">
             <span id="checkbox_on_1231_SPAN">on</span>
       </label>
-   </div> <!-- end of div div_RADIO_group_1213-->
-   <p id="field_enterCyclePeriod_label_1217">
+   </div> <!-- end of div div_RADIO_group_1213 -->
+   <p id="field_enterCyclePeriod_label_1217"> 
       Enter cycling period
    </p>
-   <input id="input_field_enterDuty_1218" value="50" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterDuty_1218" value="50" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-   <p id="field_enterDuty_label_1219">
+   <p id="field_enterDuty_label_1219"> 
       Enter square duty cycle % on
    </p>
-   <input id="input_field_enterCyclePeriod_1220" value="500" onchange="puCatalystLayer.updateUIparams()">
+   <input id="input_field_enterCyclePeriod_1220" value="500" onchange="puCatalystLayer.updateUIparams()"> 
    </input>
-    <p id="field_Krxn_label_1222">
-       Krxn
-    </p>
-    <p id="field_Krxn_1223">
-       1
-    </p>
-    <p id="field_profile_label_gas_1226">
-       <br>Gas profiles<br>in <br>catalyst layer
-    </p>
-    <p id="field_profile_label_surface_1227">
-       <br>Surface <br>profiles in<br>catalyst layer
-    </p>
-    <p id="field_reactor_label_1228">
-      <br><br><br><br>R<br>E<br>A<br>C<br>T<br>O<br>R</p>
-    <p id="field_outlet_arrow_field_1229">
+   <p id="field_Krxn_label_1222"> 
+      Krxn =
+   </p>
+   <p id="field_Krxn_1223"> 
+      1
+   </p>
+   <p id="field_profile_label_gas_1226"> 
+      Gas profiles       
+      <br>in        
+      <br>catalyst layer
+   </p>
+   <p id="field_profile_label_surface_1227"> 
+      Surface        
+      <br>profiles in       
+      <br>catalyst layer
+   </p>
+   <p id="field_outlet_arrow_field_1229"> 
       &darr;
    </p>
-   <p id="field_inlet_arrow_field_1230">
+   <p id="field_inlet_arrow_field_1230"> 
       &darr;
    </p>
-      <p id="field_aveRate_label_1236">
+   <p id="field_aveRate_label_1236"> 
       Average Rate (dimensionless turnover frequency) =
    </p>
-   <p id="field_aveRate_1237">
+   <p id="field_aveRate_1237"> 
       2
    </p>
-   <p id="field_aveConversion_1238">
-      2
-   </p>
-   <p id="field_aveConverion_label_1239">
+   <p id="field_aveConverion_label_1239"> 
       Average Conversion of A =
    </p>
-    <p id="field_spaceTimeTop_label_1240">
+   <p id="field_spaceTimeTop_label_1240"> 
       <i>outer, gas-catalyst interface:</i>
-    </p>
-    <p id="field_spaceTimeMiddle_label_1241">
+   </p>
+   <p id="field_spaceTimeMiddle_label_1241"> 
       <i><b>Space-Time plot of reaction rate</b></i>
-    </p>
-    <p id="field_spaceTimeBtm_label_1242">
+   </p>
+   <p id="field_spaceTimeBtm_label_1242"> 
       <i>inner, sealed surface:</i>
-    </p>
-    <canvas id="canvas_CANVAS_rate"></canvas>
-</div> <!-- end of div div_simulation_frame_1174-->
+   </p>
+   <canvas id="canvas_CANVAS_rate"></canvas>
+   <p id="field_run_counter"> 
+      
+   </p>
+   <p id="field_aveConversion_1238"> 
+      0
+   </p>
+   <p id="field_reactor_label_1228"> 
+            
+      <br>      
+      <br>      
+      <br>      
+      <br>R
+      <br>E
+      <br>A
+      <br>C
+      <br>T
+      <br>O
+      <br>R
+   </p>
+</div> <!-- end of div div_simulation_frame_1174 -->
 </body>
 </html>
