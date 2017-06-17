@@ -70,6 +70,7 @@ on deleteNonDevControls
       end if
       delete control tControlNumber
    end repeat
+   set the cHeaderData of this card to empty
 end deleteNonDevControls
    
    -----------------------------
