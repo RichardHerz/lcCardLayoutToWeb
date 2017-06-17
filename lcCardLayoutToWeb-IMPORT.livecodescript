@@ -76,9 +76,6 @@ end deleteNonDevControls
    
    on importWebPage
    
-   -- xxx NEED TO CHECK IF OTHER CONTROLS ON CURRENT CARD
-   -- xxx AND WARN USER IF THERE ARE
-   
    -- calls function fMakeLiveCodeCard
    
    set the defaultStack to "lcCardLayoutToWeb"
@@ -291,7 +288,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
                put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
                break
             default
-               -- xxx ignore for now
+               --  ignore for now
          end switch
       end if
    end repeat
@@ -311,7 +308,6 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    -- xxx in fGetSetControlProps changed in some unknown way the left value
    -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
    -- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
-   -- local oScrollbarList -- put tControlName & "$" & tValue & LF after oScrollbarList
    if tScrollerList is not empty then
       set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
       repeat for each line tLine in oScrollbarList
@@ -608,12 +604,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                set the textSize of tControlName to tValue
                break
             case "text-align"
-               put "before try to set textAlign, tContolName = " & tControlName & " ; tValue  = " & tValue into msg
-               set the textAlign of tControName to tValue
-               --                if there is the textAlign of tControName then
-               --                   set the textAlign of tControName to tValue
-               --                end if
-               --                break
+               set the textAlign of tControlName to tValue
+               break
             case "opacity"
                put 100*(1 - tValue) into ttemp
                set the blendLevel of tControlName to ttemp
@@ -1157,8 +1149,8 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
    
    set the htmlText of field tField to tPcontents
-   -- xxx BUT WHAT WILL HAPPEN WITH LINKS WHEN EXPORTED?
-   
+   -- Note: this preserves links <a> tags but won't appear in LC with same color, etc., as in web browser
+    
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of field tField into tControlLongName -- NOTE field tField
@@ -1175,7 +1167,7 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- set them here to try to get better correspondence
    set the textHeight of field tField to 16
    set the fixedLineHeight of field tField to true
-   
+      
    if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
    
    -- return updated tSkipChar
@@ -1303,7 +1295,7 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    set the text of field tField to tValue
    
    if tOnchange is not empty then
-      set the cOnchange of field tField to tOnchange -- xxx need to add this to EXPORT script
+      set the cOnchange of field tField to tOnchange
    end if
    
    -- GET CSS & SET CONTROL PROPERTIES
@@ -1349,7 +1341,7 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
       set the label of button tButton to tValue
    end if
    if tOnclick is not empty then
-      set the cOnclick of button tButton to tOnclick -- xxx add this to EXPORT
+      set the cOnclick of button tButton to tOnclick
    end if
    
    -- GET CSS & SET CONTROL PROPERTIES
