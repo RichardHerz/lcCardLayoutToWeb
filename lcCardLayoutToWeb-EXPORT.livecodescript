@@ -7,6 +7,8 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
+-- WARNING: fExportField in this EXPORT script uses fGetStripOuterSpace in IMPORT script
+
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
 
@@ -461,7 +463,7 @@ on exportWebPage
             put tResult["css"] after tCSS
             break
          case "field"
-            get fExportField(tControl_ID, tGrp, tGrpLoc,tIndent)
+            get fExportField(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
             -- put the field result after tHTML and tCSS
             put it into tResult
             put tResult["html"] after tHTML
@@ -544,7 +546,8 @@ end exportWebPage
 -----------------------------------------------
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
-   -- groups and some controls use this, other controls are special
+   
+    -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
@@ -559,6 +562,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    else
       -- not a group, handle position
+      put space & "position: absolute;" & LF after tCSS -- all elements will have position: absolute
       -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID & LF & the short name of control id tControl_ID & LF& tGrpLoc -- xxx
       if tGrpLoc is empty then
          -- element not in a group
@@ -580,6 +584,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put the keys of aCSSprops into tHitList
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList
+      
    repeat for each line tKey in tKeyList
       if tKey is among the lines of tHitList then
          if aControlProps[tKey] is not empty then
@@ -644,7 +649,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   put aControlProps[tKey] & "px" into tValue
                   break
                case "backColor"
-                  -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
+                 -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
                   put "rgb(" & aControlProps[tKey] & ")" into tValue
                   break
                case "vScrollbar"
@@ -657,7 +662,8 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
             put space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
          end if
       end if
-   end repeat
+   end repeat  
+   
    return tCSS
 end fReturnCSSprops
 
@@ -1240,11 +1246,9 @@ end fExportCheckBox
 
 -----------------------------------------------
 
-function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
+function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fIDname
-   -- the long name of control id tControl_ID is the full name of the control
-   -- tGrp = for example, "of group 1045" or empty
-   -- tGrpLoc = for example, "237,49" or empty
+   -- uses function fReturnCSSprops
    -- there are different types of fields, e.g., <p> for locked, <input> for unlocked
    -- TEXT IN LOCKED LC FIELDS will be written to html in <p> tags
    -- TEXT IN UN-LOCKED LC FIELDS will be written as VALUE attribute in <input> tags
@@ -1288,69 +1292,100 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent
    put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
    
    -- write css
-   -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
-   put the rect of control id tControl_ID into tRect
-   put item 1 of tRect into tLeft
-   put item 2 of tRect into tTop
-   if  tGrpLoc is empty then
-      -- element not in a group
-      -- position is relative to left, top of page
-   else
-      -- element is in a group
-      -- position it relative to the group, not
-      -- LiveCode's position relative to card
-      subtract item 1 of tGrpLoc from tLeft
-      subtract item 2 of tGrpLoc from tTop
-   end if
+   put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
+   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
+   
+    -- there are some special properties of "p" and "input" fields so search for the lines involved 
+   
    if tFieldType is "p" then
-      -- xxx having trouble locating fields, so try a subtraction here...
-      -- xxx maybe location of text inside field differs and may depend on font size?
-      subtract kFieldShift from tTop
-   end if
-   -- need position: absolute here but not for general <p>
-   -- because that messes up text added to HTML later
-   put space &  "position: absolute;" & LF after tCSS
-   if tFieldType is "p" then
-      -- set LC textSize as font-size for locked fields, let unlocked input fields get default html size
-      if kReporter is "TEST" then put LF & "tIDname =" && tIDname after msg
-      if kReporter is "TEST" then put LF & "name of control id tControl_ID =" && the name of control id tControl_ID after msg
+      
+      -- top location is special for "p" fields - need to shift to get same loc in LC card and web page
+      -- do not use top from the topLeft of control here because it may be in a group
+      -- group location taken care of in fReturnCSSprops above
+      -- shift the adjusted top location written by fReturnCSSprops above
+      put lineoffset("top:", tCSS) into tline
+      if tline > 0 then
+         put line tline of tCSS into tprop
+         set the itemDelimiter to colon
+         put item 2 of tprop into tvalue -- may have spaces and px;
+         put fGetStripOuterSpace(tvalue) into tvalue -- function is in IMPORT script
+         replace "px;" with empty in tvalue
+         subtract kFieldShift from tvalue
+         put space & tvalue & "px;" into item 2 of tprop
+         put tprop into line tline of tCSS
+         set the itemDelimiter to comma
+      end if
+      
+      -- set LC textSize as font-size for locked fields
       put the textSize of control id tControl_ID into tTextSize
       -- xxx at least in LC 9 (dp7) the textSize of fields is coming up empty 
       -- xxx even though property palette shows  default of 12 unless user purposely sets the value
       if tTextSize is empty then put 13 into tTextSize -- will get incremented below by kTextFontExportAdd
-      if kReporter is "TEST" then put LF & "tTextSize =" && tTextSize & LF after msg
       add kTextFontExportAdd to tTextSize
-      if kReporter is "TEST" then put LF & "tTextSize AFTER kTextFontExportAdd =" && tTextSize after msg
-      put space & "font-size:" && tTextSize & "px;" & LF after tCSS
-      if kReporter is "TEST" then put LF & "font-size just written to tCSS, font-size =" && tTextSize & LF after msg
-   end if -- end of if tFieldType is "p" then
-   put space & "left:" && tLeft & "px;" & LF after tCSS
-   put space & "top:" && tTop & "px;" & LF after tCSS
-   put the width of control id tControl_ID into tWd
-   put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & LF after tCSS
-   put space & "height:" && tHt & "px;" & LF after tCSS
-   put the textAlign of control id tControl_ID into tTextAlign
-   if tTextAlign is not "left" then
-      put space & "text-align:" & space & tTextAlign & ";" & LF after tCSS
-   end if
-   put the showBorder of control id tControl_ID into tShowBorder
-   put the borderWidth of control id tControl_ID into tBorderWidth
-   put the threeD of control id tControl_ID into tThreeD
-   if tFieldType is "p" and tShowBorder is true then
-      -- input tag fields in html show a default border so use that
-      if tThreeD is true then
-         put space & "border-style: outset;" & LF after tCSS
+      put lineoffset("font-size:", tCSS) into tline
+      if tline > 0 then
+         put space & "font-size:" && tTextSize & "px;" into line tline of tCSS
       else
-         put space & "border-style: solid;" & LF after tCSS
+         put space & "font-size:" && tTextSize & "px;" & LF after tCSS
       end if
-      put space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
-   end if
+      
+      put the showBorder of control id tControl_ID into tShowBorder
+      put the borderWidth of control id tControl_ID into tBorderWidth
+      put the threeD of control id tControl_ID into tThreeD
+      
+      if tShowBorder is true then
+         
+         put lineoffset("border-style:", tCSS) into tline
+         if tline > 0 then
+            if tThreeD is true then
+               put space & "border-style: outset;" into line tline of tCSS
+            else
+               put space & "border-style: solid;" into line tline of tCSS
+            end if
+         else
+            if tThreeD is true then
+               put space & "border-style: outset;" & LF after tCSS
+            else
+               put space & "border-style: solid;" & LF after tCSS
+            end if
+         end if
+         
+         put lineoffset("border-width:", tCSS) into tline
+         if tline > 0 then
+            put space & "border-width:" && tBorderWidth & "px;" into line tline of tCSS
+         else
+            put space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
+         end if
+         
+      end if -- end of if tShowBorder is true
+      
+   end if -- end of if tFieldType is "p" 
+   
+   if tFieldType is "input" then
+      
+      -- let unlocked input fields get default html font size
+      put lineoffset("font-size:", tCSS) into tline
+      if tline > 0 then
+         delete line tline of tCSS
+      end if
+      -- let unlocked input fields get default border-style
+      put lineoffset("border-style:", tCSS) into tline
+      if tline > 0 then
+         delete line tline of tCSS
+      end if
+      put lineoffset("border-width", tCSS) into tline
+      if tline > 0 then
+         delete line tline of tCSS
+      end if
+      
+   end if -- end of if tFieldType is "input"
+      
    -- conclude css
-   put "}" & LF & LF after tCSS
-   -- end of css
+   put "}" & LF & LF after tCSS   
+   -- end of css   
+   
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]

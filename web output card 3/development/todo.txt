@@ -1,7 +1,0 @@
-To do list:
-
-* add save data buttons
-* need new web lab naming convention not using sequential numbers
-* add average effectiveness factor
-* answer question why is this important? other related transient diffusion or diffusion reaction problems, e.g., drug patch, artificial kidney, etc.
-* have adaptable time step dt and adjust step repeats to keep plot span constant 
