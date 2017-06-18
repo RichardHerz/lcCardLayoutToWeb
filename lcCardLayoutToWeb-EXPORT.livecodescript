@@ -7,8 +7,6 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
--- WARNING: fExportField in this EXPORT script uses fGetStripOuterSpace in IMPORT script
-
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
 
@@ -1297,7 +1295,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    
-    -- there are some special properties of "p" and "input" fields so search for the lines involved 
+   -- there are some special properties of "p" and "input" fields so search for the lines involved 
    
    if tFieldType is "p" then
       
@@ -1310,7 +1308,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          put line tline of tCSS into tprop
          set the itemDelimiter to colon
          put item 2 of tprop into tvalue -- may have spaces and px;
-         put fGetStripOuterSpace(tvalue) into tvalue -- function is in IMPORT script
+         replace space with empty in tvalue
          replace "px;" with empty in tvalue
          subtract kFieldShift from tvalue
          put space & tvalue & "px;" into item 2 of tprop
@@ -1381,7 +1379,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       end if
       
    end if -- end of if tFieldType is "input"
-      
+   
    -- conclude css
    put "}" & LF & LF after tCSS   
    -- end of css   
