@@ -22,9 +22,9 @@ constant kWebOutputFolder = "web output"
 --      to image file which should be located in images folder kImagesFolder
 --      and not imported into LC stack
 constant kImagesFolder = "images"
+constant kJavascriptFolder = "js"
 constant kCssFolder = "css"
 constant kCssFileName = "index.css"
-constant kJavascriptFolder = "js"
 constant kHtmlFileName = "index.html"
 -- set number of spaces to indent
 --      used to increase and decrease indents
@@ -230,17 +230,14 @@ on exportWebPage
    else
       create folder tCssFolderPath
    end if
-   -- tCssFolder worked when this script in design stack but change to tCssFolderPath when
-   -- in script-only stack in use by design stack
-   put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- also used at end this handler
-   -- xxx probably don't want to make js folder unless put some stuff there...
-   --    -- create folder for javascript
-   --    put tOutputFolderPath & "/" & kJavascriptFolder into tJavascriptFolderPath
-   --    if there is a folder tJavascriptFolderPath then
-   --       -- do nothing
-   --    else
-   --       create folder tJavascriptFolderPath
-   --    end if
+   put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- tCssFilePath used at end this handler
+   -- create folder for Javascript
+   put tOutputFolderPath & "/" & kJavascriptFolder into tJavascriptFolderPath
+   if there is a folder tJavascriptFolderPath then
+      -- do nothing
+   else
+      create folder tJavascriptFolderPath
+   end if
    -- create folder for images
    put tOutputFolderPath & "/" & kImagesFolder into tImagesFolderPath
    if there is a folder tImagesFolderPath then
@@ -544,6 +541,11 @@ end exportWebPage
 -----------------------------------------------
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
+   
+   -- functions which do NOT use this function:
+   -- fExportScrollBar
+   -- fExportRadioButton
+   -- fExportCheckBox
    
     -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
