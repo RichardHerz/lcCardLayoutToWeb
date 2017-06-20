@@ -1,13 +1,11 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
-/*
+
 Design, text, images and code by Richard K. Herz, 2017
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
-
--- WARNING: fExportField in this EXPORT script uses fGetStripOuterSpace in IMPORT script
 
 constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kKillWord is the same in both script files
@@ -24,9 +22,9 @@ constant kWebOutputFolder = "web output"
 --      to image file which should be located in images folder kImagesFolder
 --      and not imported into LC stack
 constant kImagesFolder = "images"
+constant kJavascriptFolder = "js"
 constant kCssFolder = "css"
 constant kCssFileName = "index.css"
-constant kJavascriptFolder = "js"
 constant kHtmlFileName = "index.html"
 -- set number of spaces to indent
 --      used to increase and decrease indents
@@ -232,17 +230,14 @@ on exportWebPage
    else
       create folder tCssFolderPath
    end if
-   -- tCssFolder worked when this script in design stack but change to tCssFolderPath when
-   -- in script-only stack in use by design stack
-   put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- also used at end this handler
-   -- xxx probably don't want to make js folder unless put some stuff there...
-   --    -- create folder for javascript
-   --    put tOutputFolderPath & "/" & kJavascriptFolder into tJavascriptFolderPath
-   --    if there is a folder tJavascriptFolderPath then
-   --       -- do nothing
-   --    else
-   --       create folder tJavascriptFolderPath
-   --    end if
+   put tCssFolderPath & "/" & kCssFileName into tCssFilePath -- tCssFilePath used at end this handler
+   -- create folder for Javascript
+   put tOutputFolderPath & "/" & kJavascriptFolder into tJavascriptFolderPath
+   if there is a folder tJavascriptFolderPath then
+      -- do nothing
+   else
+      create folder tJavascriptFolderPath
+   end if
    -- create folder for images
    put tOutputFolderPath & "/" & kImagesFolder into tImagesFolderPath
    if there is a folder tImagesFolderPath then
@@ -547,6 +542,11 @@ end exportWebPage
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    
+   -- functions which do NOT use this function:
+   -- fExportScrollBar
+   -- fExportRadioButton
+   -- fExportCheckBox
+   
     -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
@@ -812,8 +812,6 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    
    if kReporter is "true" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
    
-   put the thumbPosition of control id tControl_ID into tThumbPosition
-   put the pageInc of control id tControl_ID into tStep
    -- WILL WRITE SOME MORE HTML BELOW
    
    -- WRITE CSS (AND SOME MORE HTML) 
@@ -835,59 +833,117 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
    
-   if tHt < tWd then
-      -- horizontal scrollbar
-      put space & "min=" & quote & tStartValue & quote after tHTML
-      put space & "max=" & quote & tEndValue & quote after tHTML
-   else
-      -- vertical scrollbar
-      -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
-      -- ALSO SEE if below
-      -- swap LC start and end values
-      put space & "min=" & quote & tEndValue & quote after tHTML
-      put space & "max=" & quote & tStartValue & quote after tHTML
-   end if
+   -- THERE ARE 4 POSSIBLE ARRANGEMENTS CONSIDERED HERE FOR RANGE, SCROLLBAR, SCALE, SLIDER
+   -- FOR ALL, HTML "min" value must < "max" value & change orientation by css transform rotation
+   -- LC startValue is always on left of horizontal, top of vertical & change orientation by startValue < or > endValue
+   -- 1) horizontal with smaller value on left, larger on right (essentially default for both LC and HTML)
+   -- 2) horizontal with max larger on left, smaller on right (css transform rotation 180 deg)
+   -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
+   -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
+   -- DETECT WHICH CASE IN LC by width vs. height, startValue vs. endValue
+   
+   if tHt < tWd and tStartValue < tEndValue then put 1 into tScrollCase
+   if tHt < tWd and tStartValue > tEndValue then put 2 into tScrollCase
+   if tHt > tWd and tStartValue > tEndValue then put 3 into tScrollCase
+   if tHt > tWd and tStartValue < tEndValue then put 4 into tScrollCase
+   
+   -- set html range min and max values
+   switch tScrollCase
+      case 1
+         -- 1) horizontal with smaller value on left, larger on right
+         put space & "min=" & quote & tStartValue & quote after tHTML
+         put space & "max=" & quote & tEndValue & quote after tHTML
+         break
+      case 2
+         -- 2) horizontal with max larger on left, smaller on right (css transform rotation 180 deg)
+         put space & "min=" & quote & tEndValue & quote after tHTML
+         put space & "max=" & quote & tStartValue & quote after tHTML
+         break
+      case 3
+         -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
+         put space & "min=" & quote & tEndValue & quote after tHTML
+         put space & "max=" & quote & tStartValue & quote after tHTML
+         break
+      case 4
+         -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
+         put space & "min=" & quote & tStartValue & quote after tHTML
+         put space & "max=" & quote & tEndValue & quote after tHTML
+         break
+      default
+         answer "bad scrollbar orientation!"
+   end switch
+   
+   -- LC pageInc and HTML range step not equivalent
+   -- pageInc is where thumb jumps when click away in LC
+   -- step is precision of value during drag in HTML, whereas click away thumb jumps to click
+   put abs(tEndValue-tStartValue)/100 into tStep
    put space & "step=" & quote & tStep & quote after tHTML
+   
+   put the thumbPosition of control id tControl_ID into tThumbPosition
    put space & "value=" & quote & tThumbPosition & quote after tHTML
+   
    -- get oninput, if any
    put the cOninput of control id tControl_ID into tOninput
    if tOninput is not empty then
       put space & "oninput=" & quote & tOninput & quote after tHtml
    end if
+   
+   -- conclude html
    put ">" & LF after tHTML
    put tIndent & "</input>" & LF after tHTML
    -- END HTML
    
    -- CONTINUE WITH CSS
-   if tHt > tWd then
-      -- vertical scrollbar when height > width
-      -- default in html and css is horizontal, so need to do something special to get vertical
-      -- need to test on various browsers: rotate appears to work on Mac Safari, Mac Firefox, Mac Chrome
-      -- rotate appears to work in Google browser on Andoid phone
-      -- there are a variety of techniques
-      -- see http://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically
-      -- also see http://www.useragentman.com/blog/csssandpaper-a-css3-javascript-library/
-      -- HERE USE CSS ROTATE, need to swap height and width from LC, i.e.,
-      -- make horizontal, then rotate
-      -- NOTE: IN LC vertical scales, startValue is at top and endValue at bottom
-      -- ASSUME LC has startValue at top GREATER THAN endValue at bottom - see if above
-      -- AND THEN ROTATE IN CSS by 270 deg to get min value at bottom, max at top
-      -- save both old values for modify positioning below
-      put tWd into tOldWd
-      put tHt into tOldHt
-      put tOldWd into tHt
-      put tOldHt into tWd
-      -- need to rotate by 270 deg to get CSS/HTML with min value at bottom, max at top
-      put space & "transform: rotate(270deg);" & LF after tCSS
-      -- now need to modify positioning left and top
-      -- as if you rotate original vertical about roughly its
-      -- center to horizontal, make those left, top the new left, top
-      -- then rotate the new back to vertical
-      subtract tOldHt/2 from tLeft
-      add tOldWd/4 to tLeft
-      add tOldHt/2 to tTop
-      subtract tOldWd/2 from tTop
-   end if
+   -- set css values
+   switch tScrollCase
+      case 1
+         -- 1) horizontal with smaller value on left, larger on right (essentially default for both LC and HTML)
+         -- so don't need to do anything here
+         break
+      case 2
+         -- 2) horizontal with max larger on left, smaller on right (css transform rotation 180 deg)
+         put space & "transform: rotate(180deg);" & LF after tCSS
+         break
+      case 3
+         -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
+         put space & "transform: rotate(270deg);" & LF after tCSS
+         -- need to swap LC ht and wd to get horiz, which will then be rotated
+         put tWd into tOldWd
+         put tHt into tOldHt
+         put tOldWd into tHt
+         put tOldHt into tWd
+         -- now need to modify positioning left and top
+         -- as if you rotate original vertical about roughly its
+         -- center to horizontal, make those left, top the new left, top
+         -- then rotate the new back to vertical
+         -- note that original tLeft and tTop set above
+         subtract tOldHt/2 from tLeft
+         add tOldWd/4 to tLeft
+         add tOldHt/2 to tTop
+         subtract tOldWd/2 from tTop
+         break
+      case 4
+         -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
+         put space & "transform: rotate(90deg);" & LF after tCSS
+         -- need to swap LC ht and wd to get horiz, which will then be rotated
+         put tWd into tOldWd
+         put tHt into tOldHt
+         put tOldWd into tHt
+         put tOldHt into tWd
+         -- now need to modify positioning left and top
+         -- as if you rotate original vertical about roughly its
+         -- center to horizontal, make those left, top the new left, top
+         -- then rotate the new back to vertical
+         -- note that original tLeft and tTop set above
+         subtract tOldHt/2 from tLeft
+         add tOldWd/4 to tLeft
+         add tOldHt/2 to tTop
+         subtract tOldWd/2 from tTop
+         break
+      default
+         -- do nothing here, already alerted above
+   end switch
+   
    put space & "left:" && tLeft & "px;" & LF after tCSS
    put space & "top:" && tTop & "px;" & LF after tCSS
    put space & "width:" && tWd & "px;" & LF after tCSS
@@ -1297,7 +1353,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    
-    -- there are some special properties of "p" and "input" fields so search for the lines involved 
+   -- there are some special properties of "p" and "input" fields so search for the lines involved 
    
    if tFieldType is "p" then
       
@@ -1310,7 +1366,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          put line tline of tCSS into tprop
          set the itemDelimiter to colon
          put item 2 of tprop into tvalue -- may have spaces and px;
-         put fGetStripOuterSpace(tvalue) into tvalue -- function is in IMPORT script
+         replace space with empty in tvalue
          replace "px;" with empty in tvalue
          subtract kFieldShift from tvalue
          put space & tvalue & "px;" into item 2 of tprop
@@ -1381,7 +1437,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       end if
       
    end if -- end of if tFieldType is "input"
-      
+   
    -- conclude css
    put "}" & LF & LF after tCSS   
    -- end of css   
