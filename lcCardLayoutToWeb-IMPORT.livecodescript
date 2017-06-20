@@ -572,6 +572,10 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
             replace "px" with empty in tValue -- if any, delete px
          end if
          
+         --          -- NEED TO DO THIS IF THERE IS NO CALC
+         --          delete the last char of tValue -- delete ;
+         --          replace "px" with empty in tValue -- if any, delete px
+         
          -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
          if pSpanFlag is "true" then
             if tProp is not "font-size" then 
@@ -648,8 +652,18 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
             case "transform"
                -- used when rotate horizontal range to vertical in CSS
                if kReporter is "true" then put LF & "SCROLLBAR TRANSFORM DETECTED" after msg
-               put "true" into tTransformFlag
-               if kReporter is "true" then put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
+               -- EXAMPLE ASSUMING ROTATION ONLY HERE, e.g., transform: rotate(90deg);
+               if tValue contains "rotate" then
+                  -- only handle rotate transforms here
+                  replace space with empty in tValue
+                  replace semicolon with empty in tValue
+                  replace "rotate(" with empty in tValue
+                  -- replace "deg);" did not work, see separate replace semicolon above
+                  replace "deg)" with empty in tValue
+                  -- degree value should be left
+                  put tValue into tTransformFlag
+                  if kReporter is "true" then put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
+               end if
                break
             case "LCvScrollbar"
                -- this is for vScrollbar property of scrolling groups, not for scrollbar controls
@@ -683,10 +697,11 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
       add item 2 of tLast to item 2 of tTopLeft
    end if
    
-   if tTransformFlag is "true" then
-      -- CSS/HTML range started out as horiz then transformed by rotation 90 deg about center
+   if tTransformFlag = 90 OR tTransformFlag = 270 then
+      -- a vertical scrollbar
+      -- CSS/HTML range started out as horiz then transformed by rotation about center
       if kReporter is "true" then 
-         put LF & "in IF swapping width and height, tTransformFlag is true" after msg
+         put LF & "in IF swapping width and height, tTransformFlag = " & tTransformFlag after msg
       end if
       -- swap width and height
       put tWidth into tOldWidth
@@ -698,6 +713,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
       put item 2 of tTopLeft into tOldTop
       put tOldLeft + tOldWidth/2 - tOldHeight/4 into item 1 of tTopLeft
       put tOldTop + tOldHeight/2 - tOldWidth/2 into item 2 of tTopLeft
+   else
+      -- do nothing, not a scrollbar or a horizontal scrollbar
    end if
    
    if kReporter is "true" then put LF & "JUST BEFORE set the width of tControlName to tWidth" after msg
@@ -720,6 +737,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "topLeft = " & the topLeft of tControlName after msg
    
    if kReporter is "true" then put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
+   -- return transform flag, which will be false or number of degrees of rotation, assume rotation only here
    return tTransformFlag
 end fGetSetControlProps
 
@@ -1377,7 +1395,7 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if tValue is empty then put 50 into tValue
    
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
-   
+     
    -- GET MIN, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "min") into tMin
    if tMin is empty then put 0 into tMin
@@ -1406,36 +1424,75 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    --- GET CSS & SET CONTROL PROPERTIES
    
+   -- THERE ARE 4 POSSIBLE ARRANGEMENTS CONSIDERED HERE FOR RANGE, SCROLLBAR, SCALE, SLIDER
+   -- FOR ALL, HTML "min" value must < "max" value & change orientation by css transform rotation
+   -- LC startValue is always on left of horizontal, top of vertical & change orientation by startValue < or > endValue
+   -- 1) horizontal with smaller value on left, larger on right (essentially default for both LC and HTML)
+   -- 2) horizontal with max larger on left, smaller on right (css transform rotation 180 deg)
+   -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
+   -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
+   -- DETECT WHICH CASE IN LC by width vs. height, startValue vs. endValue
+   -- 
+   -- fGetSetControlProps handles topLeft, height, width
+   -- need to check tTransformFlag returned by fGetSetControlProps 
+   -- and set startValue and endValue here
+   
    put the long name of scrollbar tScrollbar into tControlLongName -- NOTE scrollbar tScrollbar   
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList) 
-   
-   put it into tTransformFlag -- returned true if control has a transform flag
+   put it into tTransformFlag -- returned with number degrees of rotation if control has a transform flag
    
    if kReporter is "true" then put LF & "in fImportScrollbar, after return from fGetSet... tTransformFlag = " & tTransformFlag after msg 
-   
-   if tTransformFlag is true then
-      if kReporter is "true" then 
-         put LF & "tTransformFlag is TRUE" after msg
-      end if
-      -- vertical scrollbar
-      -- startValue in LC vertical scrollbar is at top
-      -- ASSUME LC scrollbar has larger # at top so LC startValue at top is > LC endValue at btm
-      -- CSS/HTML rotated a horiz range to get vertical
-      -- CSS/HTML horiz range rotated 270 deg to vertical range has min at bottom, max at top
-      set the startValue of scrollbar tScrollbar to tMax
-      set the endValue of scrollbar tScrollbar to tMin
-   else
-      -- horizontal scrollbar
+    
+   if tTransformFlag is "false" then
+      -- horiz with lower value on left
+      put 1 into tScrollCase
       set the startValue of scrollbar tScrollbar to tMin
       set the endValue of scrollbar tScrollbar to tMax
+   else
+      switch tTransformFlag
+         case 90
+            -- vert with lower value at top
+            put 4 into tScrollCase
+            set the startValue of scrollbar tScrollbar to tMin
+            set the endValue of scrollbar tScrollbar to tMax
+            break
+         case 180
+            -- horiz with lower value on right
+            put 2 into tScrollCase
+            set the startValue of scrollbar tScrollbar to tMax
+            set the endValue of scrollbar tScrollbar to tMin
+            break
+         case 270
+            -- vert with lower value at bottom
+            put 3 into tScrollCase
+            set the startValue of scrollbar tScrollbar to tMax
+            set the endValue of scrollbar tScrollbar to tMin
+            break
+         case 0
+            -- use this case for situation where user edits rotation to 0 in css
+            -- horiz with lower value on left
+            put 1 into tScrollCase
+            set the startValue of scrollbar tScrollbar to tMin
+            set the endValue of scrollbar tScrollbar to tMax
+         default
+            -- do nothing for now
+      end switch
    end if
    
    -- finish up scrollbar
-   set the pageInc of scrollbar tScrollbar to tStep
    set the thumbPosition of scrollbar tScrollbar to tValue
    if tOninput is not empty then
       set the cOninput of scrollbar tScrollbar to tOninput
    end if
+   
+   -- LC pageInc and HTML range step not equivalent
+   -- pageInc is where thumb jumps when click away in LC
+   -- step is precision of value during drag in HTML, whereas click away thumb jumps to click
+   -- but use and correct pageInc sign as needed
+   if tTransformFlag = 180 or tTransformFlag = 270 then
+      put -1 * tStep into tStep
+   end if
+   set the pageInc of scrollbar tScrollbar to tStep
    
    if kReporter is "true" then put LF & "just before end fImportScrollbar" & LF after msg
    return empty -- no need to return tSkipChar

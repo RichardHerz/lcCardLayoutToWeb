@@ -45,9 +45,9 @@ canvas {
 }
 
 #range_Scrollbar02 {
- transform: rotate(270deg);
- left: 142.75px;
- top: 212.5px;
+ transform: rotate(180deg);
+ left: 143px;
+ top: 212px;
  width: 200px;
  height: 27px;
 }
@@ -61,7 +61,7 @@ canvas {
 }
 
 #range_Scrollbar04 {
- transform: rotate(270deg);
+ transform: rotate(90deg);
  left: 232.5px;
  top: 396px;
  width: 190px;

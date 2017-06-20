@@ -1,5 +1,5 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
-/*
+
 Design, text, images and code by Richard K. Herz, 2017
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
@@ -812,8 +812,6 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    
    if kReporter is "true" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
    
-   put the thumbPosition of control id tControl_ID into tThumbPosition
-   put the pageInc of control id tControl_ID into tStep -- xxx but LC pageInc not same effect as HTML step
    -- WILL WRITE SOME MORE HTML BELOW
    
    -- WRITE CSS (AND SOME MORE HTML) 
@@ -835,7 +833,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
    
-   -- THERE ARE 4 POSSIBLE ARRANGEMENTS CONSIDERED HERE FOR RANGE, SCROLLBAR, SCALE 
+   -- THERE ARE 4 POSSIBLE ARRANGEMENTS CONSIDERED HERE FOR RANGE, SCROLLBAR, SCALE, SLIDER
    -- FOR ALL, HTML "min" value must < "max" value & change orientation by css transform rotation
    -- LC startValue is always on left of horizontal, top of vertical & change orientation by startValue < or > endValue
    -- 1) horizontal with smaller value on left, larger on right (essentially default for both LC and HTML)
@@ -875,10 +873,13 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
          answer "bad scrollbar orientation!"
    end switch
    
-   -- xxx but LC pageInc not same effect as HTML step...
+   -- LC pageInc and HTML range step not equivalent
+   -- pageInc is where thumb jumps when click away in LC
+   -- step is precision of value during drag in HTML, whereas click away thumb jumps to click
    put abs(tEndValue-tStartValue)/100 into tStep
    put space & "step=" & quote & tStep & quote after tHTML
    
+   put the thumbPosition of control id tControl_ID into tThumbPosition
    put space & "value=" & quote & tThumbPosition & quote after tHTML
    
    -- get oninput, if any
