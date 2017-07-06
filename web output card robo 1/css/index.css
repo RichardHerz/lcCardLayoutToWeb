@@ -1,7 +1,7 @@
 input {
  display: block;
  position: absolute;
- text-align: left;
+ text-align: center;
 }
 
 input, button {
@@ -31,6 +31,12 @@ select {
  position: absolute;
 }
 
+canvas {
+ display: block;
+ position: absolute;
+ text-align: left;
+}
+
 #div_simulation_frame {
  display: block;
  position: absolute;
@@ -42,6 +48,7 @@ select {
  border-width: 2px;
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_OUTER_group {
@@ -56,9 +63,11 @@ select {
  background-color: rgb(0,255,255);
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #button_get_num_controls {
+ position: absolute;
  left: 6px;
  top: 21px;
  width: 120px;
@@ -81,9 +90,11 @@ select {
  background-color: rgb(255,255,0);
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #button_list_groups {
+ position: absolute;
  left: 11px;
  top: 6px;
  width: 82px;
@@ -100,11 +111,18 @@ select {
  top: 37px;
  width: 100px;
  height: 21px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
+ font-size: 16px;
 }
 
 #button_blank {
+ position: absolute;
  left: 30px;
- top: 28px;
+ top: 31px;
  width: 82px;
  height: 23px;
  visibility: visible;
@@ -114,6 +132,7 @@ select {
 }
 
 #button_Button01-1 {
+ position: absolute;
  left: 42px;
  top: 53px;
  width: 82px;
@@ -135,6 +154,7 @@ select {
  border-width: 2px;
  border-style: none;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #div_RADIO_group {
@@ -148,6 +168,7 @@ select {
  border-width: 2px;
  border-style: outset;
  opacity: 1;
+ LCvScrollbar: false;
 }
 
 #radio_Radio2_LABEL {
@@ -160,6 +181,7 @@ select {
 #radio_Radio2_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 16px;
 }
 
 #radio_Radio1_LABEL {
@@ -172,6 +194,7 @@ select {
 #radio_Radio1_SPAN {
  margin-left: 22px;
  line-height: 22px;
+ font-size: 16px;
 }
 
 #checkbox_Check1_LABEL {
@@ -184,9 +207,11 @@ select {
 #checkbox_Check1_SPAN {
  margin-left: 22px;
  line-height: 18px;
+ font-size: 16px;
 }
 
 #image_robo_99_png {
+ position: absolute;
  left: 6px;
  top: 166px;
  width: 178px;
@@ -203,6 +228,9 @@ select {
  top: 216px;
  width: 100px;
  height: 21px;
+ visibility: visible;
+ opacity: 1;
+ LCvScrollbar: false;
 }
 
 #range_slider_horiz {
@@ -213,6 +241,7 @@ select {
 }
 
 #select_Option_Menu {
+ position: absolute;
  left: 358px;
  top: 179px;
  width: 102px;
@@ -224,6 +253,7 @@ select {
 }
 
 #select_Pulldown_Menu {
+ position: absolute;
  left: 445px;
  top: 224px;
  width: 102px;
@@ -248,5 +278,8 @@ select {
  top: 355px;
  width: 100px;
  height: 21px;
+ visibility: visible;
+ opacity: 1;
+ LCvScrollbar: false;
 }
 

@@ -19,6 +19,9 @@ constant kCssTopShift = 50 -- value used in css file for computed shift of eleme
 constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
+-- item list of added html events that are saved on import
+constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
+
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
@@ -42,18 +45,6 @@ label > input type="radio" > span = radio button (will be several inside one div
 canvas 
 TAGS TO DO -----------
 --
-ALL TAGS TO HANDLE WILL HAVE id ATTRIBUTE 
-search css for the id and parse to set properties of LC control
-HANDLE OTHER ATTRIBUTES control by control
-FORMATTING AND ANCHOR TAGS IN FIELDS
-save to write out later in case LC htmlText can't handle
-also set as the htmlText of the field in LC card
-HOW TO HANDLE ONCLICK AND ONCHANGE ATTRIBUTES?
-maybe set as custom props of the LC controls, then handle in save to web?
-HOW TO HANDLE COMMENTS?
-maybe save as custom prop of previous or next LC control, then handle in save to web?
-or maybe each as custom prop of a button created for each in order handled, whose
-names include save to web kill word? - can just put these in same place on card and pile them up...
 */
 
 -----------------------------
@@ -465,6 +456,38 @@ end fGetHtmlAttribute
 
 -----------------------------
 
+function fGetHtmlEvents pSkipChar, pHtmlFileData
+   -- uses function fGetHtmlAttribute
+   -- returns any html events and javascript functions they invoke
+   -- input param pSkipChar points to "<" at start of tag in pHtmlFileData
+   put 0 into tCounter
+   repeat for each item tEvent in kEventList -- kEventList is a constant of this script
+      put fGetHtmlAttribute(pSkipChar, pHtmlFileData, tEvent) into tEventCode
+      if tEventCode is not empty then
+         add 1 to tCounter
+         put tEvent into item 1 of line tCounter of tEventCodeLines
+         put tEventCode into item 2 of line tCounter of tEventCodeLines
+      end if
+   end repeat
+   return tEventCodeLines
+end fGetHtmlEvents
+
+-----------------------------
+
+function  fSaveHtmlEvents pEventCodeLines, pControl_ID
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   -- naming convention for html events saved as LC custom props is, e.g., event_onchange
+   -- make sure same convention in both IMPORT and EXPORT script stacks
+   repeat for each line tLine in pEventCodeLines
+      put item 1 of tLine into tEventName
+      put item 2 of tLine into tEventCode
+      put "event_" before tEventName
+      set the tEventName of control id pControl_ID to tEventCode
+   end repeat
+end fSaveHtmlEvents
+
+-----------------------------
+
 function fGetReporter tSkipChar, pHtmlFileData
    put char tSkipChar-20 to tSkipChar+20 of pHtmlFileData into tReport
    -- replace <> because some LC answer and text editors treat as HTML and/or colorize
@@ -796,12 +819,9 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    end if
    -- BELOW, set the hilited of the control to tCheckedFlag
    
-   -- GET WHETHER OR NOT INPUT HAS ONCHANGE ATTRIBUTE
-   -- AND SAVE AS CUSTOM PROP OF LC CONTROL
-   -- NOTE ONCHANGE ATTRIBUTE IS IN INPUT UNDER THIS LABEL: <LABEL <INPUT
-   put offset("<input",pHtmlFileData,tSkipChar) into tInputTagStart 
-   add tSkipChar to tInputTagStart
-   put fGetHtmlAttribute(tInputTagStart, pHtmlFileData, "onchange") into tOnchange 
+   -- GET ANY HTML EVENT CODE
+   -- need to use tInputTagStart, not tSkipChar (start of label tag)
+   put fGetHtmlEvents(tInputTagStart, pHtmlFileData) into tEventCodeLines -- note tInputTagStart, use tEventCodeLines below
    
    -- GET TEXT BETWEEN <span AND </span>
    -- AND SET AS LABEL OF THE LC CONTROL
@@ -824,11 +844,12 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    set the style of button tButton to pStyle -- pStyle is input argument to this function
    -- was getting the hiliteBorder set to true when export original had it false,
    -- causes border to show when selected, property in icons panel of LC control properties 
-   set the hiliteBorder of button tButton to false 
-   if tOnchange is not empty then
-      set the cOnchange of button tButton to tOnchange
-   end if
+   set the hiliteBorder of button tButton to false    
    set the hilited of button tButton to tCheckedFlag
+   
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of button tButton into tControl_ID -- note button tButton
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -1014,6 +1035,9 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- see LC docs
    -- will have to do some work on both EXPORT script and this IMPORT script
    
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
    
@@ -1029,9 +1053,13 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    if kReporter is "true" then put LF & "JUST AFTER CREATE button tButton  = " & tButton after msg
    
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of button tButton into tControl_ID -- note button tButton
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
+   
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
-     
+   
    if kReporter is "true" then put LF & "tValue = " & tValue after msg -- development field
    
    -- GET OPTION(S)
@@ -1110,7 +1138,14 @@ function fImportImage tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    -- GET SRC ATTRIBUTE 
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "src") into tSRC
-     
+   
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of image tImage into tControl_ID -- note image tImage
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
+   
    if kReporter is "true" then put LF & "tSRC = " & tSRC after msg -- development field
    
    set the cFilename of image tImage to tSRC -- xxx may want to use this on export
@@ -1141,6 +1176,9 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
    
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   
    put tID into tField
    replace "_" with space in tField
    -- "field" added in export, others added later might not have it
@@ -1157,6 +1195,10 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    set the textAlign of field tField to left -- xxx may be set in p { } in css
    -- setting textHeight and fixedLineHeight does not work here - set below
    
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of field tField into tControl_ID -- note field tField
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
+   
    -- get <p> tag (locked field) contents
    put offset(">",pHtmlFileData,tSkipChar) into tPendChar
    add tSkipChar to tPendChar
@@ -1169,7 +1211,7 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    set the htmlText of field tField to tPcontents
    -- Note: this preserves links <a> tags but won't appear in LC with same color, etc., as in web browser
-    
+   
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of field tField into tControlLongName -- NOTE field tField
@@ -1186,7 +1228,7 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- set them here to try to get better correspondence
    set the textHeight of field tField to 16
    set the fixedLineHeight of field tField to true
-      
+   
    if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
    
    -- return updated tSkipChar
@@ -1290,10 +1332,8 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
-   -- GET ONCHANGE, IF ANY
-   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onchange") into tOnchange
-   
-   if kReporter is "true" then put LF & "tOnchange= " & tOnchange after msg
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    put tID into tField -- will use both tID and tField below
    replace "_" with space in tField
@@ -1313,9 +1353,9 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    
    set the text of field tField to tValue
    
-   if tOnchange is not empty then
-      set the cOnchange of field tField to tOnchange
-   end if
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of field tField into tControl_ID -- note field tField
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -1348,10 +1388,8 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
-   -- GET ONCLICK
-   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "onclick") into tOnclick
-   
-   if kReporter is "true" then put LF & "tOnclick= " & tOnclick after msg
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    -- CREATE BUTTON
    create button
@@ -1359,9 +1397,10 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    if tValue is not empty then
       set the label of button tButton to tValue
    end if
-   if tOnclick is not empty then
-      set the cOnclick of button tButton to tOnclick
-   end if
+   
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of button tButton into tControl_ID -- note button tButton
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -1395,7 +1434,7 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if tValue is empty then put 50 into tValue
    
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
-     
+   
    -- GET MIN, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "min") into tMin
    if tMin is empty then put 0 into tMin
@@ -1414,10 +1453,8 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    
    if kReporter is "true" then put LF & "tStep = " & tStep after msg
    
-   -- GET ONINPUT, IF ANY
-   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "oninput") into tOninput 
-   
-   if kReporter is "true" then put LF & "tOninput= " & tOninput after msg
+   -- GET ANY HTML EVENT CODE
+   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    create scrollbar tScrollbar
    set the style of scrollbar tScrollbar to scale
@@ -1442,7 +1479,7 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put it into tTransformFlag -- returned with number degrees of rotation if control has a transform flag
    
    if kReporter is "true" then put LF & "in fImportScrollbar, after return from fGetSet... tTransformFlag = " & tTransformFlag after msg 
-    
+   
    if tTransformFlag is "false" then
       -- horiz with lower value on left
       put 1 into tScrollCase
@@ -1479,11 +1516,12 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
       end switch
    end if
    
+   -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
+   put the id of scrollbar tScrollbar into tControl_ID -- note scrollbar tScrollbar
+   get fSaveHtmlEvents(tEventCodeLines, tControl_ID)
+   
    -- finish up scrollbar
    set the thumbPosition of scrollbar tScrollbar to tValue
-   if tOninput is not empty then
-      set the cOninput of scrollbar tScrollbar to tOninput
-   end if
    
    -- LC pageInc and HTML range step not equivalent
    -- pageInc is where thumb jumps when click away in LC

@@ -540,6 +540,26 @@ end exportWebPage
 
 -----------------------------------------------
 
+function fReturnHtmlEvents pControl_ID
+   -- get and return any html event code
+   -- only events handled are those in constant kEventList of the IMPORT script-only stack
+   -- naming convention for html events saved as LC custom props is, e.g., event_onchange
+   -- make sure same naming convention in both IMPORT and EXPORT script-only stacks
+   put empty into tHtml
+   put the customKeys of control id pControl_ID into tEventLines
+   repeat for each line tLIne in tEventLines
+      put tLine into tLongName
+      if offset("event_",tLongName) = 1 then
+         put tLongName into tShortName
+         delete char 1 to 6 of tShortName -- chars of "event_"
+         put the tLongName of control id pControl_ID into tEventCode
+         put space & tShortName & "=" & quote & tEventCode & quote after tHtml
+      end if
+   end repeat
+   return tHtml
+end fReturnHtmlEvents
+-----------------------------------------------
+
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    
    -- functions which do NOT use this function:
@@ -760,7 +780,11 @@ function fExportImage tControl_ID, tGrp, tGrpLoc, tIndent, tImagesFolder, aCSSpr
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
    put the filename of control id tControl_ID into tFileName
-   put space & "src=" & quote & tFileName & quote & ">" & LF after tHTML
+   put space & "src=" & quote & tFileName & quote after tHTML
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
+   put ">" & LF after tHTML
    -- end of html
    -- write css
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
@@ -882,11 +906,9 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put space & "value=" & quote & tThumbPosition & quote after tHTML
    
-   -- get oninput, if any
-   put the cOninput of control id tControl_ID into tOninput
-   if tOninput is not empty then
-      put space & "oninput=" & quote & tOninput & quote after tHtml
-   end if
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
    
    -- conclude html
    put ">" & LF after tHTML
@@ -1054,11 +1076,9 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
-   -- get onchange, if any
-   put the cOnchange of control id tControl_ID into tOnchange
-   if tOnchange is not empty then
-      put space & "onchange=" & quote & tOnchange & quote after tHtml
-   end if
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with radio button label
@@ -1131,11 +1151,9 @@ function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
-   -- get onclick, if any
-   put the cOnclick of control id tControl_ID into tOnclick
-   if tOnclick is not empty then
-      put space & "onclick=" & quote & tOnclick & quote after tHtml
-   end if
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
    put ">" after tHTML
    put "</input>" & LF after tHTML
    -- end html
@@ -1191,13 +1209,11 @@ function fExportMenuButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       put the short name of control id tControl_ID into tButtonName
    end if
    put space & "value=" & quote & tButtonName & quote after tHTML
-   -- get onmouseup, if any
-   -- xxx need to check if this is correct place to put this or if it should be in each option...
-   put the cOnmouseup of control id tControl_ID into tOnmouseup
-   if tOnmouseup is not empty then
-      put space & "onmouseup=" & quote & tOnmouseup & quote after tHtml
-   end if
-   put ">" & LF after tHTML
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
+   -- end start of select tag
+   put ">" & LF after tHtml
    -- now need to enter menu options
    put the text of control id tControl_ID into tOptions
    repeat for each line tOpt in tOptions
@@ -1241,11 +1257,9 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    if the hilite of control id tControl_ID is true then
       put space & "checked" after tHTML
    end if
-   -- get onchange, if any
-   put the cOnchange of control id tControl_ID into tOnchange
-   if tOnchange is not empty then
-      put space & "onchange=" & quote & tOnchange & quote after tHtml
-   end if
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml 
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with checkbox name
@@ -1320,13 +1334,12 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       -- unlocked field for user input
       put the text of control id tControl_ID into tValue
       put space & "value=" & quote & tValue & quote after tHTML
-      -- get onchange, if any
-      put the cOnchange of control id tControl_ID into tOnchange
-      if tOnchange is not empty then
-         put space & "onchange=" & quote & tOnchange & quote after tHtml
-      end if
    end if
-   put ">" & space after tHTML
+   -- get and write any html event code
+   get fReturnHtmlEvents(tControl_ID)
+   put it after tHtml
+   -- end first tag
+   put ">" & LF after tHTML
    if tFieldType is "p" then
       -- the htmlText has extra <p></p> tags which then
       -- won't be referenced in CSS and thus flow that text from top of page
@@ -1343,7 +1356,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       -- use double indents on the rest of the <br> so text editor can fold/unfold <p>
       -- but do this after delete first <br>
       replace "<br>" with tIndent & tIndent & "<br>" in tTempText
-      put LF & tTempText after tHTML
+      put tTempText after tHTML
    end if
    put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
    
