@@ -19,6 +19,9 @@ constant kCssTopShift = 50 -- value used in css file for computed shift of eleme
 constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
+constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script tags in html body
+-- make sure value of constant kScriptTagPrefix is the same in both script files 
+
 -- item list of added html events that are saved on import
 constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
 
@@ -190,20 +193,14 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
          else
             put tComment & LF after tCommentList
             -- tCommentList will be saved at end fMakeLiveCodeCard
-            -- can not access header button when editing a group
             -- these are comments in body which are outside of non-div tags
          end if
          next repeat
-         /*
+
          -- xxx need to save comments somewhere
-         -- can't directly add them to header button when editing a group
-         -- for now, add to a variable and then handle at end of this function
-         -- what about adding as a cComment custom prop to last control added
-         -- to card, checked by highest control number (problems if editing group?), then 
-         -- on export write to html file after that control is written to the html file...
-         -- but need to not duplicate comments already added on export, e.g., at end div's
-         -- will still have problems with any comment inside a tag
-         */
+         -- xxx see fImportScriptTag which creates a button for each script tag in body
+         -- xxx this could be used for comments so they get put in (approx) place on export
+ 
       end if
       if offset("/div>",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of </div>
@@ -230,8 +227,10 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       put offset(">",pHtmlFileData,tSkipChar) into tNextEndChar
       if tNextEndChar < tNextSpaceChar then
          -- not a tag with an attribute such as type or id
+         add tSkipChar to tNextEndChar
+         put char tSkipChar + 1 to tNextEndChar - 1 of pHtmlFileData into tTagName
          if kReporter is "true" then 
-            put LF & "tNextEndChar < tNextSpaceChar so not a tag with attribute such as type or id" & LF after msg
+            put LF & "tNextEndChar < tNextSpaceChar so not a tag with attribute such as type or id, tTagName = " & tTagName & LF after msg
          end if
       else
          add tSkipChar to tNextSpaceChar
@@ -239,50 +238,54 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
          if kReporter is "true" then 
             put LF & "before switch in makeLiveCodeCard, tTagName = " & tTagName & LF after msg
          end if
-         switch tTagName
-            case "div"
-               -- import div = group
-               if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-               if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
-               get fImportGroupStart(tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGrpLocList)
-               put it into tResult
-               put tResult["SkipChar"] into tSkipChar
-               put tResult["GrpList"] into tGrpList
-               put tResult["GrpLocList"] into tGrpLocList
-               if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
-               if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
-               break
-            case "p"
-               -- import p = locked field
-               put fImportLockedField(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            case "img"
-               -- import img = image
-               put fImportImage(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            case "select"
-               -- import select = menu button
-               put fImportMenuButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            case "input"
-               -- import input that are not inside <label tags
-               -- 3 types: none = unlocked field, button = button, range = slider
-               put fImportInputTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            case "label"
-               -- import label
-               -- need to look for <input inside
-               -- two input types: checkbox, radio button
-               -- <label <input followed by <span
-               put fImportLabelTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            case "canvas"
-               put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-               break
-            default
-               --  ignore for now
-         end switch
       end if
+      switch tTagName
+         case "div"
+            -- import div = group
+            if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+            if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+            get fImportGroupStart(tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGrpLocList)
+            put it into tResult
+            put tResult["SkipChar"] into tSkipChar
+            put tResult["GrpList"] into tGrpList
+            put tResult["GrpLocList"] into tGrpLocList
+            if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+            if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+            break
+         case "p"
+            -- import p = locked field
+            put fImportLockedField(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "img"
+            -- import img = image
+            put fImportImage(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "select"
+            -- import select = menu button
+            put fImportMenuButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "input"
+            -- import input that are not inside <label tags
+            -- 3 types: none = unlocked field, button = button, range = slider
+            put fImportInputTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "label"
+            -- import label
+            -- need to look for <input inside
+            -- two input types: checkbox, radio button
+            -- <label <input followed by <span
+            put fImportLabelTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "canvas"
+            put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+            break
+         case "script"
+            -- these are script tags in body below header
+            put fImportScriptTag(tSkipChar, pHtmlFileData) into tSkipChar
+            break
+         default
+            --  ignore for now
+      end switch
    end repeat
    
    -- save comment list, if any
@@ -352,6 +355,53 @@ function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    add tEndChar to tSkipChar
    return tSkipChar
 end fImportCANVAS
+
+----------------------------- 
+
+function fImportScriptTag tSkipChar, pHtmlFileData
+   -- this is for <script> tags that appear in the html body (those in header get saved with header)
+   -- this creates a button whose custom property cScriptTagCode contains the entire
+   -- script tag and contents from and including <script> to </script>
+   -- on export, this code will be written to html in approximately the location in the html in which it
+   -- appeared before import   
+   -- cScriptTagCode must match name used in IMPORT script
+   
+   -- create button
+   create button
+   
+   -- build uniqe name in variable tButton starting with the prefix kScriptTagPrefix
+   set the name of it to kScriptTagPrefix
+   put the id of button kScriptTagPrefix into tID
+   put kScriptTagPrefix && tID into tButton 
+   set the name of button kScriptTagPrefix to tButton
+   -- now can refer to control as button tButton
+   
+   -- below are special properties for the button
+   set the topLeft of button tButton to 0,40 -- will get overlapping buttons if more than one script tag in body
+   set the style of button tButton to rectangle
+   set the showBorder of button tButton to true
+   set the borderWidth of button tButton to 2
+   set the backColor of button tButton to 200,200,255
+   
+   -- HIDE the button because assume will not do any script editing
+   -- in the LiveCode design stack
+   -- the script tag and code will still get exported to html on export
+   hide button tButton
+   
+   -- get the script tag and save it
+   put offset("</script>",pHtmlFileData,tSkipChar) into tEndChar
+   add tSkipChar to tEndChar
+   add 8 to tEndChar -- move from < to > in </script>
+   put char tSkipChar to tEndChar of pHtmlFileData into tScriptCode
+   put LF after tScriptCode
+   
+   -- name of custom prop cScriptTagCode must match name used in IMPORT script
+   set the cScriptTagCode of button tButton to tScriptCode
+   
+   -- update tSkipChar and return
+   put tEndChar into tSkipChar
+   return tSkipChar
+end fImportScriptTag
 
 ----------------------------- 
 
