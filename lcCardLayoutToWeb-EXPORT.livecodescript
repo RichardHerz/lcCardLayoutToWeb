@@ -16,6 +16,9 @@ constant kFieldShift = 16 -- was 16, subtract to shift locked fields when export
 constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
 -- make sure value of constant kTextFontExportAdd is the same in both script files 
 
+constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script tags in html body
+-- make sure value of constant kScriptTagPrefix is the same in both script files 
+
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
 constant kWebOutputFolder = "web output"
 -- images should be added to LiveCode stack only BY REFERENCE
@@ -429,11 +432,8 @@ on exportWebPage
          case "button"
             -- there are different styles of buttons
             put the style of control tControlNumber into tStyle
-            -- get the html for this style of button
+            -- get the html and css for this style of button
             switch tStyle
-               case "standard"
-                  get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
-                  break
                case "radiobutton"
                   get fExportRadioButton(tControl_ID, tGrp, tGrpLoc, tIndent)
                   break
@@ -447,6 +447,9 @@ on exportWebPage
                   -- check for button used to represent an HTML CANVAS element
                   if the first word of the short name of control tControlNumber is "CANVAS" then
                      get fExportCANVAS(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                     -- check for button used to represent hold a script tag in html body
+                  else if the first word of the short name of control tControlNumber is kScriptTagPrefix then
+                     get fExportScriptTag(tControl_ID, tIndent)
                   else
                      -- a standard button
                      get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
@@ -1064,7 +1067,7 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put fIDname(tControl_ID) into tIDname
    put the short name of control id tControl_ID into tRadioButtonName
    -- write html for label tag
-   put tIndent & "<label" into tHTML
+   put tIndent & "<switchlabel" into tHTML
    put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
    put space & "name=" & quote & tRadioGroupName & quote after tHTML
    put ">" & LF after tHTML
@@ -1135,7 +1138,23 @@ end fExportRadioButton
 
 -----------------------------------------------
 
-function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+function fExportScriptTag tControl_ID, tIndent
+   -- this is for <script> tags that appear in the html body (those in header get saved with header)
+   -- button custom prop cScriptTagCode holds <script> to </script> 
+   -- cScriptTagCode must match name used in IMPORT script
+   put the cScriptTagCode of control id tControl_ID into tScriptCode
+   put tIndent before tScriptCode
+   put tScriptCode into tHTML
+   put empty into tCSS
+   -- finally return the result
+   put tHTML into tResult["html"]
+   put tCSS into tResult["css"]
+   return tResult
+end fExportScriptTag
+   
+   -----------------------------------------------
+   
+   function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fIDname
    -- uses function fReturnCSSprops
    -- There are different types of buttons
