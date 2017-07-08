@@ -171,32 +171,6 @@ canvas {
  LCvScrollbar: false;
 }
 
-#radio_Radio2_LABEL {
- width: 82px;
- height: 23px;
- left: 6px;
- top: 34px;
-}
-
-#radio_Radio2_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 16px;
-}
-
-#radio_Radio1_LABEL {
- width: 82px;
- height: 23px;
- left: 7px;
- top: 6px;
-}
-
-#radio_Radio1_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 16px;
-}
-
 #checkbox_Check1_LABEL {
  width: 82px;
  height: 23px;
