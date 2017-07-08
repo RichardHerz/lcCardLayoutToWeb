@@ -19,6 +19,9 @@ constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, s
 constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script tags in html body
 -- make sure value of constant kScriptTagPrefix is the same in both script files 
 
+constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
+-- make sure value of constant kCommentTagPrefix is the same in both script files 
+
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
 constant kWebOutputFolder = "web output"
 -- images should be added to LiveCode stack only BY REFERENCE
@@ -444,12 +447,16 @@ on exportWebPage
                   get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                  -- check for button used to represent an HTML CANVAS element
+                  -- check for special buttons
                   if the first word of the short name of control tControlNumber is "CANVAS" then
+                     -- button used to represent an html canvas tag in html body
                      get fExportCANVAS(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
-                     -- check for button used to represent hold a script tag in html body
                   else if the first word of the short name of control tControlNumber is kScriptTagPrefix then
+                     -- button used to hold a script tag in html body
                      get fExportScriptTag(tControl_ID, tIndent)
+                  else if the first word of the short name of control tControlNumber is kCommentTagPrefix then
+                     -- button used to hold a comment tag in html body
+                     get fExportCommentTag(tControl_ID, tIndent)
                   else
                      -- a standard button
                      get fExportStandardButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
@@ -1141,7 +1148,7 @@ end fExportRadioButton
 function fExportScriptTag tControl_ID, tIndent
    -- this is for <script> tags that appear in the html body (those in header get saved with header)
    -- button custom prop cScriptTagCode holds <script> to </script> 
-   -- cScriptTagCode must match name used in IMPORT script
+   -- cScriptTagCode must match name used in both IMPORT and EXPORT scripts
    put the cScriptTagCode of control id tControl_ID into tScriptCode
    put tIndent before tScriptCode
    put tScriptCode into tHTML
@@ -1151,10 +1158,27 @@ function fExportScriptTag tControl_ID, tIndent
    put tCSS into tResult["css"]
    return tResult
 end fExportScriptTag
-   
-   -----------------------------------------------
-   
-   function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
+
+-----------------------------------------------
+
+function fExportCommentTag tControl_ID, tIndent
+   -- this is for <!-- comment tags that appear in the html body (those in header get saved with header)
+   -- button custom prop cCommentTagCode holds <!-- to --> 
+   -- cCommentTagCode must match name used in both IMPORT and EXPORT scripts
+   put the cCommentTagCode of control id tControl_ID into tCommentCode
+   put tIndent before tCommentCode
+   put tCommentCode into tHTML
+   put empty into tCSS
+   -- finally return the result
+   put tHTML into tResult["html"]
+   put tCSS into tResult["css"]
+   return tResult
+end fExportCommentTag
+
+
+-----------------------------------------------
+
+function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- uses function fIDname
    -- uses function fReturnCSSprops
    -- There are different types of buttons

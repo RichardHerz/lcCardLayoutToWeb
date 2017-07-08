@@ -22,6 +22,9 @@ constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, s
 constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script tags in html body
 -- make sure value of constant kScriptTagPrefix is the same in both script files 
 
+constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
+-- make sure value of constant kCommentTagPrefix is the same in both script files 
+
 -- item list of added html events that are saved on import
 constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
 
@@ -177,31 +180,31 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
-      -- save comments in body which are outside of other tags
-      if offset("!--",pHtmlFileData,tSkipChar) = 1 then 
-         -- tSkipChar points to < of <!-- comment
-         if kReporter is "true" then put LF & "comment found" & LF after msg
-         -- want to skip to end comment in case have commented out some controls
-         put offset("-->",pHtmlFileData,tSkipChar) into tEndComment
-         add 2 to tEndComment -- include -> of -->
-         add tEndComment to tSkipChar
-         put tSkipChar into tEndComment
-         put char tNextTagStart to tEndComment of pHtmlFileData into tComment
-         if tComment contains "end of div div_" then
-            -- export writes end of div comments like this: <!-- end of div div_EMPTY_group_1017 -->
-            -- do not save these
-         else
-            put tComment & LF after tCommentList
-            -- tCommentList will be saved at end fMakeLiveCodeCard
-            -- these are comments in body which are outside of non-div tags
-         end if
-         next repeat
-
-         -- xxx need to save comments somewhere
-         -- xxx see fImportScriptTag which creates a button for each script tag in body
-         -- xxx this could be used for comments so they get put in (approx) place on export
- 
-      end if
+      
+      --       -- save comments in body which are outside of other tags
+      --       if offset("!--",pHtmlFileData,tSkipChar) = 1 then 
+      --          -- tSkipChar points to < of <!-- comment
+      --          if kReporter is "true" then put LF & "comment found" & LF after msg
+      --          -- want to skip to end comment in case have commented out some controls
+      --          put offset("-->",pHtmlFileData,tSkipChar) into tEndComment
+      --          add 2 to tEndComment -- include -> of -->
+      --          add tEndComment to tSkipChar
+      --          put tSkipChar into tEndComment
+      --          put char tNextTagStart to tEndComment of pHtmlFileData into tComment
+      --          if tComment contains "end of div div_" then
+      --             -- export writes end of div comments like this: <!-- end of div div_EMPTY_group_1017 -->
+      --             -- do not save these
+      --          else
+      --             put tComment & LF after tCommentList
+      --             -- tCommentList will be saved at end fMakeLiveCodeCard
+      --             -- these are comments in body which are outside of non-div tags
+      --          end if
+      --          next repeat
+      --          -- xxx need to save comments somewhere
+      --          -- xxx see fImportScriptTag which creates a button for each script tag in body
+      --          -- xxx this could be used for comments so they get put in (approx) place on export
+      --       end if
+      
       if offset("/div>",pHtmlFileData,tSkipChar) = 1 then 
          -- tSkipChar points to < of </div>
          if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
@@ -280,8 +283,12 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
             put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
             break
          case "script"
-            -- these are script tags in body below header
+            -- these are script tags in html body outside other tags
             put fImportScriptTag(tSkipChar, pHtmlFileData) into tSkipChar
+            break
+         case "!--"
+            -- these are comment tags in html body outside other tags
+            put fImportCommentTag(tSkipChar, pHtmlFileData) into tSkipChar
             break
          default
             --  ignore for now
@@ -364,7 +371,7 @@ function fImportScriptTag tSkipChar, pHtmlFileData
    -- script tag and contents from and including <script> to </script>
    -- on export, this code will be written to html in approximately the location in the html in which it
    -- appeared before import   
-   -- cScriptTagCode must match name used in IMPORT script
+   -- cScriptTagCode must match name used in both IMPORT and EXPORT scripts
    
    -- create button
    create button
@@ -395,7 +402,7 @@ function fImportScriptTag tSkipChar, pHtmlFileData
    put char tSkipChar to tEndChar of pHtmlFileData into tScriptCode
    put LF after tScriptCode
    
-   -- name of custom prop cScriptTagCode must match name used in IMPORT script
+   -- name of custom prop cScriptTagCode must match name used in both IMPORT and EXPORT scripts
    set the cScriptTagCode of button tButton to tScriptCode
    
    -- update tSkipChar and return
@@ -405,7 +412,59 @@ end fImportScriptTag
 
 ----------------------------- 
 
-function fImportLabelTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
+function fImportCommentTag tSkipChar, pHtmlFileData
+   -- this is for <!-- comment tags that appear in the html body (those in header get saved with header)
+   -- this creates a button whose custom property cCommentTagCode contains the entire
+   -- comment tag and contents from and including <!-- to -->
+   -- on export, this code will be written to html in approximately the location in the html in which it
+   -- appeared before import   
+   -- cCommentTagCode must match name used in both IMPORT and EXPORT scripts
+   
+   -- get the comment tag FIRST so can check it for default "end of div" comment
+   put offset("-->",pHtmlFileData,tSkipChar) into tEndChar
+   add tSkipChar to tEndChar
+   add 2 to tEndChar -- move from - to > in -->
+   put char tSkipChar to tEndChar of pHtmlFileData into tCommentCode
+   put LF after tCommentCode
+   
+   if tCommentCode contains "end of div div_" then
+      -- do not save these, since they are produced by EXPORT script for all div endings
+   else
+      -- create button
+      create button
+      
+      -- build uniqe name in variable tButton starting with the prefix kCommentTagPrefix
+      set the name of it to kCommentTagPrefix
+      put the id of button kCommentTagPrefix into tID
+      put kCommentTagPrefix && tID into tButton 
+      set the name of button kCommentTagPrefix to tButton
+      -- now can refer to control as button tButton
+      
+      -- below are special properties for the button
+      set the topLeft of button tButton to 0,80 -- will get overlapping buttons if more than one comment tag in body
+      set the style of button tButton to rectangle
+      set the showBorder of button tButton to true
+      set the borderWidth of button tButton to 2
+      set the backColor of button tButton to 200,255,200
+      
+      -- HIDE the button because assume will not add any coments 
+      -- in the LiveCode design stack
+      -- the comment tag and code will still get exported to html on export
+      hide button tButton
+      
+      -- name of custom prop cCommentTagCode must match name used in both IMPORT and EXPORT scripts
+      set the cCommentTagCode of button tButton to tCommentCode
+      
+   end if -- end of if tComment contains "end of div div_"
+   
+   -- update tSkipChar and return
+   put tEndChar into tSkipChar
+   return tSkipChar
+end fImportCommentTag
+   
+   -----------------------------
+   
+   function fImportLabelTag tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if kReporter is "true" then put LF & "enter fImportLabelTag" & LF after msg
    -- tSkipChar points to < of <label
    -- need to return updated tSkipChar
