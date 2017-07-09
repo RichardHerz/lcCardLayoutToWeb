@@ -1074,7 +1074,7 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put fIDname(tControl_ID) into tIDname
    put the short name of control id tControl_ID into tRadioButtonName
    -- write html for label tag
-   put tIndent & "<switchlabel" into tHTML
+   put tIndent & "<label" into tHTML
    put space & "id=" & quote & tIDname & "_LABEL" & quote after tHTML
    put space & "name=" & quote & tRadioGroupName & quote after tHTML
    put ">" & LF after tHTML
