@@ -32,21 +32,6 @@
 <body>
 <!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
 <!-- SAMPLE USE: document.getElementById("dev01").innerHTML = "text = " + value -->
-<p id="field_dev00">
-
-</p>
-<p id="field_dev01">
-
-</p>
-<p id="field_dev02">
-
-</p>
-<p id="field_dev03">
-
-</p>
-<p id="field_dev04">
-
-</p>
 <p id="field_Field_0_1173">
 <a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
 </p>
@@ -61,7 +46,7 @@
       <br> sites S:  A + S &#8652; AS.       Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).
    </p>
    <p id="field_Field_1a_1176a">
-      <a href="info.html" target="new">Click here for more information</a> (opens in new tab)     
+      <a href="info.html" target="_blank">Click here for more information</a> (opens in new tab)
       <br>
       <br>    <font color="#FF0000">    <b>See space-time plot of rate, and average rate and conversion at bottom of page.</b>     </font>
    </p>
@@ -91,7 +76,7 @@
    <p id="field_setCmax_value_1199">
       1
    </p>
-   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1">
+   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1" oninput="puCatalystLayer.updateUIparams()">
    </input>
    <p id="field_enterKflow_label_1201">
       Enter Kflow
@@ -199,8 +184,8 @@
    <p id="field_Label_Field">
        <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
    </p>
+   <img id="image_reactor_image" src="images/reactor.png">
+   <canvas id="canvas_CANVAS_rate"></canvas>
 </div> <!-- end of div div_simulation_frame_1174 -->
-<canvas id="canvas_CANVAS_rate"></canvas>
-<img id="image_reactor_image" src="/Users/richardherz/Documents/My GitHub/REPOSITORIES/lcToWeb-RKH-branch/web output card DDR/images/reactor.png">
 </body>
 </html>
