@@ -31,6 +31,7 @@
 </head>
 <body>
 <!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
+<!-- SAMPLE USE: document.getElementById("dev01").innerHTML = "text = " + value -->
 <p id="field_dev00">
 
 </p>
@@ -46,36 +47,30 @@
 <p id="field_dev04">
 
 </p>
-<!-- SAMPLE USE: document.getElementById("dev01").innerHTML = "text = " + value -->
 <p id="field_Field_0_1173">
 <a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
 </p>
 <div id="div_simulation_frame_1174">
    <p id="field_run_counter">
-      
+
    </p>
    <p id="field_Field_1_1176">
-      <i><b>Dynamic diffusion and reaction in a porous solid catalyst layer</b></i>       
+      <i><b>Dynamic diffusion and reaction in a porous solid catalyst layer</b></i>
       <br>
-      <br>      The overall reaction is A &#8640; B and is far from equilibrium under conditions here.       Reactant A adsorbs reversibly over catalyst surface 
-      <br> sites S:  A + S &#8652; AS.       Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).       
-      <br>      
-      <br>      
-      <br>      
-      <br>      
-      <br>      <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+      <br>      The overall reaction is A &#8640; B and is far from equilibrium under conditions here. Reactant A adsorbs reversibly over catalyst surface
+      <br> sites S:  A + S &#8652; AS.       Select the "slow" rate determining step below: Model 1 (simple) or 2 (self-inhibiting).
    </p>
    <p id="field_Field_1a_1176a">
-      <a href="info.html">Click here for more information</a> (opens in new tab)     
-      <br>    
+      <a href="info.html" target="new">Click here for more information</a> (opens in new tab)     
+      <br>
       <br>    <font color="#FF0000">    <b>See space-time plot of rate, and average rate and conversion at bottom of page.</b>     </font>
    </p>
    <div id="div_RADIO_group_Model">
-      <switchlabel id="radio_Model_1_LABEL" name="radio_of_group_RADIO_group_Model">
+      <label id="radio_Model_1_LABEL" name="radio_of_group_RADIO_group_Model">
             <input type="radio" id="radio_Model_1" name="radio_of_group_RADIO_group_Model" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Model_1_SPAN">Model 1: AS &#8640; B + S</span>
       </label>
-      <switchlabel id="radio_Model_2_LABEL" name="radio_of_group_RADIO_group_Model">
+      <label id="radio_Model_2_LABEL" name="radio_of_group_RADIO_group_Model">
             <input type="radio" id="radio_Model_2" name="radio_of_group_RADIO_group_Model" checked onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Model_2_SPAN">Model 2: AS + S &#8640; B + 2S</span>
       </label>
@@ -135,15 +130,15 @@
 
    </input>
    <div id="div_RADIO_group_1213">
-      <switchlabel id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group_1213">
+      <label id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group_1213">
             <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" checked onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Sine_1214_SPAN">Sine</span>
       </label>
-      <switchlabel id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group_1213">
+      <label id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group_1213">
             <input type="radio" id="radio_Constant_1215" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Constant_1215_SPAN">Constant</span>
       </label>
-      <switchlabel id="radio_Square_1216_LABEL" name="radio_of_group_RADIO_group_1213">
+      <label id="radio_Square_1216_LABEL" name="radio_of_group_RADIO_group_1213">
             <input type="radio" id="radio_Square_1216" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Square_1216_SPAN">Square</span>
       </label>
@@ -172,31 +167,13 @@
    </p>
    <p id="field_profile_label_gas_1226">
       Gas profiles
-      <br>in 
+      <br>in
       <br>catalyst layer
    </p>
    <p id="field_profile_label_surface_1227">
-      Surface 
+      Surface
       <br>profiles in
       <br>catalyst layer
-   </p>
-   <p id="field_reactor_label_1228">
-      
-      <br>
-      <br>
-      <br>R
-      <br>E
-      <br>A
-      <br>C
-      <br>T
-      <br>O
-      <br>R
-   </p>
-   <p id="field_outlet_arrow_field_1229">
-      &darr;
-   </p>
-   <p id="field_inlet_arrow_field_1230">
-      &darr;
    </p>
    <p id="field_aveRate_label_1236">
       Average Rate (dimensionless turnover frequency) =
@@ -219,7 +196,11 @@
    <p id="field_spaceTimeBtm_label_1242">
       <i>inner, sealed surface:</i>
    </p>
+   <p id="field_Label_Field">
+       <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+   </p>
 </div> <!-- end of div div_simulation_frame_1174 -->
-<input type="button" id="button_falserate" value="falserate"></input>
+<canvas id="canvas_CANVAS_rate"></canvas>
+<img id="image_reactor_image" src="/Users/richardherz/Documents/My GitHub/REPOSITORIES/lcToWeb-RKH-branch/web output card DDR/images/reactor.png">
 </body>
 </html>

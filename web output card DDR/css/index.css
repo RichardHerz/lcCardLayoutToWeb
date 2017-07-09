@@ -39,7 +39,7 @@ canvas {
 
 #field_dev00 {
  position: absolute;
- left: 10px;
+ left: 7px;
  top: 770px;
  width: 900px;
  height: 100px;
@@ -53,7 +53,7 @@ canvas {
 
 #field_dev01 {
  position: absolute;
- left: 10px;
+ left: 7px;
  top: 740px;
  width: 900px;
  height: 100px;
@@ -67,7 +67,7 @@ canvas {
 
 #field_dev02 {
  position: absolute;
- left: 10px;
+ left: 7px;
  top: 910px;
  width: 900px;
  height: 100px;
@@ -81,7 +81,7 @@ canvas {
 
 #field_dev03 {
  position: absolute;
- left: 10px;
+ left: 7px;
  top: 1020px;
  width: 900px;
  height: 100px;
@@ -95,7 +95,7 @@ canvas {
 
 #field_dev04 {
  position: absolute;
- left: 10px;
+ left: 7px;
  top: 1170px;
  width: 900px;
  height: 100px;
@@ -109,7 +109,7 @@ canvas {
 
 #field_Field_0_1173 {
  position: absolute;
- left: 14px;
+ left: 11px;
  top: 7px;
  width: 780px;
  height: 24px;
@@ -124,7 +124,7 @@ canvas {
 #div_simulation_frame_1174 {
  display: block;
  position: absolute;
- left: 13px;
+ left: 10px;
  top: 52px;
  width: 801px;
  height: 830px;
@@ -154,7 +154,7 @@ canvas {
  left: 6px;
  top: -10px;
  width: 780px;
- height: 114px;
+ height: 73px;
  border-width: 2px;
  visibility: visible;
  border-style: none;
@@ -167,8 +167,8 @@ canvas {
  position: absolute;
  left: 300px;
  top: 70px;
- width: 600px;
- height: 200px;
+ width: 502px;
+ height: 64px;
  border-width: 2px;
  visibility: visible;
  border-style: none;
@@ -181,9 +181,9 @@ canvas {
  display: block;
  position: absolute;
  left: 32px;
- top: 77px;
- width: 250px;
- height: 58px;
+ top: 81px;
+ width: 205px;
+ height: 62px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
@@ -192,8 +192,8 @@ canvas {
 }
 
 #radio_Model_1_LABEL {
- width: 128px;
- height: 32px;
+ width: 193px;
+ height: 28px;
  left: 6px;
  top: 6px;
 }
@@ -201,20 +201,20 @@ canvas {
 #radio_Model_1_SPAN {
  margin-left: 22px;
  line-height: 22px;
- font-size: 16px;
+ font-size: 14px;
 }
 
 #radio_Model_2_LABEL {
- width: 128px;
- height: 32px;
+ width: 191px;
+ height: 24px;
  left: 6px;
- top: 33px;
+ top: 32px;
 }
 
 #radio_Model_2_SPAN {
  margin-left: 22px;
  line-height: 22px;
- font-size: 16px;
+ font-size: 14px;
 }
 
 #button_resetButton_1177 {
@@ -490,8 +490,8 @@ canvas {
  display: block;
  position: absolute;
  left: 32px;
- top: 258px;
- width: 150px;
+ top: 260px;
+ width: 177px;
  height: 88px;
  visibility: visible;
  border-width: 2px;
@@ -501,10 +501,10 @@ canvas {
 }
 
 #radio_Sine_1214_LABEL {
- width: 128px;
- height: 32px;
+ width: 124px;
+ height: 21px;
  left: 6px;
- top: 33px;
+ top: 35px;
 }
 
 #radio_Sine_1214_SPAN {
@@ -514,10 +514,10 @@ canvas {
 }
 
 #radio_Constant_1215_LABEL {
- width: 128px;
- height: 32px;
+ width: 126px;
+ height: 27px;
  left: 6px;
- top: 6px;
+ top: 9px;
 }
 
 #radio_Constant_1215_SPAN {
@@ -528,7 +528,7 @@ canvas {
 
 #radio_Square_1216_LABEL {
  width: 128px;
- height: 32px;
+ height: 23px;
  left: 6px;
  top: 59px;
 }
@@ -540,10 +540,10 @@ canvas {
 }
 
 #checkbox_on_1231_LABEL {
- width: 128px;
+ width: 66px;
  height: 32px;
- left: 92px;
- top: 8px;
+ left: 105px;
+ top: 6px;
 }
 
 #checkbox_on_1231_SPAN {
@@ -627,7 +627,7 @@ canvas {
  border-style: none;
  opacity: 1;
  LCvScrollbar: false;
- font-size: 12px;
+ font-size: 13px;
 }
 
 #field_profile_label_gas_1226 {
@@ -658,48 +658,6 @@ canvas {
  font-size: 16px;
 }
 
-#field_reactor_label_1228 {
- position: absolute;
- left: 357px;
- top: 301px;
- width: 37px;
- height: 243px;
- border-width: 2px;
- visibility: visible;
- border-style: solid;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 12px;
-}
-
-#field_outlet_arrow_field_1229 {
- position: absolute;
- left: 356px;
- top: 539px;
- width: 41px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
-}
-
-#field_inlet_arrow_field_1230 {
- position: absolute;
- left: 356px;
- top: 278px;
- width: 44px;
- height: 17px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
-}
-
 #field_aveRate_label_1236 {
  position: absolute;
  left: 78px;
@@ -716,7 +674,7 @@ canvas {
 
 #field_aveRate_1237 {
  position: absolute;
- left: 409px;
+ left: 415px;
  top: 770px;
  width: 87px;
  height: 21px;
@@ -730,7 +688,7 @@ canvas {
 
 #field_aveConversion_1238 {
  position: absolute;
- left: 710px;
+ left: 714px;
  top: 770px;
  width: 75px;
  height: 21px;
@@ -798,9 +756,23 @@ canvas {
  font-size: 16px;
 }
 
-#button_falserate {
+#field_Label_Field {
  position: absolute;
- left: 392px;
+ left: 6px;
+ top: 136px;
+ width: 558px;
+ height: 21px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: none;
+ opacity: 1;
+ LCvScrollbar: false;
+ font-size: 14px;
+}
+
+#canvas_CANVAS_rate {
+ position: absolute;
+ left: 389px;
  top: 750px;
  width: 414px;
  height: 80px;
@@ -809,5 +781,17 @@ canvas {
  background-color: rgb(0,255,0);
  border-style: outset;
  opacity: 1;
+}
+
+#image_reactor_image {
+ position: absolute;
+ left: 372px;
+ top: 352px;
+ width: 37px;
+ height: 275px;
+ visibility: visible;
+ border-style: none;
+ opacity: 1;
+ border-width: 1px;
 }
 
