@@ -552,8 +552,9 @@ end exportWebPage
 
 function fReturnHtmlEvents pControl_ID
    -- get and return any html event code
-   -- only events handled are those in constant kEventList of the IMPORT script-only stack
+   -- only events handled on IMPORT are those in constant kEventList of the IMPORT script-only stack
    -- naming convention for html events saved as LC custom props is, e.g., event_onchange
+   -- with the key prefix event_
    -- make sure same naming convention in both IMPORT and EXPORT script-only stacks
    put empty into tHtml
    put the customKeys of control id pControl_ID into tEventLines
