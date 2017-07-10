@@ -259,9 +259,13 @@ canvas {
  font-size: 16px;
 }
 
+::-ms-tooltip {
+  display: none;
+}
+
 #range_setCmax_slider_1200 {
  left: 26px;
- top: 233px;
+ top: 223px;
  width: 249px;
  height: 24px;
 }
@@ -724,4 +728,3 @@ canvas {
  border-style: outset;
  opacity: 1;
 }
-
