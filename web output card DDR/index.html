@@ -76,8 +76,11 @@
    <p id="field_setCmax_value_1199">
       1
    </p>
-   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1" oninput="puCatalystLayer.updateUIparams()">
+   <input type="range" id="range_setCmax_slider_1200" min="0" max="1" step="0.01" value="1"
+   oninput="puCatalystLayer.updateUIparams()" onchange="puCatalystLayer.updateUIparams()">
    </input>
+   <!-- note about range slider: need event onchange for Win IE, oninput for others
+   in order to display value as you drag -->
    <p id="field_enterKflow_label_1201">
       Enter Kflow
    </p>
