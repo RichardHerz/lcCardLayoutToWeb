@@ -320,6 +320,10 @@ on exportWebPage
    put space &  "position: absolute;" & LF after tCSS
    put space &  "text-align: left;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for input
+   -- special for Internet Explorer, remove tooltips, especially from range-slider inputs
+   put "::-ms-tooltip {" & LF after tCSS
+   put space & "display: none;" & LF after tCSS
+   put "}" & LF & LF after tCSS -- finish css for special for IE tooltip 
    
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups

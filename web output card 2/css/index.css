@@ -44,22 +44,22 @@ canvas {
 #div_simulation_frame {
  display: block;
  position: absolute;
- left: 31px;
- top: 46px;
- width: 553px;
- height: 382px;
+ left: 39px;
+ top: 30px;
+ width: 569px;
+ height: 498px;
  visibility: visible;
  border-width: 2px;
- border-style: outset;
+ border-style: none;
  opacity: 1;
- LCvScrollbar: false;
+ LCvScrollbar: true;
 }
 
 #div_OUTER_group {
  display: block;
  position: absolute;
- left: 33px;
- top: 6px;
+ left: 31px;
+ top: 4px;
  width: 262px;
  height: 93px;
  visibility: visible;
@@ -126,7 +126,7 @@ canvas {
 #button_blank {
  position: absolute;
  left: 30px;
- top: 31px;
+ top: 28px;
  width: 82px;
  height: 23px;
  visibility: visible;
@@ -164,8 +164,8 @@ canvas {
 #div_RADIO_group {
  display: block;
  position: absolute;
- left: 307px;
- top: 30px;
+ left: 305px;
+ top: 28px;
  width: 95px;
  height: 63px;
  visibility: visible;
@@ -204,8 +204,8 @@ canvas {
 #checkbox_Check1_LABEL {
  width: 82px;
  height: 23px;
- left: 180px;
- top: 113px;
+ left: 178px;
+ top: 111px;
 }
 
 #checkbox_Check1_SPAN {
@@ -216,8 +216,8 @@ canvas {
 
 #image_robo_99_png {
  position: absolute;
- left: 6px;
- top: 166px;
+ left: 4px;
+ top: 164px;
  width: 178px;
  height: 193px;
  visibility: visible;
@@ -228,8 +228,8 @@ canvas {
 
 #input_field_unlocked_field_1 {
  position: absolute;
- left: 250px;
- top: 216px;
+ left: 248px;
+ top: 214px;
  width: 100px;
  height: 21px;
  visibility: visible;
@@ -238,16 +238,47 @@ canvas {
 }
 
 #range_slider_horiz {
- left: 313px;
- top: 279px;
+ left: 311px;
+ top: 277px;
  width: 187px;
  height: 22px;
 }
 
+#range_slider_vert {
+ transform: rotate(270deg);
+ left: 184.5px;
+ top: 282px;
+ width: 120px;
+ height: 22px;
+}
+
+#input_field_unlocked_field_2 {
+ position: absolute;
+ left: 249px;
+ top: 353px;
+ width: 100px;
+ height: 21px;
+ visibility: visible;
+ opacity: 1;
+ LCvScrollbar: false;
+}
+
+#button_BUTTON_AT_BOTTOM_PAGE {
+ position: absolute;
+ left: 196px;
+ top: 831px;
+ width: 243px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
 #select_Option_Menu {
  position: absolute;
- left: 358px;
- top: 179px;
+ left: 356px;
+ top: 177px;
  width: 102px;
  height: 22px;
  visibility: visible;
@@ -258,32 +289,13 @@ canvas {
 
 #select_Pulldown_Menu {
  position: absolute;
- left: 445px;
- top: 224px;
+ left: 443px;
+ top: 222px;
  width: 102px;
  height: 22px;
  visibility: visible;
  border-width: 1px;
  border-style: outset;
  opacity: 1;
-}
-
-#range_slider_vert {
- transform: rotate(270deg);
- left: 186.5px;
- top: 284px;
- width: 120px;
- height: 22px;
-}
-
-#input_field_unlocked_field_2 {
- position: absolute;
- left: 251px;
- top: 355px;
- width: 100px;
- height: 21px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
 }
 

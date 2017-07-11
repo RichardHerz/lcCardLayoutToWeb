@@ -37,6 +37,10 @@ canvas {
  text-align: left;
 }
 
+::-ms-tooltip {
+ display: none;
+}
+
 #range_Scrollbar01 {
  left: 155px;
  top: 113px;

@@ -37,6 +37,10 @@ canvas {
  text-align: left;
 }
 
+::-ms-tooltip {
+ display: none;
+}
+
 #field_Field_0_1173 {
  position: absolute;
  left: 8px;
@@ -101,7 +105,7 @@ canvas {
  height: 64px;
  border-width: 2px;
  visibility: visible;
- border-style: none;
+ border-style: outset;
  opacity: 1;
  LCvScrollbar: false;
  font-size: 14px;
@@ -257,10 +261,6 @@ canvas {
  opacity: 1;
  LCvScrollbar: false;
  font-size: 16px;
-}
-
-::-ms-tooltip {
-  display: none;
 }
 
 #range_setCmax_slider_1200 {
@@ -706,10 +706,10 @@ canvas {
 
 #image_reactor_image {
  position: absolute;
- left: 362px;
- top: 300px;
- width: 37px;
- height: 275px;
+ left: 355px;
+ top: 266px;
+ width: 51px;
+ height: 343px;
  visibility: visible;
  border-style: none;
  opacity: 1;
@@ -728,3 +728,4 @@ canvas {
  border-style: outset;
  opacity: 1;
 }
+
