@@ -1,0 +1,108 @@
+input {
+ display: block;
+ position: absolute;
+ text-align: center;
+}
+
+input, button {
+ text-align: center;
+}
+
+/* do NOT write general style for div since interferes
+    with plotting by jquery.flot.js */
+
+p {
+ display: block;
+ text-align: left;
+}
+
+label {
+ display: block;
+ position: absolute;
+}
+
+img {
+ display: block;
+ position: absolute;
+}
+
+select {
+ display: block;
+ position: absolute;
+}
+
+canvas {
+ display: block;
+ position: absolute;
+ text-align: left;
+}
+
+::-ms-tooltip {
+ display: none;
+}
+
+#div_simulation_frame_BIG {
+ display: block;
+ position: absolute;
+ left: 15px;
+ top: 27px;
+ width: 941px;
+ height: 663px;
+ visibility: visible;
+ border-width: 2px;
+ background-color: rgb(102,204,255);
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
+}
+
+#button_Button_BIG_1 {
+ position: absolute;
+ left: 6px;
+ top: 6px;
+ width: 122px;
+ height: 41px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#button_Button_BIG_3 {
+ position: absolute;
+ left: 853px;
+ top: 634px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#button_Button_BIG_2 {
+ position: absolute;
+ left: 147px;
+ top: 14px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#field_Field {
+ position: absolute;
+ left: 65px;
+ top: 45px;
+ width: 760px;
+ height: 568px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: true;
+ font-size: 16px;
+}
+
