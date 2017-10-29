@@ -685,6 +685,24 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
       repeat for each line n in tCssData
          if n contains "#" then next repeat
          if n contains "}" then exit repeat
+         if n contains "/*" then
+            put offset("/*",n) into tStart
+            put offset("*/",n) into tEnd
+            if tEnd <= tStart then
+               -- no */ in this line
+               put the number of characters of n into tEnd
+            else
+               add 1 to tEnd -- move to / of */
+            end if
+            delete char tStart to tEnd of n
+         end if
+         if n contains "*/" then
+            -- lines with /* taken care of above
+            -- so this line just has */
+            put offset("*/",n) into tEnd
+            add 1 to tEnd -- move to / of */
+            delete char 1 to tEnd of n
+         end if
          put word 1 of item 1 of n into tProp -- so don't get spaces
          put item 2 of n into tValue
          put fGetStripOuterSpace(tValue) into tValue
@@ -716,6 +734,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
          end if
          
          switch tProp
+            case "position"
+               put tValue into tPosition
+               break
             case "width"
                put tValue into tWidth
                break
@@ -859,12 +880,14 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    if tHeight > 0 then set the height of tControlName to tHeight
    
    -- set topLeft AFTER set width and height
-   
-   if kReporter is "true" then put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft" after msg
+   -- order in LC topLeft is left,top!
+   if tPosition is "relative" then
+      -- place just below lcCardLayoutToWeb control buttons on card
+      put 1,21 into tTopLeft 
+   end if
+   if kReporter is "true" then put LF & "JUST BEFORE set the topLeft of tControlName to tTopLeft, tPosition = " & tPosition after msg
    if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tTopLeft = " & tTopLeft after msg
-   
    set the topLeft of tControlName to tTopLeft
-   
    if kReporter is "true" then put LF & "JUST AFTER set the topLeft of tControlName to tTopLeft" after msg
    if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "topLeft = " & the topLeft of tControlName after msg
    
