@@ -1099,7 +1099,11 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- write html for span tag with radio button label
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put the label of control id tControl_ID after tHTML
+   if the label of control id tControl_ID is not empty then
+      put the label of control id tControl_ID after tHTML
+   else
+      put the short name of control id tControl_ID after tHTML
+   end if
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
@@ -1313,7 +1317,11 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    -- write html for span tag with checkbox name
    put tIndent & tIndent & "<span" after tHTML
    put space & "id=" & quote & tIDname & "_SPAN" & quote & ">" after tHTML
-   put the label of control id tControl_ID after tHTML
+   if the label of control id tControl_ID is not empty then
+      put the label of control id tControl_ID after tHTML
+   else
+      put the short name of control id tControl_ID after tHTML
+   end if
    put "</span>" & LF after tHTML
    -- end html for span tag with checkbox name
    -- write html for end of label tag
