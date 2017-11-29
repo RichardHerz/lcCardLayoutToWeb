@@ -41,16 +41,17 @@ canvas {
  display: none;
 }
 
-#checkbox_Check_2_LABEL {
- width: 82px;
- height: 23px;
- left: 130px;
- top: 204px;
-}
-
-#checkbox_Check_2_SPAN {
- margin-left: 22px;
- line-height: 18px;
+#field_example_label {
+ position: absolute;
+ left: 59px;
+ top: 45px;
+ width: 371px;
+ height: 91px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
  font-size: 16px;
 }
 
@@ -67,17 +68,16 @@ canvas {
  font-size: 16px;
 }
 
-#field_Field {
- position: absolute;
- left: 91px;
- top: 260px;
- width: 358px;
- height: 103px;
- border-width: 2px;
- visibility: visible;
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+#checkbox_Check_2_LABEL {
+ width: 82px;
+ height: 23px;
+ left: 130px;
+ top: 204px;
+}
+
+#checkbox_Check_2_SPAN {
+ margin-left: 22px;
+ line-height: 18px;
  font-size: 16px;
 }
 
@@ -95,22 +95,25 @@ canvas {
  font-size: 16px;
 }
 
-#input_field_Field {
+#field_output_field {
  position: absolute;
  left: 62px;
- top: 65px;
- width: 396px;
- height: 79px;
+ top: 257px;
+ width: 384px;
+ height: 139px;
+ border-width: 2px;
  visibility: visible;
+ border-style: outset;
  opacity: 1;
  LCvScrollbar: false;
+ font-size: 16px;
 }
 
 #div_sandbox_group {
  display: block;
  position: absolute;
- left: 64px;
- top: 408px;
+ left: 60px;
+ top: 438px;
  width: 516px;
  height: 223px;
  visibility: visible;
@@ -119,4 +122,3 @@ canvas {
  opacity: 1;
  LCvScrollbar: false;
 }
-
