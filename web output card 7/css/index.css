@@ -55,29 +55,43 @@ canvas {
  font-size: 16px;
 }
 
-#checkbox_Check_1_LABEL {
- width: 82px;
- height: 23px;
- left: 130px;
- top: 173px;
+#div_radio_group_1 {
+ display: block;
+ position: absolute;
+ left: 132px;
+ top: 170px;
+ width: 141px;
+ height: 65px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
 }
 
-#checkbox_Check_1_SPAN {
+#radio_Radio_button_1_LABEL {
+ width: 139px;
+ height: 23px;
+ left: 6px;
+ top: 6px;
+}
+
+#radio_Radio_button_1_SPAN {
  margin-left: 22px;
- line-height: 18px;
+ line-height: 22px;
  font-size: 16px;
 }
 
-#checkbox_Check_2_LABEL {
- width: 82px;
+#radio_Radio_button_2_LABEL {
+ width: 139px;
  height: 23px;
- left: 130px;
- top: 204px;
+ left: 6px;
+ top: 36px;
 }
 
-#checkbox_Check_2_SPAN {
+#radio_Radio_button_2_SPAN {
  margin-left: 22px;
- line-height: 18px;
+ line-height: 22px;
  font-size: 16px;
 }
 

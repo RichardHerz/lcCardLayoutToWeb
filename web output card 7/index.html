@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<!-- load style sheets for this lab  -->
+<link rel="stylesheet" href="css/index.css">
+<!-- load main JAVASCRIPT for this lab -->
+<script language="javascript" src="js/process_main.js" type="text/javascript"></script>
+</head>
+<body>
+<p id="field_output_field">
+
+</p>
+<p id="field_output_label">
+Output:
+</p>
+<p id="field_example_label">
+Radio button examples:
+<br>
+<br>Click the radio buttons. Related radio buttons must have the same "name"
+attribute to coordinate their operation.
+</p>
+<div id="div_radio_group_1">
+   <label id="radio_Radio_button_1_LABEL" name="radio_of_group_radio_group_1">
+      <input type="radio" id="radio_Radio_button_1" name="radio_of_group_radio_group_1" checked
+        onchange = "check_radio_buttons()">
+      <span id="radio_Radio_button_1_SPAN">Radio button 1</span>
+    </label>
+   <label id="radio_Radio_button_2_LABEL" name="radio_of_group_radio_group_1">
+      <input type="radio" id="radio_Radio_button_2" name="radio_of_group_radio_group_1"
+        onchange = "check_radio_buttons()">
+      <span id="radio_Radio_button_2_SPAN">Radio button 2</span>
+   </label>
+</div> <!-- end of div div_radio_group_1 -->
+</body>
+</html>
