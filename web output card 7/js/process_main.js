@@ -6,27 +6,10 @@
 */
 
 // DISPLAY INITIAL STATE ON OPEN WINDOW
-window.onload = check_radio_buttons;
+window.onload = reset;
 
-function check_radio_buttons() {
+function reset() {
 
-  var el1 = document.querySelector('#radio_Radio_button_1');
-  var el2 = document.querySelector('#radio_Radio_button_2');
-
-  if (el1.checked && el2.checked) {
-    document.getElementById("field_output_field").innerHTML = "buttons 1 & 2 are checked";
-  }
-
-  if (el1.checked && !el2.checked) {
-    document.getElementById("field_output_field").innerHTML = "button 1 is checked";
-  }
-
-  if (!el1.checked && el2.checked) {
-    document.getElementById("field_output_field").innerHTML = "button 2 is checked";
-  }
-
-  if (!el1.checked && !el2.checked) {
-    document.getElementById("field_output_field").innerHTML = "neither button is checked";
-  }
+  document.getElementById("field_output_field").innerHTML = "0";
 
 }
