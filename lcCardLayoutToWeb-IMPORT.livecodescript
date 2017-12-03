@@ -32,7 +32,7 @@ constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
 -- or use a special value to activate only selected reports below
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
-constant kReporter = "false"
+constant kReporter = "true"
 
 local oScrollbarList -- used to set the vScrollbar of groups
 
@@ -520,6 +520,14 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    -- ASSUMES no spaces outside of quotes in, e.g., pTargetName="target value"
    -- ASSUMES tSkipChar points to < of <parentTag
    
+   if kReporter is "true" then put LF & LF & "=!=!=!=!=!= ENTER fGetHtmlAttribute =!=!=!=!=!=" after msg
+   if kReporter is "true" then put LF & "tSkipChar =" & tSkipChar after msg
+   if kReporter is "true" then put LF & "-------------------------------" after msg
+   if kReporter is "true" then put LF & "pFileData =" & LF & pFileData after msg
+   if kReporter is "true" then put LF & "-------------------------------" after msg
+   if kReporter is "true" then put LF & "pTargetName =" & pTargetName after msg
+   if kReporter is "true" then put LF & "-------------------------------" after msg
+   
    -- previously had trouble for this:  target=""
    -- so revised original script to a more complex script below
    
@@ -529,9 +537,7 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    -- search below only in this tag
    put char tSkipChar to tTagEndChar of pFileData into tTagData
    
-   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, pTargetName = " & pTargetName after msg -- development field
-   
-   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, tTagData = " & tTagData after msg -- development field
+   if kReporter is "true" then put LF & "fGetHtmlAttribute, tTagData = " & tTagData after msg -- development field
    
    -- ASSUME no space between pTargetName and ="
    put offset(pTargetName & "=" & quote, tTagData) into tTargetStartChar
@@ -558,7 +564,20 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
       end if
    end if
    
-   if kReporter is "TEST" then put LF & "fGetHtmlAttribute, tTargetValue to RETURN = " & tTargetValue & LF after msg -- development field
+   -- fix problem when control added by hand to html file and not by export from this project
+   -- will have no html id attribute, so need to supply one 
+   if pTargetName is "id" then
+      if tTargetValue is empty then
+         -- need to create a unique id to use for name of future control
+         -- which hasn't been created yet, so can't use it's new livecode id
+         put the number of controls of this card into tNum
+         add 1 to tNum
+         put "control" && tNum into tTargetValue
+      end if
+   end if
+   
+   if kReporter is "true" then put LF & "leaving fGetHtmlAttribute, tTargetValue to RETURN = " & tTargetValue & LF after msg -- development field
+   if kReporter is "true" then put LF & LF & "=!=!=!=!=!= LEAVE fGetHtmlAttribute =!=!=!=!=!=" after msg
    
    return tTargetValue
 end fGetHtmlAttribute
@@ -569,6 +588,9 @@ function fGetHtmlEvents pSkipChar, pHtmlFileData
    -- uses function fGetHtmlAttribute
    -- returns any html events and javascript functions they invoke
    -- input param pSkipChar points to "<" at start of tag in pHtmlFileData
+   
+   if kReporter is "true" then put LF & LF & "=*=*=*=*=*= ENTER fGetHtmlEvents =*=*=*=*=*=" after msg
+   
    put 0 into tCounter
    repeat for each item tEvent in kEventList -- kEventList is a constant of this script
       put fGetHtmlAttribute(pSkipChar, pHtmlFileData, tEvent) into tEventCode
@@ -578,6 +600,10 @@ function fGetHtmlEvents pSkipChar, pHtmlFileData
          put tEventCode into item 2 of line tCounter of tEventCodeLines
       end if
    end repeat
+   
+   if kReporter is "true" then put LF & "leaving fGetHtmlEvents, tEventCodeLines = " & LF & tEventCodeLines after msg
+   if kReporter is "true" then put LF & LF & "=*=*=*=*=*= LEAVE fGetHtmlEvents =*=*=*=*=*=" after msg
+   
    return tEventCodeLines
 end fGetHtmlEvents
 
@@ -635,7 +661,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    -- for example, tControlName = button "radio 2"
    -- the long name does not work, at least when control is inside a group
    
-   if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
+   if kReporter is "true" then put LF & LF & "========== ENTER fGetSetControlProps =========" after msg
+   if kReporter is "true" then put LF & "fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
    if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, pID = " & LF & pID & LF after msg
    
    put empty into tCssData
@@ -892,7 +919,9 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "topLeft = " & the topLeft of tControlName after msg
    
    if kReporter is "true" then put LF & "just before end fGetSetControlProps, return tTransformFlag = " & tTransformFlag after msg
-   -- return transform flag, which will be false or number of degrees of rotation, assume rotation only here
+   if kReporter is "true" then put LF & "========== LEAVE fGetSetControlProps =========" after msg 
+   
+   -- return transform flag, which will be false or number of degrees of rotation, assume rotation only here  
    return tTransformFlag
 end fGetSetControlProps
 
@@ -1305,11 +1334,25 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- tSkipChar points to < of <p
    -- need to return updated tSkipChar
    
+   if kReporter is "true" then put LF & "====== ENTER fImportLockedField =====" after msg
+   if kReporter is "true" then put LF & "tSkipChar = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "------------------------------------" after msg
+   if kReporter is "true" then put LF & "pHtmlFileData = " & LF & pHtmlFileData after msg
+   if kReporter is "true" then put LF & "------------------------------------" after msg
+   if kReporter is "true" then put LF & "pCssFileData = " & LF & pCssFileData after msg
+   if kReporter is "true" then put LF & "------------------------------------" after msg
+   if kReporter is "true" then put LF & "tGrpLocList = " & LF & tGrpLocList after msg
+   if kReporter is "true" then put LF & "===========================" after msg
+   
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
    
+   if kReporter is "true" then put LF & "JUST AFTER GET CONTROL ID, tID = " & tID after msg
+   
    -- GET ANY HTML EVENT CODE
    put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   
+   if kReporter is "true" then put LF & "JUST AFTER GET ANY HTML EVENT CODE,  tEventCodeLines = " & LF & tEventCodeLines after msg
    
    put tID into tField
    replace "_" with space in tField
@@ -1342,7 +1385,8 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetStripOuterSpace(tPcontents) into tPcontents -- e.g., strip spaces
    
    set the htmlText of field tField to tPcontents
-   -- Note: this preserves links <a> tags but won't appear in LC with same color, etc., as in web browser
+   -- Note: this preserves <a> tag links but won't appear in LC with same color, etc., as in web browser
+   --  get the htmlText of the field in the LC card to see the <a> tag link
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -1361,7 +1405,8 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    set the textHeight of field tField to 16
    set the fixedLineHeight of field tField to true
    
-   if kReporter is "true" then put LF & "just before end of fImportLockedField" & LF after msg
+   if kReporter is "true" then put LF & "just before end of fImportLockedField, return tSkipChar = " & tSkipChar & LF after msg
+   if kReporter is "true" then put LF & "====== LEAVE fImportLockedField =====" after msg
    
    -- return updated tSkipChar
    -- which was updated above in fImportLockedField

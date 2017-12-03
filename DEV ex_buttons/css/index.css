@@ -41,12 +41,26 @@ canvas {
  display: none;
 }
 
-#field_control_11 {
+#field_output_field {
  position: absolute;
- left: 0px;
- top: 0px;
- width: 128px;
- height: 32px;
+ left: 62px;
+ top: 257px;
+ width: 384px;
+ height: 139px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
+ font-size: 16px;
+}
+
+#field_output_label {
+ position: absolute;
+ left: 90px;
+ top: 230px;
+ width: 91px;
+ height: 24px;
  border-width: 2px;
  visibility: visible;
  border-style: none;
@@ -55,3 +69,26 @@ canvas {
  font-size: 16px;
 }
 
+#button_1 {
+ position: absolute;
+ left: 66px;
+ top: 190px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
+
+#button_2 {
+ position: absolute;
+ left: 165px;
+ top: 190px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+}
