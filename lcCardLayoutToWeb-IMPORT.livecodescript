@@ -32,7 +32,7 @@ constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
 -- or use a special value to activate only selected reports below
 -- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
-constant kReporter = "true"
+constant kReporter = "false"
 
 local oScrollbarList -- used to set the vScrollbar of groups
 
