@@ -523,8 +523,8 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    if kReporter is "true" then put LF & LF & "=!=!=!=!=!= ENTER fGetHtmlAttribute =!=!=!=!=!=" after msg
    if kReporter is "true" then put LF & "tSkipChar =" & tSkipChar after msg
    if kReporter is "true" then put LF & "-------------------------------" after msg
-   if kReporter is "true" then put LF & "pFileData =" & LF & pFileData after msg
-   if kReporter is "true" then put LF & "-------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pFileData =" & LF & pFileData after msg
+   --    if kReporter is "true" then put LF & "-------------------------------" after msg
    if kReporter is "true" then put LF & "pTargetName =" & pTargetName after msg
    if kReporter is "true" then put LF & "-------------------------------" after msg
    
@@ -1078,6 +1078,12 @@ function fImportGroupStart tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGr
    -- "div" added in export, others added later might not have it
    if word 1 of tGroup is "div" then delete word 1 of tGroup -- delete div
    
+   if tGroup is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "div" & space before tGroup
+   end if
+   
    -- UPDATE tGrpList
    put the number of lines of tGrpList into tLines
    add 1 to tLines
@@ -1206,6 +1212,13 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tButton
    -- "select" added in export, others added later might not have it
    if word 1 of tButton is "select" then delete word 1 of tButton 
+   
+   if tButton is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "select" & space before tButton
+   end if
+   
    if kReporter is "true" then put LF & "JUST BEFORE CREATE button tButton  = " & tButton after msg
    
    create button tButton
@@ -1292,6 +1305,13 @@ function fImportImage tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tImage
    -- "image" added in export, others added later might not have it
    if word 1 of tImage is "image" then delete word 1 of tImage 
+   
+   if tImage is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "image" & space before tImage
+   end if
+   
    if kReporter is "true" then put LF & "JUST BEFORE CREATE IMAGE tImage = " & tImage after msg
    create image tImage
    -- set the showBorder of image tImage to true -- during development if need to see rect
@@ -1337,10 +1357,10 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if kReporter is "true" then put LF & "====== ENTER fImportLockedField =====" after msg
    if kReporter is "true" then put LF & "tSkipChar = " & tSkipChar after msg
    if kReporter is "true" then put LF & "------------------------------------" after msg
-   if kReporter is "true" then put LF & "pHtmlFileData = " & LF & pHtmlFileData after msg
-   if kReporter is "true" then put LF & "------------------------------------" after msg
-   if kReporter is "true" then put LF & "pCssFileData = " & LF & pCssFileData after msg
-   if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pHtmlFileData = " & LF & pHtmlFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pCssFileData = " & LF & pCssFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
    if kReporter is "true" then put LF & "tGrpLocList = " & LF & tGrpLocList after msg
    if kReporter is "true" then put LF & "===========================" after msg
    
@@ -1358,6 +1378,13 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tField
    -- "field" added in export, others added later might not have it
    if word 1 of tField is "field" then delete word 1 of tField 
+   
+   if tField is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "field" & space before tField
+   end if
+   
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    
    create field tField
@@ -1517,6 +1544,13 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    -- "input_field" added in export of unlocked field, others added later might not have it
    if word 1 of tField is "input" then delete word 1 of tField 
    if word 1 of tField is "field" then delete word 1 of tField
+   
+   if tField is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "input field" & space before tField
+   end if
+   
    if kReporter is "true" then put LF & "JUST BEFORE CREATE FIELD tField = " & tField after msg
    
    create field tField
@@ -1551,6 +1585,16 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    -- called by function fImportInputTag
    -- EXAMPLE: <input type="button" id="button_resetButton_1177" value="Reset" onclick="resetThisLab()"></input>
    
+   if kReporter is "true" then put LF & "====== ENTER fImportStandardButton =====" after msg
+   if kReporter is "true" then put LF & "tSkipChar = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pHtmlFileData = " & LF & pHtmlFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pCssFileData = " & LF & pCssFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
+   if kReporter is "true" then put LF & "tGrpLocList = " & LF & tGrpLocList after msg
+   if kReporter is "true" then put LF & "===========================" after msg
+   
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
    
@@ -1559,6 +1603,12 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    replace "_" with space in tButton
    -- "button" added in export, others added later might not have it
    if word 1 of tButton is "button" then delete word 1 of tButton
+   
+   if tButton is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "button" & space before tButton
+   end if
    
    -- GET VALUE
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
@@ -1584,7 +1634,8 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   if kReporter is "true" then put LF & "just before end fImportStandardButton" & LF after msg
+   if kReporter is "true" then put LF & "======== LEAVE fImportStandardButton =========" after msg
+   
    return empty -- no need to return tSkipChar
 end fImportStandardButton
 
@@ -1605,6 +1656,12 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    replace "_" with space in tScrollbar
    -- "range" added in export, others added later might not have it
    if word 1 of tScrollbar is "range" then delete word 1 of tScrollbar
+   
+   if tScrollbar is a number then
+      -- reference to name then will get control with this layer number, not necessarily this control!
+      -- this can happen with a control added by hand to html file and not by export
+      put "range" & space before tScrollbar
+   end if
    
    -- GET VALUE, IF ANY
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "value") into tValue
