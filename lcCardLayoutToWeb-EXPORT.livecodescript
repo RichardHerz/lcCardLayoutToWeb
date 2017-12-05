@@ -493,8 +493,11 @@ on exportWebPage
             put tResult["css"] after tCSS
             break
          default
-            answer "unknown control, id, long name = " & LF & tControl_ID & LF & the long name of control tControlNumber
-            put "*********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber & LF after tHTML
+            if kReporter is "true" then
+               put "unknown control, id, long name = " & LF & tControl_ID & LF & the long name of control tControlNumber & LF after msg
+            end if
+            -- **UNKNOWN CONTROL** referenced at end this command so edit if change text here
+            put "<!-- *********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber && "-->" & LF after tHTML
       end switch
    end repeat
    
@@ -549,6 +552,10 @@ on exportWebPage
    close file tCssFilePath
    
    beep
+   
+   if tHTML contains "**UNKNOWN CONTROL**" then
+      answer "Unknown controls were detected - see comments **UNKNOWN CONTROL** in HTML file for info"
+   end if
    
 end exportWebPage
 

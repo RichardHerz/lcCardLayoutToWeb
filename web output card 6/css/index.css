@@ -41,17 +41,16 @@ canvas {
  display: none;
 }
 
-#field_example_label {
- position: absolute;
- left: 59px;
- top: 45px;
- width: 371px;
- height: 91px;
- border-width: 2px;
- visibility: visible;
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+#checkbox_Check_2_LABEL {
+ width: 82px;
+ height: 23px;
+ left: 130px;
+ top: 204px;
+}
+
+#checkbox_Check_2_SPAN {
+ margin-left: 22px;
+ line-height: 18px;
  font-size: 16px;
 }
 
@@ -68,16 +67,17 @@ canvas {
  font-size: 16px;
 }
 
-#checkbox_Check_2_LABEL {
- width: 82px;
- height: 23px;
- left: 130px;
- top: 204px;
-}
-
-#checkbox_Check_2_SPAN {
- margin-left: 22px;
- line-height: 18px;
+#field_output_field {
+ position: absolute;
+ left: 62px;
+ top: 257px;
+ width: 384px;
+ height: 139px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
  font-size: 16px;
 }
 
@@ -95,12 +95,12 @@ canvas {
  font-size: 16px;
 }
 
-#field_output_field {
+#field_example_label {
  position: absolute;
- left: 62px;
- top: 257px;
- width: 384px;
- height: 139px;
+ left: 59px;
+ top: 45px;
+ width: 371px;
+ height: 91px;
  border-width: 2px;
  visibility: visible;
  border-style: outset;
@@ -108,3 +108,18 @@ canvas {
  LCvScrollbar: false;
  font-size: 16px;
 }
+
+#div_sandbox_group {
+ display: block;
+ position: absolute;
+ left: 60px;
+ top: 438px;
+ width: 516px;
+ height: 223px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
+ LCvScrollbar: false;
+}
+
