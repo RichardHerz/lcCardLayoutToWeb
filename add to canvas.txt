@@ -1,9 +1,11 @@
 canvas HTML elements need this special handling on export and import 
 
 HTML 
-    <!-- canvas needs width & height to be specified here and not in CSS -->
+
+   <canvas id="canvas_CANVAS_rate" width='499' height='80'></canvas> <!-- canvas for colormap graphic -->
+   <!-- canvas element width & height must be specified here in HTML and not in CSS -->
   
 CSS
 
-/* canvas width & height must be set in HTML */ 
+ /* canvas element width & height must be set in HTML and not in CSS */ 
 
