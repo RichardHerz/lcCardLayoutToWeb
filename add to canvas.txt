@@ -1,0 +1,9 @@
+canvas HTML elements need this special handling on export and import 
+
+HTML 
+    <!-- canvas needs width & height to be specified here and not in CSS -->
+  
+CSS
+
+/* canvas width & height must be set in HTML */ 
+
