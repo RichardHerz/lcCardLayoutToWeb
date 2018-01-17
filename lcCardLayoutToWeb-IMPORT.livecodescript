@@ -328,7 +328,7 @@ function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- this is to import an LC button that represents the area of an HTML CANVAS element
    -- used for generating images on HTML canvas by Javascript
    -- need to return updated tSkipChar
-   -- EXAMPLE: <canvas id="canvas_CANVAS_rate"></canvas> 
+   -- EXAMPLE: <canvas id="canvas_CANVAS_rate" width="400" height="200"></canvas> <!-- ... etc.
    
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
@@ -349,10 +349,24 @@ function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    set the showBorder of button tCanvas to true
    set the borderWidth of button tCanvas to 2
    set the backColor of button tCanvas to 0,255,0
-     
-   -- GET CSS & SET CONTROL PROPERTIES
+   
+   -- NOTE new button representing canvas will get LC default width & height since none 
+   -- specified in CSS for canvas elements
+   -- need to get width and height from HTML and set the new button 
+   -- EXAMPLE: <canvas id="canvas_CANVAS_rate" width="400" height="200"></canvas> <!-- ... etc.
+   --
+   -- NOTE must use quotes (width="400") and not apostrophes (width='400') nor neither (width=400)
+   -- and no units (px) nor spaces for import by this project - see function fGetHtmlAttribute in IMPORT script stack
    
    put the long name of button tCanvas into tControlLongName -- NOTE button tCanvas
+   
+   -- FIRST GET WIDTH & HEIGHT FROM HTML & SET
+   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "width") into tWidth
+   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "height") into tHeight
+   set the width of button tControlLongName to tWidth
+   set the height of button tControlLongName to tHeight
+   
+   -- THEN GET CSS & SET OTHER CONTROL PROPERTIES 
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
    -- update tSkipChar before returning
@@ -360,6 +374,7 @@ function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    add tEndChar to tSkipChar
    put offset(">",pHtmlFileData,tSkipChar) into tEndChar
    add tEndChar to tSkipChar
+   
    return tSkipChar
 end fImportCANVAS
 
