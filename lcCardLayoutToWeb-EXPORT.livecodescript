@@ -1237,18 +1237,57 @@ function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- this is for an LC button representing the area of an HTML CANVAS element
    -- (elsewhere I may have used "plotCanvas" for groups/divs for use with flot.js plotting)
    -- HTML EXAMPLE:  <canvas id="canvas_CANVAS_rate"></canvas>
-   put tIndent & "<canvas" into tHTML
-   put fIDname(tControl_ID) into tIDname
-   put space & "id=" & quote & tIDname & quote & ">" after tHTML
-   put "</canvas>" & LF after tHTML
-   -- end html
+   -- NOTE: width and height are special for canvas elements
+   -- so get props first for CSS and then edit
    -- write css
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
-   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
+   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) into tTempCSS
+   -- now need to get width and height for HTML and delete from CSS
+   -- THIS IS WHAT IS IN tTempCSS
+   --    put space & "width:" && tWd & "px;" & LF after tCSS
+   --    put space & "height:" && tHt & "px;" & LF after tCSS
+   put lineOffset("width:",tTempCSS) into tLineWd
+   put line tLineWd of tTempCSS into tTempWd
+   put lineOffset("height:",tTempCSS) into tLineHt
+   put line tLineHt of tTempCSS into tTempHt
+   -- delete lines from tTempCSS, higher number line first, and add comment
+   if tLineHt > tLineWd then
+      delete line tLineHt of tTempCSS
+      put space & "/* canvas element width & height must be set in HTML and not in CSS */" into line tLineWd of tTempCSS
+   else
+      delete line tLineWd of tTempCSS
+      put space & "/* canvas element width & height must be set in HTML and not in CSS */" into line tLineHt of tTempCSS
+   end if
+   put tTempCSS after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
-   -- end of css
+   -- end of css 
+   -- now extract width and height from tTempWd and tTempHt
+   -- 300 w x 150 h is default for canvas element unless specify otherwise in HTML
+   put 300 into tWidth
+   put 150 into tHeight
+   -- THIS IS WHAT IS IN tTempCSS
+   --    put space & "width:" && tWd & "px;" & LF after tCSS
+   --    put space & "height:" && tHt & "px;" & LF after tCSS
+   put word 2 of tTempWd into tWidth
+   put word 2 of tTempHt into tHeight
+   -- delete "px;" (3 chars) since don't use units here in HTML
+   repeat 3 times
+      delete the last char of tWidth
+      delete the last char of tHeight
+   end repeat
+   put tIndent & "<canvas" into tHTML
+   put fIDname(tControl_ID) into tIDname
+   put space & "id=" & quote & tIDname & quote after tHTML 
+   -- add width and height here in HTML for canvas elements
+   -- NOTE must use quotes (width="400") and not apostrophes (width='400') nor neither (width=400)
+   -- and no spaces for later import by this project - see function fGetHtmlAttribute in IMPORT script stack
+   put space & "width=" & quote & tWidth & quote && "height=" & quote & tHeight & quote & ">" after tHTML
+   put "</canvas>" && "<!-- canvas for colormap graphic -->" & LF after tHTML
+   -- add comment explaining special width and height
+   put tIndent & "<!-- canvas element width & height must be specified here in HTML and not in CSS -->" & LF after tHTML
+   -- end of html
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
