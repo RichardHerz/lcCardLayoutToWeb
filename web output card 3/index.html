@@ -30,11 +30,6 @@
 
 </head>
 <body>
-<!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
-<!-- SAMPLE USE: document.getElementById("dev01").innerHTML = "text = " + value -->
-<p id="field_Field_0_1173">
-<a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
-</p>
 <div id="div_simulation_frame_1174">
    <p id="field_run_counter">
       
@@ -56,7 +51,7 @@
             <span id="radio_Model_1_SPAN">Model 1: AS &#8640; B + S</span>
       </label>
       <label id="radio_Model_2_LABEL" name="radio_of_group_RADIO_group_Model">
-            <input type="radio" id="radio_Model_2" name="radio_of_group_RADIO_group_Model" checked onchange="puCatalystLayer.updateUIparams()">
+            <input type="radio" id="radio_Model_2" name="radio_of_group_RADIO_group_Model" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Model_2_SPAN">Model 2: AS + S &#8640; B + 2S</span>
       </label>
    </div> <!-- end of div div_RADIO_group_Model -->
@@ -118,7 +113,7 @@
    </input>
    <div id="div_RADIO_group_1213">
       <label id="radio_Sine_1214_LABEL" name="radio_of_group_RADIO_group_1213">
-            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" checked onchange="puCatalystLayer.updateUIparams()">
+            <input type="radio" id="radio_Sine_1214" name="radio_of_group_RADIO_group_1213" onchange="puCatalystLayer.updateUIparams()">
             <span id="radio_Sine_1214_SPAN">Sine</span>
       </label>
       <label id="radio_Constant_1215_LABEL" name="radio_of_group_RADIO_group_1213">
@@ -130,7 +125,7 @@
             <span id="radio_Square_1216_SPAN">Square</span>
       </label>
       <label id="checkbox_on_1231_LABEL">
-            <input type="checkbox" id="checkbox_on_1231" checked onchange="puCatalystLayer.updateUIparams()">
+            <input type="checkbox" id="checkbox_on_1231" onchange="puCatalystLayer.updateUIparams()">
             <span id="checkbox_on_1231_SPAN">on</span>
       </label>
    </div> <!-- end of div div_RADIO_group_1213 -->
@@ -187,7 +182,13 @@
       <font color="#0000FF">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
    </p>
    <img id="image_reactor_image" src="images/reactor.png">
-   <canvas id="canvas_CANVAS_rate"></canvas>
+   <canvas id="canvas_CANVAS_rate" width="414" height="80"></canvas> <!-- canvas for colormap graphic -->
+   <!-- canvas element width & height must be specified here in HTML and not in CSS -->
 </div> <!-- end of div div_simulation_frame_1174 -->
+<p id="field_Field_0_1173">
+<a href="http://reactorlab.net/web-app-experiments/">Back</a> to Reactor Lab Web Labs at ReactorLab.net
+</p>
+<!-- FIELDS USED TO DISPLAY DATA DURING DEVELOPMENT -->
+<!-- SAMPLE USE: document.getElementById("dev01").innerHTML = "text = " + value -->
 </body>
 </html>

@@ -44,10 +44,10 @@ canvas {
 #div_simulation_frame {
  display: block;
  position: absolute;
- left: 31px;
- top: 46px;
- width: 553px;
- height: 382px;
+ left: 30px;
+ top: 33px;
+ width: 566px;
+ height: 441px;
  visibility: visible;
  border-width: 2px;
  border-style: outset;
@@ -59,7 +59,7 @@ canvas {
  display: block;
  position: absolute;
  left: 33px;
- top: 6px;
+ top: 65px;
  width: 262px;
  height: 93px;
  visibility: visible;
@@ -117,7 +117,7 @@ canvas {
  height: 21px;
  border-width: 2px;
  visibility: visible;
- border-style: outset;
+ border-style: dotted;
  opacity: 1;
  LCvScrollbar: false;
  font-size: 16px;
@@ -165,7 +165,7 @@ canvas {
  display: block;
  position: absolute;
  left: 307px;
- top: 30px;
+ top: 89px;
  width: 95px;
  height: 63px;
  visibility: visible;
@@ -205,7 +205,7 @@ canvas {
  width: 82px;
  height: 23px;
  left: 180px;
- top: 113px;
+ top: 172px;
 }
 
 #checkbox_Check1_SPAN {
@@ -217,7 +217,7 @@ canvas {
 #image_robo_99_png {
  position: absolute;
  left: 6px;
- top: 166px;
+ top: 225px;
  width: 178px;
  height: 193px;
  visibility: visible;
@@ -229,7 +229,7 @@ canvas {
 #input_field_unlocked_field_1 {
  position: absolute;
  left: 250px;
- top: 216px;
+ top: 275px;
  width: 100px;
  height: 21px;
  visibility: visible;
@@ -239,7 +239,7 @@ canvas {
 
 #range_slider_horiz {
  left: 313px;
- top: 279px;
+ top: 338px;
  width: 187px;
  height: 22px;
 }
@@ -247,7 +247,7 @@ canvas {
 #select_Option_Menu {
  position: absolute;
  left: 358px;
- top: 179px;
+ top: 238px;
  width: 102px;
  height: 22px;
  visibility: visible;
@@ -259,7 +259,7 @@ canvas {
 #select_Pulldown_Menu {
  position: absolute;
  left: 445px;
- top: 224px;
+ top: 283px;
  width: 102px;
  height: 22px;
  visibility: visible;
@@ -271,7 +271,7 @@ canvas {
 #range_slider_vert {
  transform: rotate(270deg);
  left: 186.5px;
- top: 284px;
+ top: 343px;
  width: 120px;
  height: 22px;
 }
@@ -279,11 +279,25 @@ canvas {
 #input_field_unlocked_field_2 {
  position: absolute;
  left: 251px;
- top: 355px;
+ top: 414px;
  width: 100px;
  height: 21px;
  visibility: visible;
  opacity: 1;
  LCvScrollbar: false;
+}
+
+#field_instructions {
+ position: absolute;
+ left: 30px;
+ top: -10px;
+ width: 530px;
+ height: 49px;
+ border-width: 2px;
+ visibility: visible;
+ border-style: dotted;
+ opacity: 1;
+ LCvScrollbar: false;
+ font-size: 16px;
 }
 

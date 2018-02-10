@@ -41,11 +41,25 @@ canvas {
  display: none;
 }
 
+#div_sim_frame {
+ display: block;
+ position: absolute;
+ left: 159px;
+ top: 129px;
+ width: 322px;
+ height: 182px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: none;
+ opacity: 1;
+ LCvScrollbar: false;
+}
+
 #div_group_surrounding_plotdiv {
  display: block;
  position: absolute;
- left: 217px;
- top: 167px;
+ left: 58px;
+ top: 38px;
  width: 260px;
  height: 140px;
  visibility: visible;
@@ -67,5 +81,17 @@ canvas {
  border-style: dotted;
  opacity: 1;
  LCvScrollbar: false;
+}
+
+#button_Button {
+ position: absolute;
+ left: 4px;
+ top: 4px;
+ width: 82px;
+ height: 23px;
+ visibility: visible;
+ border-width: 2px;
+ border-style: outset;
+ opacity: 1;
 }
 
