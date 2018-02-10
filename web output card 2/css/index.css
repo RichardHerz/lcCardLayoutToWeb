@@ -117,7 +117,7 @@ canvas {
  height: 21px;
  border-width: 2px;
  visibility: visible;
- border-style: outset;
+ border-style: dotted;
  opacity: 1;
  LCvScrollbar: false;
  font-size: 16px;

@@ -100,7 +100,7 @@ canvas {
  height: 568px;
  border-width: 2px;
  visibility: visible;
- border-style: outset;
+ border-style: dotted;
  opacity: 1;
  LCvScrollbar: true;
  font-size: 16px;

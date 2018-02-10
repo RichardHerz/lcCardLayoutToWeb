@@ -401,6 +401,7 @@ on exportWebPage
             put the long name of ttemp into ttemp
             put the id of ttemp into ttempID
             get fIDname(ttempID)
+            -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
             put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
             put tNewLine after tHTML
             
@@ -522,6 +523,7 @@ on exportWebPage
       put the long name of ttemp into ttemp
       put the id of ttemp into ttempID
       get fIDname(ttempID)
+      -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
       put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
@@ -1247,7 +1249,8 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put space & "id=" & quote & tIDname & quote after tHTML
    put ">" & LF after tHTML
    -- new for PLOTDIV - terminate the empty div immediately
-   put tIndent & tOneIndent & "</div> <!-- end of" && tIDname && "-->" & LF after tHTML
+   -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
+   put tIndent & tOneIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
    -- end of html
    -- write css
    put fIDname(tControl_ID) into tIDname
