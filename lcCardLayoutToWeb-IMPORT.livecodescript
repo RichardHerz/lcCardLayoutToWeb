@@ -72,7 +72,7 @@ end deleteNonDevControls
    
    -----------------------------
    
-   on importWebPage
+on importWebPage
    
    -- calls function fMakeLiveCodeCard
    
@@ -244,7 +244,18 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       end if
       switch tTagName
          case "div"
-            -- import div = group
+            -- check if PLOTDIV div or regular div
+            put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
+            if "_PLOTDIV_" is in tID then
+               -- special html div for x-y plot to be imported as specially named LC button
+               if kReporter is "true" then put LF & "JUST BEFORE get fImportPLOTDIV, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
+               if kReporter is "true" then put LF & "JUST BEFORE get fImportPLOTDIV, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
+               put fImportPLOTDIV(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+               if kReporter is "true" then -- ELSE DID NOT LIKE SINGLE LINE IF HERE
+               put LF & "JUST AFTER get fImportPLOTDIV, tSkipChar = " & tSkipChar & LF after msg
+            end if
+         else
+            -- import regular html div = LC group
             if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
             if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
             get fImportGroupStart(tSkipChar, pHtmlFileData, pCssFileData, tGrpList, tGrpLocList)
@@ -254,81 +265,87 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
             put tResult["GrpLocList"] into tGrpLocList
             if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
             if kReporter is "true" then put LF & "JUST AFTER get fImportGroupStart, tGrpLocList = " & "---||" & tGrpLocList & "||---" & LF after msg
-            break
-         case "p"
-            -- import p = locked field
-            put fImportLockedField(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "img"
-            -- import img = image
-            put fImportImage(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "select"
-            -- import select = menu button
-            put fImportMenuButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "input"
-            -- import input that are not inside <label tags
-            -- 3 types: none = unlocked field, button = button, range = slider
-            put fImportInputTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "label"
-            -- import label
-            -- need to look for <input inside
-            -- two input types: checkbox, radio button
-            -- <label <input followed by <span
-            put fImportLabelTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "canvas"
-            put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
-            break
-         case "script"
-            -- these are script tags in html body outside other tags
-            put fImportScriptTag(tSkipChar, pHtmlFileData) into tSkipChar
-            break
-         case "!--"
-            -- these are comment tags in html body outside other tags
-            put fImportCommentTag(tSkipChar, pHtmlFileData) into tSkipChar
-            break
-         default
-            --  ignore for now
-      end switch
-   end repeat
-   
-   -- save comment list, if any
-   if tCommentList is empty then
-      -- no comments found in body outside of non-div tags, other than end of div
-   else
-      put "<!-- *** START COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF before tCommentList
-      put "<!-- *** END COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF after tCommentList
-      put the cHeaderData of this card into tHeaderData
-      put LF & tCommentList after tHeaderData
-      set the cHeaderData of this card to tHeaderData
-   end if
-   
-   -- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
-   -- xxx in fGetSetControlProps changed in some unknown way the left value
-   -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
-   -- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
-   if tScrollerList is not empty then
-      set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
-      repeat for each line tLine in oScrollbarList
-         put item 1 of tLine into tControlName
-         put item 2 of tLine into tValue
+         end if
+         break
+      case "p"
+         -- import p = locked field
+         put fImportLockedField(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "img"
+         -- import img = image
+         put fImportImage(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "select"
+         -- import select = menu button
+         put fImportMenuButton(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "input"
+         -- import input that are not inside <label tags
+         -- 3 types: none = unlocked field, button = button, range = slider
+         put fImportInputTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "label"
+         -- import label
+         -- need to look for <input inside
+         -- two input types: checkbox, radio button
+         -- <label <input followed by <span
+         put fImportLabelTag(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "canvas"
+         put fImportCANVAS(tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList) into tSkipChar
+         break
+      case "script"
+         -- these are script tags in html body outside other tags
+         put fImportScriptTag(tSkipChar, pHtmlFileData) into tSkipChar
+         break
+      case "!--"
+         -- these are comment tags in html body outside other tags
+         put fImportCommentTag(tSkipChar, pHtmlFileData) into tSkipChar
+         break
+      default
+         --  ignore for now
+   end switch
+end repeat
+
+-- save comment list, if any
+if tCommentList is empty then
+   -- no comments found in body outside of non-div tags, other than end of div
+else
+   put "<!-- *** START COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF before tCommentList
+   put "<!-- *** END COLLECTION OF COMMENTS IN BODY OUTSIDE NON-DIV TAGS *** -->" & LF after tCommentList
+   put the cHeaderData of this card into tHeaderData
+   put LF & tCommentList after tHeaderData
+   set the cHeaderData of this card to tHeaderData
+end if
+
+-- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
+-- xxx in fGetSetControlProps changed in some unknown way the left value
+-- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
+-- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
+if tScrollerList is not empty then
+   set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
+   repeat for each line tLine in oScrollbarList
+      put item 1 of tLine into tControlName
+      put item 2 of tLine into tValue
+      try 
+         -- xxx for now, quick fix of plot div having LCvScrollBar but error on import to PLOTDIV button 
+         -- maybe check fGetSetControlProps and onlet add to list if name contains group (or not button?)
          set the vScrollbar of tControlName to tValue
-      end repeat
-      set the itemDelimiter to comma
-   end if
-   
+      end try
+   end repeat
+   set the itemDelimiter to comma
+end if
+
 end fMakeLiveCodeCard
 
 ----------------------------- 
 
 function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
-   -- this is to import an LC button that represents the area of an HTML CANVAS element
+   -- this is to import to LC a BUTTON that represents the area of an HTML CANVAS element
    -- used for generating images on HTML canvas by Javascript
    -- need to return updated tSkipChar
    -- EXAMPLE: <canvas id="canvas_CANVAS_rate" width="400" height="200"></canvas> <!-- ... etc.
+   -- THIS GETS IMPORTED TO LC AS A BUTTON
    
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
@@ -679,6 +696,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    if kReporter is "true" then put LF & LF & "========== ENTER fGetSetControlProps =========" after msg
    if kReporter is "true" then put LF & "fGetSetControlProps, tControlName = " & LF & tControlName & LF after msg
    if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps, pID = " & LF & pID & LF after msg
+   if kReporter is "true" then put LF & LF & "enter function fGetSetControlProps,  tGrpLocList = " & LF & tGrpLocList & LF after msg
    
    put empty into tCssData
    if pCssFileData is not empty then
@@ -883,10 +901,12 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    
    if kReporter is "true" then put LF & "---||" & tGrpLocList & "||---" after msg
    
+   if kReporter is "true" then put LF & "tTopLeft (2 items) =" && tTopLeft after msg
+   
    if tGrpLocList is not empty then
       put the last line of tGrpLocList into tLast
       if kReporter is "true" then 
-         put LF & "tLast = last line of tGrpLocList = " & tLast after msg
+         put LF & "tLast (last line of tGrpLocList) = " & tLast after msg
       end if
       add item 1 of tLast to item 1 of tTopLeft
       add item 2 of tLast to item 2 of tTopLeft
@@ -1164,17 +1184,17 @@ function fImportGroupEnd tSkipChar, tGrpList, tGrpLocList
    if kReporter is "true" then put LF & "Before delete last line, tGrpLocList = " & LF & tGrpLocList after msg
    
    -- UPDATE GROUP LIST AND GROUP LOC LIST
-      
+   
    delete the last line of tGrpList
    delete the last line of tGrpLocList
-    
+   
    -- I found, at least with LC 9 (dp6), that I had to use background and not group in this next line
    if kReporter is "true" then put LF & "JUST BEFORE STOP EDITING, the name of this background = " & the name of this background & LF after msg
-     
+   
    stop editing -- stop editing current group just has same effect as stop editing all
    
    if kReporter is "true" then put LF & "JUST AFTER stop editing" & LF after msg
-      
+   
    -- if this group was nested inside a parent group, then go back to editing that parent group
    -- this has been tested for groups nested 3 deep: grandparent > parent > child
    if tGrpList is not empty then 
@@ -1189,6 +1209,8 @@ function fImportGroupEnd tSkipChar, tGrpList, tGrpLocList
    add 1 to tSkipChar
    
    if kReporter is "true" then put LF & "return tSkipChar = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "GrpList = " & LF & GrpList after msg
+   if kReporter is "true" then put LF & "GrpLocList = " & LF & GrpLocList after msg
    if kReporter is "true" then put LF & "just before end fImportGroupEnd" & LF after msg
    
    -- RETURN RESULT
@@ -1654,6 +1676,67 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    return empty -- no need to return tSkipChar
 end fImportStandardButton
 
+-------------------------------
+
+function fImportPLOTDIV tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
+   -- this is to import to LC a BUTTON that represents the area of an HTML DIV element
+   --      used for generating x-y plots in html div by flot.js
+   -- tSkipChar points to < of parent <div 
+   -- need to return updated tSkipChar
+   -- EXAMPLE: <div id="div_PLOTDIV_my_x-y_plot" ></div>
+   
+   if kReporter is "true" then put LF & "====== ENTER fImportPLOTDIV =====" after msg
+   if kReporter is "true" then put LF & "tSkipChar = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pHtmlFileData = " & LF & pHtmlFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
+   --    if kReporter is "true" then put LF & "pCssFileData = " & LF & pCssFileData after msg
+   --    if kReporter is "true" then put LF & "------------------------------------" after msg
+   if kReporter is "true" then put LF & "tGrpLocList = " & LF & tGrpLocList after msg
+   if kReporter is "true" then put LF & "===========================" after msg
+   
+   -- GET CONTROL ID
+   put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
+   
+   -- tID used below in GET CSS - do not modify
+   put tID into tButton
+   replace "_" with space in tButton
+   -- "div" added in export for PLOTDIV, others added later might not have it
+   if word 1 of tButton is "div" then delete word 1 of tButton
+   
+   -- CREATE BUTTON
+   create button
+   set the name of it to tButton
+   if tValue is not empty then
+      set the label of button tButton to tValue
+   end if
+   
+   -- GET CSS & SET CONTROL PROPERTIES
+   
+   put the long name of button tButton into tControlLongName -- NOTE button tButton
+   get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
+   
+   set the label of button tButton to empty -- xxx without this getting label set to "tValue" 
+   set the style of button tButton to "rectangle"
+   set the showName of button tButton to "true"
+   -- maybe best to set colors of buttons representing plot divs and canvases
+   -- in LC card design rather than assigning them here? But don't currently export colors
+   -- also see fImportCANVAS for backColor
+   set the backColor of button tButton to "Cyan"
+   
+   if kReporter is "true" then put LF & "tSkipChar before update = " & tSkipChar after msg
+   
+   -- get the div end tag and update tSkipChar
+   put offset("</div>",pHtmlFileData,tSkipChar) into tEndChar
+   add 5 to tEndChar -- move from < to > in </div>
+   add tEndChar to tSkipChar
+   
+   if kReporter is "true" then put LF & "tSkipChar to return = " & tSkipChar after msg
+   if kReporter is "true" then put LF & "======== LEAVE fImportPLOTDIV =========" after msg
+   
+   return tSkipChar
+end fImportPLOTDIV
+
 ------------------------------- 
 
 function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
@@ -1786,3 +1869,8 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
 end fImportScrollbar
 
 -------------------------------
+
+
+on localNotificationReceived pMessage
+
+end localNotificationReceived

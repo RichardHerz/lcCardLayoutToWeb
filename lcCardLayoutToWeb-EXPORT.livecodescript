@@ -451,8 +451,11 @@ on exportWebPage
                   get fExportMenuButton(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   break
                default
-                  -- check for special buttons
-                  if the first word of the short name of control tControlNumber is "CANVAS" then
+                  -- check for special button
+                  if the first word of the short name of control tControlNumber is "PLOTDIV" then
+                     -- button used to represent an empty html div tag in html body for x-y plotting
+                     get fExportPLOTDIV(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                  else if the first word of the short name of control tControlNumber is "CANVAS" then
                      -- button used to represent an html canvas tag in html body
                      get fExportCANVAS(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
                   else if the first word of the short name of control tControlNumber is kScriptTagPrefix then
@@ -1191,7 +1194,6 @@ function fExportCommentTag tControl_ID, tIndent
    return tResult
 end fExportCommentTag
 
-
 -----------------------------------------------
 
 function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
@@ -1228,6 +1230,51 @@ function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tCSS into tResult["css"]
    return tResult
 end fExportStandardButton
+
+-----------------------------------------------
+
+function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
+   -- uses function fReturnCSSprops
+   -- uses function fIDname
+   -- these inputs are not modified: tControl_ID, tOneIndent
+   -- PLOTDIV BUTTON in LC becomes an empty DIV in HTML
+   -- add div tag
+   -- indent manually here without altering tIndent, since will be terminated immediately
+   put tIndent & tOneIndent & "<div" after tHTML
+   put fIDname(tControl_ID) into tIDname
+   delete char 1 to 7 of tIDname -- delete: button_
+   put "div_" before tIDname
+   put space & "id=" & quote & tIDname & quote after tHTML
+   put ">" & LF after tHTML
+   -- new for PLOTDIV - terminate the empty div immediately
+   put tIndent & tOneIndent & "</div> <!-- end of" && tIDname && "-->" & LF after tHTML
+   -- end of html
+   -- write css
+   put fIDname(tControl_ID) into tIDname
+   delete char 1 to 7 of tIDname -- delete: button_
+   put "div_" before tIDname
+   put "#" & tIDname && "{" & LF after tCSS
+   -- WARNING: need to write display and position here for each separate div
+   -- because doing so for all div interferes with plotting with jquery.flot.js
+   put space & "display: block;" & LF after tCSS
+   --  xxx getting two of these, prob because button to div:  put space &  "position: absolute;" & LF after tCSS
+   put the last line of tGrpLocList into tGrpLoc
+   put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
+   -- this is an LC button being exported as a div
+   -- so need to add things here
+   put space & "visibility: visible;" & LF after tCSS
+   put space & "border-width: 2px;" & LF after tCSS
+   put space & "border-style: dotted;" & LF after tCSS
+   put space & "opacity: 1;" & LF after tCSS
+   put space & "LCvScrollbar: false;" & LF after tCSS
+   -- conclude css
+   put "}" & LF & LF after tCSS
+   -- end of css
+   -- finally return the result
+   put tHTML into tResult["html"]
+   put tCSS into tResult["css"]
+   return tResult
+end fExportPLOTDIV
 
 -----------------------------------------------
 
@@ -1511,13 +1558,15 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          put lineoffset("border-style:", tCSS) into tline
          if tline > 0 then
             if tThreeD is true then
-               put space & "border-style: outset;" into line tline of tCSS
+               -- was outset but looks solid on Win IE & Edge, use dotted instead
+               put space & "border-style: dotted;" into line tline of tCSS
             else
                put space & "border-style: solid;" into line tline of tCSS
             end if
          else
             if tThreeD is true then
-               put space & "border-style: outset;" & LF after tCSS
+               -- was outset but looks solid on Win IE & Edge, use dotted instead
+               put space & "border-style: dotted;" & LF after tCSS
             else
                put space & "border-style: solid;" & LF after tCSS
             end if
