@@ -818,8 +818,10 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                set the itemDelimiter to colon
                break
             case "font-size"
-               subtract kTextFontExportAdd from tValue -- xxx better check if this is <p>
-               set the textSize of tControlName to tValue
+               if tValue is a number then
+                  subtract kTextFontExportAdd from tValue -- xxx better check if this is <p>
+                  set the textSize of tControlName to tValue
+               end if
                break
             case "text-align"
                set the textAlign of tControlName to tValue
@@ -827,7 +829,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
             case "opacity"
                put 100*(1 - tValue) into ttemp
                set the blendLevel of tControlName to ttemp
-               if tValue > 0 then
+               if tValue is a number and tValue > 0 then
                   set the opaque of tControlName to true
                end if
                break
@@ -938,8 +940,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
    if kReporter is "true" then put LF & "tControlName = " & tControlName && ";" && "tHeight = " & tHeight after msg
    
    -- _LABEL in CSS for checkbox and radio buttons may not have width and height values
-   if tWidth > 0 then set the width of tControlName to tWidth
-   if tHeight > 0 then set the height of tControlName to tHeight
+   if tWidth is a number then set the width of tControlName to tWidth
+   if tHeight is a number then set the height of tControlName to tHeight
    
    -- set topLeft AFTER set width and height
    -- order in LC topLeft is left,top!
