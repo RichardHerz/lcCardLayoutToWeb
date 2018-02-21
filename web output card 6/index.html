@@ -1,16 +1,160 @@
 <!doctype html>
 <html>
 <head>
-<!-- load style sheets for this lab  -->
-<link rel="stylesheet" href="css/index.css">
+
+  <title>Web Labs at ReactorLab.net</title>
+
+  <!-- THIS VIEWPORT LINE IN HTML HEAD IS KEY TO GETTING CSS @MEDIA TO WORK ON PHONE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- load style sheets for this lab  -->
+  <link rel="stylesheet" href="css/index.css">
+
+  <!-- load main JAVASCRIPT for this lab -->
+    <script language="javascript" src="js/process_main.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_interface.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_units.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_plot_info.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_plotter.js" type="text/javascript"></script>
+
+    <!-- load flot PLOTTING LIBRARY -->
+    <!-- need full jquery.js for flot.js to work -->
+    <!-- <script language="javascript" src="js/jquery.js" type="text/javascript"></script>
+    <script language="javascript" src="js/flot_library/jquery.flot.js" type="text/javascript"></script>
+    <script language="javascript" src="js/flot_library/jquery.flot.axislabels.js" type="text/javascript"></script> -->
+
+    <!-- load flot PLOTTING LIBRARY -->
+    <!-- need full jquery.js for flot.js to work -->
+    <script language="javascript" src="js/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script language="javascript" src="js/jquery/jquery.flot.min-0.8.3.js" type="text/javascript"></script>
+    <script language="javascript" src="js/jquery/jquery.flot.axislabels-20141122.js" type="text/javascript"></script>
+
 </head>
+
 <body>
-<div id="div_sim_frame">
-   <div id="div_group_surrounding_plotdiv">
-      <div id="div_PLOTDIV_div_for_plot">
-      </div> <!-- end of div div_PLOTDIV_div_for_plot -->
-   </div> <!-- end of div div_group_surrounding_plotdiv -->
-   <input type="button" id="button_Button" value="Button"></input>
-</div> <!-- end of div div_sim_frame -->
+<!-- <p><a href="../index.html">Back to Web test</a></p>
+  <p>Web app experiment 3 - HTML5</p>
+  <p>A 1st-order, essentially irreversible reaction in a continuous stirred tank reactor (CSTR).
+  The controller varies the jacket inlet T to control reactor T.
+  Reactor volume = 0.1 m<sup>3</sup>, jacket volume = 0.02 m<sup>3</sup>, density = 1000 kg/m<sup>3</sup>, heat capacity = 2.0 kJ/kg/K.
+  <font color="blue">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+  </p><p>
+  At default values in manual mode with <b>constant inputs</b>, the system <b>oscillates</b>.
+  Then put into Auto Control.</p> -->
+<!-- units: (1) reactor feed, (2) reactor, (3) feed to jacket, (4) jacket, (5) controller
+  Values set by inputs below:
+  (1) enterFeedConc, enterFeedTTemp, enterFeedFlowRate
+  (2) enterdelH, enterEa, enterk300
+  (3) enterJacketFlowRate
+  (4) enterJacketUA
+  (5) enterResetTime, enterGain, enterSetpoint
+  Alternatives: in input tag onchange, invoke either updateUIparams() in main.js or
+  invoke specific unit_#.updateUIparams() for relevant unit #
+  -->
+<div id="div_simFrame">
+   <div id="div_reactor">
+      <img id="image_reactorImage" src="images/reactor.png">
+      <div id="div_PLOTDIV_reactorContents">
+      </div> <!-- end of div div_PLOTDIV_reactorContents -->
+   </div> <!-- end of div div_reactor -->
+   <input type="button" id="button_resetButton" value="Reset" onclick="resetThisLab()"></input>
+   <input type="button" id="button_runButton" value="Run" onclick="runThisLab()"></input>
+   <div id="div_reactionParams">
+      <p id="field_enterdelHLABEL">
+            Enter reaction &sbquo;&agrave;&Uuml;H (kJ/mol)
+      </p>
+      <input id="input_field_enterdelH" value="-250" onchange="unit_2.updateUIparams()">
+
+      </input>
+      <p id="field_enterEaLABEL">
+            Enter reaction &sbquo;&agrave;&Uuml;Ea (kJ/mol)
+      </p>
+      <input id="input_field_enterEa" value="200" onchange="unit_2.updateUIparams()">
+
+      </input>
+      <p id="field_control_5">
+            Enter reaction k300 (1/s)
+      </p>
+      <input id="input_field_enterk300" value="5e-6" onchange="unit_2.updateUIparams()">
+
+      </input>
+   </div> <!-- end of div div_reactionParams -->
+   <div id="div_operatingParams">
+      <p id="field_enterJacketUALABEL">
+            Enter jacket UA (kJ/s/K)
+      </p>
+      <input id="input_field_enterjacketUA" value="20" onchange="unit_4.updateUIparams()">
+
+      </input>
+      <p id="field_enterJacketFlowRateLABEL">
+            Enter jacket flow rate (m<sup shift="-4">3</sup>/s)
+      </p>
+      <input id="input_field_enterJacketFlowRate" value="0.05" onchange="unit_3.updateUIparams()">
+
+      </input>
+      <p id="field_enterFeedConcLABEL">
+            Enter feed conc. (mol/m<sup shift="-4">3</sup>)
+      </p>
+      <input id="input_field_enterFeedConc" value="400" onchange="unit_1.updateUIparams()">
+
+      </input>
+      <p id="field_enterFeedTTempLABEL">
+            Enter feed T (K)
+      </p>
+      <input id="input_field_enterFeedTTemp" value="300" onchange="unit_1.updateUIparams()">
+
+      </input>
+      <p id="field_enterFeedFlowRateLABEL">
+            Enter feed flow rate (m<sup shift="-4">3</sup>/s)
+      </p>
+      <input id="input_field_enterFeedFlowRate" value="0.005" onchange="unit_1.updateUIparams()">
+
+      </input>
+   </div> <!-- end of div div_operatingParams -->
+   <div id="div_controller">
+      <div id="div_PLOTDIV_plotData">
+      </div> <!-- end of div div_PLOTDIV_plotData -->
+      <input type="button" id="button_copyDataButton" value="Copy data" onclick="copyData()"></input>
+      <!-- <p> id="field_enterJacketFeedTTempLABEL" MAY HAVE css visibility:hidden on open page; changed by unit_5.changeMode -->
+      <p id="field_enterJacketFeedTTempLABEL">
+            Enter jacket inlet T (K)
+      </p>
+      <!-- input id="input_field_enterJacketFeedTTemp" MAY BE type="hidden" on open page; changed by unit_5.changeMode -->
+      <p id="field_enterResetTimeLABEL">
+            Enter reset time (&gt; 0 s)
+      </p>
+      <input id="input_field_enterResetTime" value="30" onchange="unit_5.updateUIparams()">
+
+      </input>
+      <p id="field_enterGainLABEL">
+            Enter controller gain
+      </p>
+      <input id="input_field_enterGain" value="2" onchange="unit_5.updateUIparams()">
+
+      </input>
+      <p id="field_enterSetpointLABEL">
+            Enter reactor T set point (K)
+      </p>
+      <input id="input_field_enterSetpoint" value="340" onchange="unit_5.updateUIparams()">
+
+      </input>
+      <div id="div_RADIO_group_Controller">
+         <label id="radio_controllerAUTO_LABEL" name="radio_of_group_RADIO_group_Controller">
+                  <input type="radio" id="radio_controllerAUTO" name="radio_of_group_RADIO_group_Controller" onchange="unit_5.changeMode()">
+                  <span id="radio_controllerAUTO_SPAN">Auto Control</span>
+         </label>
+         <label id="radio_controllerMANUAL_LABEL" name="radio_of_group_RADIO_group_Controller">
+                  <input type="radio" id="radio_controllerMANUAL" name="radio_of_group_RADIO_group_Controller" checked onchange="unit_5.changeMode()">
+                  <span id="radio_controllerMANUAL_SPAN">Manual Control</span>
+         </label>
+      </div> <!-- end of div div_RADIO_group_Controller -->
+      <!-- end "div_RADIO_group_Controller" -->
+      <input id="input_field_enterJacketFeedTTemp" value="348" onchange="unit_5.updateUIparams()">
+
+      </input>
+   </div> <!-- end of div div_controller -->
+   <!-- end "div_controller" -->
+</div> <!-- end of div div_simFrame -->
+<!-- end "div_simFrame" -->
 </body>
 </html>
