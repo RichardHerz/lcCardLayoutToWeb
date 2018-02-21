@@ -1,0 +1,51 @@
+  reset : function() {
+    // On 1st load or reload page, the html file fills the fields with html file
+    // values and calls reset, which needs updateUIparams to get values in fields.
+    // On click reset button but not reload page, unless do something else here,
+    // reset function will use whatever last values user has entered.
+    this.updateUIparams(); // this first, then set other values as needed
+    // set state variables not set by updateUIparams to initial settings
+
+    // this.command.value = this.initialCommand;
+    // this.errorIntegral = this.initialErrorIntegral;
+
+    for (k = 0; k <= this.numNodes; k += 1) {
+      y[k] = 0;
+      y2[k] = 0;
+      yNew[k] = 0;
+      y2New[k] = 0;
+    }
+
+    cin = 0;
+    ca = 0;
+    cb = 0;
+    cinNew = 0;
+    caNew = 0;
+    cbNew = 0;
+
+    var kn = 0;
+    for (k=0; k<=this.numNodes; k+=1) {
+      kn = k/this.numNodes;
+      // x-axis values
+      // x-axis values will not change during sim
+      // XXX change to get number vars for this plotsObj variable
+      //     so can put in repeat - or better yet, a function
+      //     and same for y-axis below
+      profileData[0][k][0] = kn;
+      profileData[1][k][0] = kn;
+      profileData[2][k][0] = kn;
+      profileData[3][k][0] = kn;
+      // y-axis values
+      profileData[0][k][1] = 0;
+      profileData[1][k][1] = 0;
+      profileData[2][k][1] = 0;
+      profileData[3][k][1] = 0;
+    }
+
+    // XXX also need to reset strip chart data
+
+    // WARNING - if change a value to see initialization here
+    // then reset it to zero below this line or will get results at this node
+    // document.getElementById("dev01").innerHTML = "RESET time = " + simParams.simTime.toFixed(0) + "; y = " + y[0];
+
+  }, // end reset
