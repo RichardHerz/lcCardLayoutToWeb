@@ -1,7 +1,7 @@
 # lcCardLayoutToWeb
-This goal of this project is a design tool for interactive web simulations in which page elements are laid out in non-grid layouts. The project is not intended to build full-featured web pages. There is no LiveCode script conversion.
+This goal of this project is a design tool for one-off web simulations in which page elements are placed in non-grid layouts. The project is not intended to build full-featured web pages. There is no LiveCode script conversion.
 
-You can design a simulation layout in LiveCode, then export the layout to HTML and CSS files. Drag and drop design!
+You can design a layout in LiveCode, then export the layout to HTML and CSS files. Drag and drop design!
 
 The project is "reversible" - an exported web page, which has changes such as addition of file and event function references, can be imported back into to the project, edited (controls moved, added and deleted), and then exported back to a revised web page with the file and event references preserved.
 

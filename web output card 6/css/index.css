@@ -44,13 +44,13 @@ canvas {
 #div_simFrame {
  display: block;
  position: absolute;
- left: 20px;
- top: 27px;
- width: 838px;
- height: 647px;
+ left: 19px;
+ top: 26px;
+ width: 797px;
+ height: 649px;
  visibility: visible;
  border-width: 1px;
- border-style: none;
+ border-style: outset;
  opacity: 1;
  LCvScrollbar: false;
 }
@@ -58,8 +58,8 @@ canvas {
 #div_reactor {
  display: block;
  position: absolute;
- left: 4px;
- top: 227px;
+ left: 5px;
+ top: 228px;
  width: 300px;
  height: 230px;
  visibility: visible;
@@ -84,8 +84,8 @@ canvas {
 #div_PLOTDIV_reactorContents {
  display: block;
  position: absolute;
- left: 93px;
- top: 84px;
+ left: 92px;
+ top: 82px;
  width: 106px;
  height: 67px;
  visibility: visible;
@@ -97,8 +97,8 @@ canvas {
 
 #button_resetButton {
  position: absolute;
- left: 84px;
- top: 4px;
+ left: 85px;
+ top: 5px;
  width: 70px;
  height: 24px;
  visibility: visible;
@@ -110,8 +110,8 @@ canvas {
 
 #button_runButton {
  position: absolute;
- left: 4px;
- top: 4px;
+ left: 5px;
+ top: 5px;
  width: 70px;
  height: 24px;
  visibility: visible;
@@ -124,8 +124,8 @@ canvas {
 #div_reactionParams {
  display: block;
  position: absolute;
- left: 4px;
- top: 463px;
+ left: 5px;
+ top: 464px;
  width: 300px;
  height: 180px;
  visibility: visible;
@@ -138,7 +138,7 @@ canvas {
 #field_enterdelHLABEL {
  position: absolute;
  left: 0px;
- top: 67px;
+ top: 70px;
  width: 200px;
  height: 32px;
  border-width: 2px;
@@ -151,8 +151,8 @@ canvas {
 
 #input_field_enterdelH {
  position: absolute;
- left: 200px;
- top: 67px;
+ left: 206px;
+ top: 83px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -163,7 +163,7 @@ canvas {
 #field_enterEaLABEL {
  position: absolute;
  left: 0px;
- top: 34px;
+ top: 37px;
  width: 200px;
  height: 32px;
  border-width: 2px;
@@ -176,8 +176,8 @@ canvas {
 
 #input_field_enterEa {
  position: absolute;
- left: 200px;
- top: 34px;
+ left: 206px;
+ top: 50px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -188,8 +188,8 @@ canvas {
 #field_control_5 {
  position: absolute;
  left: 0px;
- top: 0px;
- width: 128px;
+ top: 3px;
+ width: 196px;
  height: 32px;
  border-width: 2px;
  visibility: visible;
@@ -201,8 +201,8 @@ canvas {
 
 #input_field_enterk300 {
  position: absolute;
- left: 200px;
- top: 0px;
+ left: 206px;
+ top: 16px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -213,8 +213,8 @@ canvas {
 #div_operatingParams {
  display: block;
  position: absolute;
- left: 4px;
- top: 38px;
+ left: 5px;
+ top: 39px;
  width: 300px;
  height: 180px;
  visibility: visible;
@@ -227,7 +227,7 @@ canvas {
 #field_enterJacketUALABEL {
  position: absolute;
  left: 0px;
- top: 129px;
+ top: 125px;
  width: 200px;
  height: 32px;
  border-width: 2px;
@@ -240,8 +240,8 @@ canvas {
 
 #input_field_enterjacketUA {
  position: absolute;
- left: 200px;
- top: 140px;
+ left: 206px;
+ top: 142px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -252,7 +252,7 @@ canvas {
 #field_enterJacketFlowRateLABEL {
  position: absolute;
  left: 0px;
- top: 101px;
+ top: 95px;
  width: 200px;
  height: 32px;
  border-width: 2px;
@@ -265,8 +265,8 @@ canvas {
 
 #input_field_enterJacketFlowRate {
  position: absolute;
- left: 200px;
- top: 101px;
+ left: 206px;
+ top: 111px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -277,7 +277,7 @@ canvas {
 #field_enterFeedConcLABEL {
  position: absolute;
  left: 0px;
- top: 55px;
+ top: 52px;
  width: 181px;
  height: 32px;
  border-width: 2px;
@@ -290,8 +290,8 @@ canvas {
 
 #input_field_enterFeedConc {
  position: absolute;
- left: 200px;
- top: 55px;
+ left: 206px;
+ top: 70px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -302,9 +302,9 @@ canvas {
 #field_enterFeedTTempLABEL {
  position: absolute;
  left: 0px;
- top: 27px;
+ top: 25px;
  width: 181px;
- height: 32px;
+ height: 28px;
  border-width: 2px;
  visibility: visible;
  border-style: none;
@@ -315,8 +315,8 @@ canvas {
 
 #input_field_enterFeedTTemp {
  position: absolute;
- left: 200px;
- top: 27px;
+ left: 206px;
+ top: 40px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -327,7 +327,7 @@ canvas {
 #field_enterFeedFlowRateLABEL {
  position: absolute;
  left: 0px;
- top: 0px;
+ top: -6px;
  width: 181px;
  height: 32px;
  border-width: 2px;
@@ -340,8 +340,8 @@ canvas {
 
 #input_field_enterFeedFlowRate {
  position: absolute;
- left: 200px;
- top: 0px;
+ left: 206px;
+ top: 10px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -352,8 +352,8 @@ canvas {
 #div_controller {
  display: block;
  position: absolute;
- left: 384px;
- top: 38px;
+ left: 342px;
+ top: 39px;
  width: 450px;
  height: 500px;
  visibility: visible;
@@ -392,9 +392,9 @@ canvas {
 
 #field_enterJacketFeedTTempLABEL {
  position: absolute;
- left: 20px;
- top: 420px;
- width: 128px;
+ left: 31px;
+ top: 388px;
+ width: 163px;
  height: 32px;
  border-width: 2px;
  visibility: visible;
@@ -406,9 +406,9 @@ canvas {
 
 #field_enterResetTimeLABEL {
  position: absolute;
- left: 21px;
- top: 335px;
- width: 128px;
+ left: 30px;
+ top: 322px;
+ width: 187px;
  height: 32px;
  border-width: 2px;
  visibility: visible;
@@ -420,8 +420,8 @@ canvas {
 
 #input_field_enterResetTime {
  position: absolute;
- left: 217px;
- top: 335px;
+ left: 227px;
+ top: 339px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -431,9 +431,9 @@ canvas {
 
 #field_enterGainLABEL {
  position: absolute;
- left: 20px;
- top: 306px;
- width: 128px;
+ left: 29px;
+ top: 293px;
+ width: 190px;
  height: 32px;
  border-width: 2px;
  visibility: visible;
@@ -445,8 +445,8 @@ canvas {
 
 #input_field_enterGain {
  position: absolute;
- left: 217px;
- top: 306px;
+ left: 227px;
+ top: 308px;
  width: 72px;
  height: 22px;
  visibility: visible;
@@ -456,9 +456,9 @@ canvas {
 
 #field_enterSetpointLABEL {
  position: absolute;
- left: 21px;
- top: 278px;
- width: 128px;
+ left: 30px;
+ top: 265px;
+ width: 189px;
  height: 32px;
  border-width: 2px;
  visibility: visible;
@@ -470,7 +470,7 @@ canvas {
 
 #input_field_enterSetpoint {
  position: absolute;
- left: 217px;
+ left: 227px;
  top: 278px;
  width: 72px;
  height: 22px;
@@ -503,26 +503,26 @@ canvas {
 #radio_controllerAUTO_SPAN {
  margin-left: 22px;
  line-height: 22px;
- font-size: 14px;
+ font-size: 15px;
 }
 
 #radio_controllerMANUAL_LABEL {
  width: 158px;
  height: 28px;
  left: 0px;
- top: 140px;
+ top: 117px;
 }
 
 #radio_controllerMANUAL_SPAN {
  margin-left: 22px;
  line-height: 22px;
- font-size: 14px;
+ font-size: 15px;
 }
 
 #input_field_enterJacketFeedTTemp {
  position: absolute;
- left: 175px;
- top: 388px;
+ left: 201px;
+ top: 399px;
  width: 72px;
  height: 22px;
  visibility: visible;
