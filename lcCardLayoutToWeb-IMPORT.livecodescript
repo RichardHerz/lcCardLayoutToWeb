@@ -25,8 +25,9 @@ constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script t
 constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
 -- make sure value of constant kCommentTagPrefix is the same in both script files 
 
--- item list of added html events that are saved on import
-constant kEventList = "onchange,oninput,onclick,ondrag,onmouseup"
+-- item list of added html value and events that are saved on import
+-- value is text to be shown in unlocked input fields and as button labels
+constant kEventList = "value,onchange,oninput,onclick,ondrag,onmouseup"
 
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
@@ -845,13 +846,17 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
             case "border-style"
                -- css border styles include: none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                -- EXPORT has a checkbox to add CSS dotted when LC showBorder false
-               -- EXPORT otherwise saves LC showBorder true as css outset
-               if tValue is "none" or tValue is "hidden" or tValue is "dotted" then
+               -- EXPORT otherwise saves LC showBorder true as CSS outset
+               if tValue is "none" or tValue is "hidden" then
                   set the showBorder of tControlName to false
                else
                   set the showBorder of tControlName to true
                end if
                if tValue is "solid" then
+                  set the threeD of tControlName to false
+               else
+                  -- xxx new for dotted frames around divs
+                  -- xxx but need to set threeD true for buttons elsewhere
                   set the threeD of tControlName to false
                end if
                break
@@ -1320,6 +1325,9 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
+   -- xxx new, working on 3D for div dotted lines
+   set the threeD of button tButton to true
+   
    if kReporter is "true" then put LF & "just before end fImportMenuButton" & LF after msg 
    -- update tSkipChar
    put offset("</select>",pHtmlFileData,tSkipChar) into tEndSelectTagChar
@@ -1453,6 +1461,11 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    set the htmlText of field tField to tPcontents
    -- Note: this preserves <a> tag links but won't appear in LC with same color, etc., as in web browser
    --  get the htmlText of the field in the LC card to see the <a> tag link
+   --
+   -- Note: Greek, for example ∆, is &#8710; in htmltext export AND import here
+   -- without change & appears as DELTA ∆ (option-J) here and in browser
+   -- but Greek characters imported here but composed elsewhere may not show correctly on import
+   -- see https://unicode-table.com/en/2206/ 
    
    -- GET CSS & SET CONTROL PROPERTIES
    
@@ -1672,6 +1685,9 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
+   
+   -- xxx new, working on 3D for div dotted lines
+   set the threeD of button tButton to true
    
    if kReporter is "true" then put LF & "======== LEAVE fImportStandardButton =========" after msg
    

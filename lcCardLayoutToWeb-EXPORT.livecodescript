@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
-
-Design, text, images and code by Richard K. Herz, 2017
+/*
+Design, text, images and code by Richard K. Herz, 2017-2018
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
@@ -165,7 +165,8 @@ on exportWebPage
    put empty into aCSSprops
    -- use LC blendLevel instead of LC opaque
    -- put "opacity" into aCSSprops["opaque"] -- LC true or false; CSS 1 or 0
-   put "opacity" into aCSSprops["blendLevel"] -- LC 100 > 0 (0 is opaque); CSS 0 > 1 (1 is opaque)
+   -- xxx may not want to set opacity - blendlevel - for most things? 
+   -- put "opacity" into aCSSprops["blendLevel"] -- LC 100 > 0 (0 is opaque); CSS 0 > 1 (1 is opaque)
    put "visibility" into aCSSprops["visible"] -- LC true-false; CSS visible-hidden
    -- development button "outlines" overrides border-style
    put "border-style" into aCSSprops["showBorder"]
@@ -263,7 +264,7 @@ on exportWebPage
    else
       -- write new header data for a new html file
       put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
-      put "<!-- load style sheets for this lab  -->" & LF after tHTML
+      put "<!-- load CSS style sheets for this lab  -->" & LF after tHTML
       -- use relative path to css file here:  kCssFolder & "/" & kCssFileName 
       -- and NOT full path so that it works both on web and in LC project
       put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF after tHTML
@@ -272,15 +273,23 @@ on exportWebPage
    end if
    
    -- start building the css
+   -- sup - superscript - decrease text size
+   put "sup {" & LF after tCSS
+   put space & space & "font-size: smaller;" & LF after tCSS
+   put "}" & LF & LF after tCSS
+   -- sub - subscript - decrease text size
+   put "sub {" & LF after tCSS
+   put space & space & "font-size: smaller;" & LF after tCSS
+   put "}" & LF & LF after tCSS
    -- input
    put "input {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
-   put space &  "text-align: center;" & LF after tCSS -- override LC textAlign setting for input fields
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
+   put space & space & "text-align: center;" & LF after tCSS -- override LC textAlign setting for input fields
    put "}" & LF & LF after tCSS -- finish css for input
    -- button
    put "input, button {" & LF after tCSS
-   put space &  "text-align: center;" & LF after tCSS -- override LC textAlign setting for buttons
+   put space & space & "text-align: center;" & LF after tCSS -- override LC textAlign setting for buttons
    put "}" & LF & LF after tCSS -- finish css for input, button
    -- WARNING: write notice NOT to make general div style since
    -- interferes with plotting by flot.js
@@ -291,38 +300,38 @@ on exportWebPage
    -- do NOT put position: absolute here because bad for other text added later to HTML
    -- need position: absolute only for fields laid out by LC
    put "p {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "text-align: left;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "text-align: left;" & LF after tCSS
    if there is a button "lcCardLayoutToWeb outlines" then
       if the hilite of button "lcCardLayoutToWeb outlines" is true then
-         put space & "border-style: dotted;" & LF after tCSS
+         put space & space & "border-style: dotted;" & LF after tCSS
       end if
    end if
    put "}" & LF & LF after tCSS -- finish css for p, locked field
    -- label
    put "label {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for label
    -- img
    put "img {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for img
    -- select (menu buttons)
    put "select {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for select
    -- canvas - html canvas element
    put "canvas {" & LF after tCSS
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
-   put space &  "text-align: left;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
+   put space & space & "text-align: left;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for input
    -- special for Internet Explorer, remove tooltips, especially from range-slider inputs
    put "::-ms-tooltip {" & LF after tCSS
-   put space & "display: none;" & LF after tCSS
+   put space & space & "display: none;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for special for IE tooltip 
    
    -- When you repeat down the list of control numbers
@@ -594,7 +603,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    -- fExportRadioButton
    -- fExportCheckBox
    
-    -- groups and some controls use this, other controls are special
+   -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
@@ -609,7 +618,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    else
       -- not a group, handle position
-      put space & "position: absolute;" & LF after tCSS -- all elements will have position: absolute
+      put space & space & "position: absolute;" & LF after tCSS -- all elements will have position: absolute
       -- answer "NOT group, tGrpLoc = " & word 1 of the long name of control id tControl_ID & LF & the short name of control id tControl_ID & LF& tGrpLoc -- xxx
       if tGrpLoc is empty then
          -- element not in a group
@@ -622,16 +631,16 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
          subtract item 2 of tGrpLoc from tTop
       end if
    end if
-   put space & "left:" && tLeft & "px;" & LF after tCSS
-   put space & "top:" && tTop & "px;" & LF after tCSS
+   put space & space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & space & "top:" && tTop & "px;" & LF after tCSS
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & LF after tCSS
-   put space & "height:" && tHt & "px;" & LF after tCSS
+   put space & space & "width:" && tWd & "px;" & LF after tCSS
+   put space & space & "height:" && tHt & "px;" & LF after tCSS
    put the keys of aCSSprops into tHitList
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList
-      
+   
    repeat for each line tKey in tKeyList
       if tKey is among the lines of tHitList then
          if aControlProps[tKey] is not empty then
@@ -665,7 +674,12 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                case "showBorder"
                   -- LC true-false; CSS none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                   if aControlProps[tKey] is "true" then
-                     put "outset" into tValue
+                     -- was outset but looks bad (solid) on Win IE and Edge browsers
+                     if the long name of control id tControl_ID contains "button" then
+                        put "none" into tValue
+                     else
+                        put "dotted" into tValue
+                     end if
                   else
                      put "none" into tValue
                   end if
@@ -696,7 +710,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   put aControlProps[tKey] & "px" into tValue
                   break
                case "backColor"
-                 -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
+                  -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
                   put "rgb(" & aControlProps[tKey] & ")" into tValue
                   break
                case "vScrollbar"
@@ -706,7 +720,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                default
                   put empty into tValue
             end switch
-            put space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
+            put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
          end if
       end if
    end repeat  
@@ -951,11 +965,11 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
          break
       case 2
          -- 2) horizontal with max larger on left, smaller on right (css transform rotation 180 deg)
-         put space & "transform: rotate(180deg);" & LF after tCSS
+         put space & space & "transform: rotate(180deg);" & LF after tCSS
          break
       case 3
          -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
-         put space & "transform: rotate(270deg);" & LF after tCSS
+         put space & space & "transform: rotate(270deg);" & LF after tCSS
          -- need to swap LC ht and wd to get horiz, which will then be rotated
          put tWd into tOldWd
          put tHt into tOldHt
@@ -973,7 +987,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
          break
       case 4
          -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
-         put space & "transform: rotate(90deg);" & LF after tCSS
+         put space & space & "transform: rotate(90deg);" & LF after tCSS
          -- need to swap LC ht and wd to get horiz, which will then be rotated
          put tWd into tOldWd
          put tHt into tOldHt
@@ -993,10 +1007,10 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
          -- do nothing here, already alerted above
    end switch
    
-   put space & "left:" && tLeft & "px;" & LF after tCSS
-   put space & "top:" && tTop & "px;" & LF after tCSS
-   put space & "width:" && tWd & "px;" & LF after tCSS
-   put space & "height:" && tHt & "px;" & LF after tCSS
+   put space & space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & space & "top:" && tTop & "px;" & LF after tCSS
+   put space & space & "width:" && tWd & "px;" & LF after tCSS
+   put space & space & "height:" && tHt & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- END CSS
@@ -1025,8 +1039,9 @@ function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    put "#" & fIDname(tControl_ID) && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & "display: block;" & LF after tCSS
-   put space &  "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
+   put space & space & "border-color: DodgerBlue;" & LF after tCSS
    put empty into tGrpLoc -- used in fReturnCSSprops for non group controls, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
@@ -1124,10 +1139,12 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    -- write css for label tag
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
+   put space & space & "display: block;" & LF after tCSS
+   put space & space & "position: absolute;" & LF after tCSS
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & LF after tCSS
-   put space & "height:" && tHt & "px;" & LF after tCSS
+   put space & space & "width:" && tWd & "px;" & LF after tCSS
+   put space & space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1141,20 +1158,20 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
       subtract item 1 of tGrpLoc from tLeft
       subtract item 2 of tGrpLoc from tTop
    end if
-   put space & "left:" && tLeft & "px;" & LF after tCSS
-   put space & "top:" && tTop & "px;" & LF after tCSS
+   put space & space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & space & "top:" && tTop & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css for label tag
    -- DO NOT seem to need css for input (radio button) tag
    -- write css for span tag
    put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
-   put space & "margin-left: 22px;" & LF after tCSS
-   put space & "line-height: 22px;" & LF after tCSS
+   put space & space & "margin-left: 22px;" & LF after tCSS
+   put space & space & "line-height: 22px;" & LF after tCSS
    put the textSize of control id tControl_ID into tTextSize
    if tTextSize is empty then put 13 into tTextSize -- textSize does not get value if default shown in prop inspector
    add kTextFontExportAdd to tTextSize
-   put space & "font-size:" && tTextSize & "px;" & LF after tCSS
+   put space & space & "font-size:" && tTextSize & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end css for span tag
@@ -1259,17 +1276,18 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put "#" & tIDname && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & "display: block;" & LF after tCSS
-   --  xxx getting two of these, prob because button to div:  put space &  "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS
+   --  xxx getting two of these, prob because button to div:  put space & space & "position: absolute;" & LF after tCSS
    put the last line of tGrpLocList into tGrpLoc
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- this is an LC button being exported as a div
    -- so need to add things here
-   put space & "visibility: visible;" & LF after tCSS
-   put space & "border-width: 2px;" & LF after tCSS
-   put space & "border-style: dotted;" & LF after tCSS
-   put space & "opacity: 1;" & LF after tCSS
-   put space & "LCvScrollbar: false;" & LF after tCSS
+   put space & space & "visibility: visible;" & LF after tCSS
+   put space & space & "border-width: 0px;" & LF after tCSS -- was 2px
+   put space & space & "border-style: dotted;" & LF after tCSS
+   put space & space & "border-color: DodgerBlue;" & LF after tCSS 
+   put space & space & "opacity: 1;" & LF after tCSS
+   put space & space & "LCvScrollbar: false;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css
@@ -1295,8 +1313,8 @@ function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) into tTempCSS
    -- now need to get width and height for HTML and delete from CSS
    -- THIS IS WHAT IS IN tTempCSS
-   --    put space & "width:" && tWd & "px;" & LF after tCSS
-   --    put space & "height:" && tHt & "px;" & LF after tCSS
+   --    put space & space & "width:" && tWd & "px;" & LF after tCSS
+   --    put space & space & "height:" && tHt & "px;" & LF after tCSS
    put lineOffset("width:",tTempCSS) into tLineWd
    put line tLineWd of tTempCSS into tTempWd
    put lineOffset("height:",tTempCSS) into tLineHt
@@ -1318,8 +1336,8 @@ function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put 300 into tWidth
    put 150 into tHeight
    -- THIS IS WHAT IS IN tTempCSS
-   --    put space & "width:" && tWd & "px;" & LF after tCSS
-   --    put space & "height:" && tHt & "px;" & LF after tCSS
+   --    put space & space & "width:" && tWd & "px;" & LF after tCSS
+   --    put space & space & "height:" && tHt & "px;" & LF after tCSS
    put word 2 of tTempWd into tWidth
    put word 2 of tTempHt into tHeight
    -- delete "px;" (3 chars) since don't use units here in HTML
@@ -1428,8 +1446,8 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    put "#" & tIDname & "_LABEL" && "{" & LF into tCSS
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   put space & "width:" && tWd & "px;" & LF after tCSS
-   put space & "height:" && tHt & "px;" & LF after tCSS
+   put space & space & "width:" && tWd & "px;" & LF after tCSS
+   put space & space & "height:" && tHt & "px;" & LF after tCSS
    put the rect of control id tControl_ID into tRect
    put item 1 of tRect into tLeft
    put item 2 of tRect into tTop
@@ -1443,20 +1461,20 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
       subtract item 1 of tGrpLoc from tLeft
       subtract item 2 of tGrpLoc from tTop
    end if
-   put space & "left:" && tLeft & "px;" & LF after tCSS
-   put space & "top:" && tTop & "px;" & LF after tCSS
+   put space & space & "left:" && tLeft & "px;" & LF after tCSS
+   put space & space & "top:" && tTop & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css for label tag
    -- DO NOT seem to need css for input (checkbox) tag
    -- write css for span tag
    put "#" & fIDname(tControl_ID) & "_SPAN" && "{" & LF after tCSS
-   put space & "margin-left: 22px;" & LF after tCSS
-   put space & "line-height: 18px;" & LF after tCSS
+   put space & space & "margin-left: 22px;" & LF after tCSS
+   put space & space & "line-height: 18px;" & LF after tCSS
    put the textSize of control id tControl_ID into tTextSize
    if tTextSize is empty then put 13 into tTextSize -- textSize does not get value if default shown in prop inspector
    add kTextFontExportAdd to tTextSize
-   put space & "font-size:" && tTextSize & "px;" & LF after tCSS
+   put space & space & "font-size:" && tTextSize & "px;" & LF after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end css for span tag
@@ -1547,9 +1565,9 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       add kTextFontExportAdd to tTextSize
       put lineoffset("font-size:", tCSS) into tline
       if tline > 0 then
-         put space & "font-size:" && tTextSize & "px;" into line tline of tCSS
+         put space & space & "font-size:" && tTextSize & "px;" into line tline of tCSS
       else
-         put space & "font-size:" && tTextSize & "px;" & LF after tCSS
+         put space & space & "font-size:" && tTextSize & "px;" & LF after tCSS
       end if
       
       put the showBorder of control id tControl_ID into tShowBorder
@@ -1562,24 +1580,26 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          if tline > 0 then
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
-               put space & "border-style: dotted;" into line tline of tCSS
+               put space & space & "border-style: dotted;" into line tline of tCSS
             else
-               put space & "border-style: solid;" into line tline of tCSS
+               -- was solid
+               put space & space & "border-style: dotted;" into line tline of tCSS
             end if
          else
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
-               put space & "border-style: dotted;" & LF after tCSS
+               put space & space & "border-style: dotted;" & LF after tCSS
             else
-               put space & "border-style: solid;" & LF after tCSS
+               -- was solid
+               put space & space & "border-style: dotted;" & LF after tCSS
             end if
          end if
          
          put lineoffset("border-width:", tCSS) into tline
          if tline > 0 then
-            put space & "border-width:" && tBorderWidth & "px;" into line tline of tCSS
+            put space & space & "border-width:" && tBorderWidth & "px;" into line tline of tCSS
          else
-            put space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
+            put space & space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
          end if
          
       end if -- end of if tShowBorder is true
