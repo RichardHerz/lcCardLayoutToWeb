@@ -258,17 +258,29 @@ on exportWebPage
    
    -- start building the html
    if the cHeaderData of this card is not empty then
-      -- this should have been set during import of an html file
+      -- this would have been set during import of an html file
       put the cHeaderData of this card after tHTML
       put "<body>" & LF after tHTML
    else
       -- write new header data for a new html file
-      put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF after tHTML
+      put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF & LF after tHTML
+      
+      put "<title>lcCardLayoutToWeb at GitHub</title>" & LF & LF after tHTML
+      
+      put "<!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->" & LF after tHTML
+      put "<!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->" & LF after tHTML
+      -- note can use double-quotes around text with single quotes vs. adding & quote & in string
+      put "<meta id='meta-viewport' name='viewport' content='width=device-width, initial-scale=1.0'>" & LF & LF after tHTML
+      
+      -- load CSS style sheets
       put "<!-- load CSS style sheets for this lab  -->" & LF after tHTML
       -- use relative path to css file here:  kCssFolder & "/" & kCssFileName 
       -- and NOT full path so that it works both on web and in LC project
-      put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF after tHTML
+      put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF & LF after tHTML
       -- need to add links for javascript files
+      put "<!-- load Javascript files for this lab  -->" & LF after tHTML
+      put "<!-- e.g., <script language='javascript' src='js/process_main.js' type='text/javascript'></script> -->" & LF & LF after tHTML
+
       put "</head>" & LF & "<body>" & LF after tHTML
    end if
    
@@ -560,6 +572,18 @@ on exportWebPage
    open file tHtmlFilePath for binary write
    write tHTML to file tHtmlFilePath
    close file tHtmlFilePath
+   
+   -- finish building the css with example @media
+   put "/* example @media for responsive design */" & LF after tCSS
+   put "/* requires meta viewport element in HTML head */" & LF after tCSS
+   put "@media(max-width: 640px) {" & LF after tCSS
+   put "  /* change the following when the screen width is <= 640px */" & LF after tCSS
+   put "  /* #div_controller {" & LF after tCSS
+   put "    top: 600px;" & LF after tCSS
+   put "    left: 20px;" & LF after tCSS
+   put "   } */" & LF after tCSS
+   put "}" & LF after tCSS
+   
    -- write css text with binary write
    open file tCssFilePath for binary write
    write tCSS to file tCssFilePath
@@ -1040,7 +1064,13 @@ function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
    put space & space & "display: block;" & LF after tCSS
-   put space & space & "position: absolute;" & LF after tCSS
+   if tIDname contains "div_simFrame" then
+      -- SPECIAL outer group-div-frame name
+      -- make position: relative so can add text above and below on web page
+      put space & space & "position: relative;" & LF after tCSS
+   else
+      put space & space & "position: absolute;" & LF after tCSS
+   end if
    put space & space & "border-color: DodgerBlue;" & LF after tCSS
    put empty into tGrpLoc -- used in fReturnCSSprops for non group controls, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS

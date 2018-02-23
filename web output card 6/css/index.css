@@ -51,12 +51,12 @@ canvas {
 
 #div_simFrame {
   display: block;
-  position: absolute;
+  position: relative;
   border-color: DodgerBlue;
-  left: 15px;
-  top: 22px;
-  width: 801px;
-  height: 613px;
+  left: 19px;
+  top: 26px;
+  width: 797px;
+  height: 649px;
   visibility: visible;
   border-width: 1px;
   border-style: dotted;
@@ -67,8 +67,8 @@ canvas {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 9px;
-  top: 232px;
+  left: 5px;
+  top: 228px;
   width: 300px;
   height: 230px;
   visibility: visible;
@@ -105,8 +105,8 @@ canvas {
 
 #button_resetButton {
   position: absolute;
-  left: 89px;
-  top: 9px;
+  left: 85px;
+  top: 5px;
   width: 70px;
   height: 24px;
   visibility: visible;
@@ -117,8 +117,8 @@ canvas {
 
 #button_runButton {
   position: absolute;
-  left: 9px;
-  top: 9px;
+  left: 5px;
+  top: 5px;
   width: 70px;
   height: 24px;
   visibility: visible;
@@ -131,8 +131,8 @@ canvas {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 9px;
-  top: 468px;
+  left: 5px;
+  top: 464px;
   width: 300px;
   height: 180px;
   visibility: visible;
@@ -214,8 +214,8 @@ canvas {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 9px;
-  top: 43px;
+  left: 5px;
+  top: 39px;
   width: 300px;
   height: 180px;
   visibility: visible;
@@ -343,8 +343,8 @@ canvas {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 346px;
-  top: 43px;
+  left: 342px;
+  top: 39px;
   width: 450px;
   height: 500px;
   visibility: visible;
@@ -516,3 +516,12 @@ canvas {
   LCvScrollbar: false;
 }
 
+/* example @media for responsive design */
+/* requires meta viewport element in HTML head */
+@media(max-width: 640px) {
+  /* change the following when the screen width is <= 640px */
+  /* #div_controller {
+    top: 600px;
+    left: 20px;
+   } */
+}
