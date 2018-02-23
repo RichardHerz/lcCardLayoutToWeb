@@ -1,532 +1,527 @@
+sup {
+  font-size: smaller;
+}
+
+sub {
+  font-size: smaller;
+}
+
 input {
- display: block;
- position: absolute;
- text-align: center;
+  display: block;
+  position: absolute;
+  text-align: center;
 }
 
 input, button {
- text-align: center;
+  text-align: center;
 }
 
 /* do NOT write general style for div since interferes
     with plotting by jquery.flot.js */
 
 p {
- display: block;
- text-align: left;
+  display: block;
+  text-align: left;
 }
 
 label {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 img {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 select {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 canvas {
- display: block;
- position: absolute;
- text-align: left;
+  display: block;
+  position: absolute;
+  text-align: left;
 }
 
 ::-ms-tooltip {
- display: none;
+  display: none;
 }
 
 #div_simFrame {
- display: block;
- position: absolute;
- left: 19px;
- top: 26px;
- width: 797px;
- height: 649px;
- visibility: visible;
- border-width: 1px;
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: relative;
+  border-color: DodgerBlue;
+  left: 19px;
+  top: 26px;
+  width: 797px;
+  height: 649px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #div_reactor {
- display: block;
- position: absolute;
- left: 5px;
- top: 228px;
- width: 300px;
- height: 230px;
- visibility: visible;
- border-width: 1px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 5px;
+  top: 228px;
+  width: 300px;
+  height: 230px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: none;
+  LCvScrollbar: false;
 }
 
 #image_reactorImage {
- position: absolute;
- left: 0px;
- top: 0px;
- width: 280px;
- height: 202px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- border-width: 2px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 280px;
+  height: 202px;
+  visibility: visible;
+  border-style: none;
+  border-width: 2px;
 }
 
 #div_PLOTDIV_reactorContents {
- display: block;
- position: absolute;
- left: 92px;
- top: 82px;
- width: 106px;
- height: 67px;
- visibility: visible;
- border-width: 2px;
- border-style: dotted;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  left: 93px;
+  top: 84px;
+  width: 106px;
+  height: 67px;
+  visibility: visible;
+  border-width: 0px;
+  border-style: dotted;
+  border-color: DodgerBlue;
+  opacity: 1;
+  LCvScrollbar: false;
 }
 
 #button_resetButton {
- position: absolute;
- left: 85px;
- top: 5px;
- width: 70px;
- height: 24px;
- visibility: visible;
- border-width: 2px;
- background-color: rgb(222,222,222);
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 85px;
+  top: 5px;
+  width: 70px;
+  height: 24px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(222,222,222);
+  border-style: none;
 }
 
 #button_runButton {
- position: absolute;
- left: 5px;
- top: 5px;
- width: 70px;
- height: 24px;
- visibility: visible;
- border-width: 2px;
- background-color: rgb(222,222,222);
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 70px;
+  height: 24px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(222,222,222);
+  border-style: none;
 }
 
 #div_reactionParams {
- display: block;
- position: absolute;
- left: 5px;
- top: 464px;
- width: 300px;
- height: 180px;
- visibility: visible;
- border-width: 1px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 5px;
+  top: 464px;
+  width: 300px;
+  height: 180px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: none;
+  LCvScrollbar: false;
 }
 
 #field_enterdelHLABEL {
- position: absolute;
- left: 0px;
- top: 70px;
- width: 200px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 70px;
+  width: 200px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterdelH {
- position: absolute;
- left: 206px;
- top: 83px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 83px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterEaLABEL {
- position: absolute;
- left: 0px;
- top: 37px;
- width: 200px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 37px;
+  width: 200px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterEa {
- position: absolute;
- left: 206px;
- top: 50px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 50px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_control_5 {
- position: absolute;
- left: 0px;
- top: 3px;
- width: 196px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 3px;
+  width: 196px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterk300 {
- position: absolute;
- left: 206px;
- top: 16px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 16px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #div_operatingParams {
- display: block;
- position: absolute;
- left: 5px;
- top: 39px;
- width: 300px;
- height: 180px;
- visibility: visible;
- border-width: 1px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 5px;
+  top: 39px;
+  width: 300px;
+  height: 180px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: none;
+  LCvScrollbar: false;
 }
 
 #field_enterJacketUALABEL {
- position: absolute;
- left: 0px;
- top: 125px;
- width: 200px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 125px;
+  width: 200px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterjacketUA {
- position: absolute;
- left: 206px;
- top: 142px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 142px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterJacketFlowRateLABEL {
- position: absolute;
- left: 0px;
- top: 95px;
- width: 200px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 95px;
+  width: 200px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterJacketFlowRate {
- position: absolute;
- left: 206px;
- top: 111px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 111px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterFeedConcLABEL {
- position: absolute;
- left: 0px;
- top: 52px;
- width: 181px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 52px;
+  width: 181px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterFeedConc {
- position: absolute;
- left: 206px;
- top: 70px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 70px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterFeedTTempLABEL {
- position: absolute;
- left: 0px;
- top: 25px;
- width: 181px;
- height: 28px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: 25px;
+  width: 181px;
+  height: 28px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterFeedTTemp {
- position: absolute;
- left: 206px;
- top: 40px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 40px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterFeedFlowRateLABEL {
- position: absolute;
- left: 0px;
- top: -6px;
- width: 181px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 0px;
+  top: -6px;
+  width: 181px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterFeedFlowRate {
- position: absolute;
- left: 206px;
- top: 10px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 206px;
+  top: 10px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #div_controller {
- display: block;
- position: absolute;
- left: 342px;
- top: 39px;
- width: 450px;
- height: 500px;
- visibility: visible;
- border-width: 1px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 342px;
+  top: 39px;
+  width: 450px;
+  height: 500px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: none;
+  LCvScrollbar: false;
 }
 
 #div_PLOTDIV_plotData {
- display: block;
- position: absolute;
- left: 0px;
- top: 0px;
- width: 430px;
- height: 248px;
- visibility: visible;
- border-width: 2px;
- border-style: dotted;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 430px;
+  height: 248px;
+  visibility: visible;
+  border-width: 0px;
+  border-style: dotted;
+  border-color: DodgerBlue;
+  opacity: 1;
+  LCvScrollbar: false;
 }
 
 #button_copyDataButton {
- position: absolute;
- left: 326px;
- top: 258px;
- width: 104px;
- height: 24px;
- visibility: visible;
- border-width: 2px;
- background-color: rgb(222,222,222);
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 326px;
+  top: 258px;
+  width: 104px;
+  height: 24px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(222,222,222);
+  border-style: none;
 }
 
 #field_enterJacketFeedTTempLABEL {
- position: absolute;
- left: 31px;
- top: 388px;
- width: 163px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 31px;
+  top: 388px;
+  width: 163px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #field_enterResetTimeLABEL {
- position: absolute;
- left: 30px;
- top: 322px;
- width: 187px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 30px;
+  top: 322px;
+  width: 187px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterResetTime {
- position: absolute;
- left: 227px;
- top: 339px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 227px;
+  top: 339px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterGainLABEL {
- position: absolute;
- left: 29px;
- top: 293px;
- width: 190px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 29px;
+  top: 293px;
+  width: 190px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterGain {
- position: absolute;
- left: 227px;
- top: 308px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 227px;
+  top: 308px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #field_enterSetpointLABEL {
- position: absolute;
- left: 30px;
- top: 265px;
- width: 189px;
- height: 32px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 30px;
+  top: 265px;
+  width: 189px;
+  height: 32px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: none;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #input_field_enterSetpoint {
- position: absolute;
- left: 227px;
- top: 278px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 227px;
+  top: 278px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
 #div_RADIO_group_Controller {
- display: block;
- position: absolute;
- left: 4px;
- top: 254px;
- width: 163px;
- height: 242px;
- visibility: visible;
- border-width: 1px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 4px;
+  top: 254px;
+  width: 163px;
+  height: 242px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: none;
+  LCvScrollbar: false;
 }
 
 #radio_controllerAUTO_LABEL {
- width: 163px;
- height: 28px;
- left: 0px;
- top: 0px;
+  display: block;
+  position: absolute;
+  width: 163px;
+  height: 28px;
+  left: 0px;
+  top: 0px;
 }
 
 #radio_controllerAUTO_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 15px;
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 15px;
 }
 
 #radio_controllerMANUAL_LABEL {
- width: 158px;
- height: 28px;
- left: 0px;
- top: 117px;
+  display: block;
+  position: absolute;
+  width: 158px;
+  height: 28px;
+  left: 0px;
+  top: 117px;
 }
 
 #radio_controllerMANUAL_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 15px;
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 15px;
 }
 
 #input_field_enterJacketFeedTTemp {
- position: absolute;
- left: 201px;
- top: 399px;
- width: 72px;
- height: 22px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 201px;
+  top: 399px;
+  width: 72px;
+  height: 22px;
+  visibility: visible;
+  LCvScrollbar: false;
 }
 
+/* example @media for responsive design */
+/* requires meta viewport element in HTML head */
+@media(max-width: 640px) {
+  /* change the following when the screen width is <= 640px */
+  /* #div_controller {
+    top: 600px;
+    left: 20px;
+   } */
+}
