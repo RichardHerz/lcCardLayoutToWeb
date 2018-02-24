@@ -698,9 +698,9 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                case "showBorder"
                   -- LC true-false; CSS none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                   if aControlProps[tKey] is "true" then
-                     -- was outset but looks bad (solid) on Win IE and Edge browsers
+                     -- was outset but looks bad (solid) on Win IE and Edge browsers?
                      if the long name of control id tControl_ID contains "button" then
-                        put "none" into tValue
+                        put "outset" into tValue -- try outset or none
                      else
                         put "dotted" into tValue
                      end if
@@ -720,7 +720,13 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                case "borderWidth"
                   -- LC is pixel value; CSS thin, medium, thick or px
                   put aControlProps[tKey] & "px" into tValue
-                  -- modify for menu buttons only
+                  -- set unlocked input fields to have borderWidth of 1 px
+                  if the long name of control id tControl_ID contains "field" then
+                     if the locked of control id tControl_ID is false then
+                        put "1px" into tValue
+                     end if
+                  end if
+                  -- modify for menu style buttons only
                   -- if set standard buttons to 1px then they become rectanges
                   if word 1 of the long name of control id tControl_ID is "button" then
                      -- not all control types have style property so check for button first
@@ -1643,14 +1649,16 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       if tline > 0 then
          delete line tline of tCSS
       end if
-      -- let unlocked input fields get default border-style
+      -- set unlocked input fields with 1px solid borders
       put lineoffset("border-style:", tCSS) into tline
       if tline > 0 then
-         delete line tline of tCSS
+         -- delete line tline of tCSS -- for default style
+         put "border-style: solid;" into line tline of tCSS
       end if
       put lineoffset("border-width", tCSS) into tline
       if tline > 0 then
-         delete line tline of tCSS
+         -- delete line tline of tCSS -- for default style
+         put "border-width: 1px;" into line tline of tCSS
       end if
       
    end if -- end of if tFieldType is "input"
