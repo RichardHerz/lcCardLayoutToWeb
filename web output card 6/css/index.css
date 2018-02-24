@@ -112,7 +112,7 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(222,222,222);
-  border-style: none;
+  border-style: outset;
 }
 
 #button_runButton {
@@ -124,7 +124,7 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(222,222,222);
-  border-style: none;
+  border-style: outset;
 }
 
 #div_reactionParams {
@@ -147,7 +147,7 @@ canvas {
   top: 70px;
   width: 200px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -160,7 +160,9 @@ canvas {
   top: 83px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -170,7 +172,7 @@ canvas {
   top: 37px;
   width: 200px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -183,7 +185,9 @@ canvas {
   top: 50px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -193,7 +197,7 @@ canvas {
   top: 3px;
   width: 196px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -206,7 +210,9 @@ canvas {
   top: 16px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -230,7 +236,7 @@ canvas {
   top: 125px;
   width: 200px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -243,7 +249,9 @@ canvas {
   top: 142px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -253,7 +261,7 @@ canvas {
   top: 95px;
   width: 200px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -266,7 +274,9 @@ canvas {
   top: 111px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -276,7 +286,7 @@ canvas {
   top: 52px;
   width: 181px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -289,7 +299,9 @@ canvas {
   top: 70px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -299,7 +311,7 @@ canvas {
   top: 25px;
   width: 181px;
   height: 28px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -312,7 +324,9 @@ canvas {
   top: 40px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -322,7 +336,7 @@ canvas {
   top: -6px;
   width: 181px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -335,7 +349,9 @@ canvas {
   top: 10px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -377,7 +393,7 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(222,222,222);
-  border-style: none;
+  border-style: outset;
 }
 
 #field_enterJacketFeedTTempLABEL {
@@ -386,7 +402,7 @@ canvas {
   top: 388px;
   width: 163px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -399,7 +415,7 @@ canvas {
   top: 322px;
   width: 187px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -412,7 +428,9 @@ canvas {
   top: 339px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -422,7 +440,7 @@ canvas {
   top: 293px;
   width: 190px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -435,7 +453,9 @@ canvas {
   top: 308px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -445,7 +465,7 @@ canvas {
   top: 265px;
   width: 189px;
   height: 32px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: none;
   LCvScrollbar: false;
@@ -458,7 +478,9 @@ canvas {
   top: 278px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
@@ -512,7 +534,9 @@ canvas {
   top: 399px;
   width: 72px;
   height: 22px;
+border-width: 1px;
   visibility: visible;
+border-style: solid;
   LCvScrollbar: false;
 }
 
