@@ -2,30 +2,64 @@
 <html>
 <head>
 
-<title>** EDIT TITLE **</title>
+  <title>Web Labs at ReactorLab.net</title>
 
-<meta name='description' content='designed with lcCardLayoutToWeb project at GitHub'>
+  <!-- THIS VIEWPORT LINE IN HTML HEAD IS KEY TO GETTING CSS @MEDIA TO WORK ON PHONE -->
+  <meta id='meta-viewport' name='viewport' content='width=device-width, initial-scale=1.0'>
 
-<!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->
-<!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->
-<!-- suggest use content width = div_simFrame width + 2 * div_simFrame left, and no scale -->
-<meta id='meta-viewport' name='viewport' content='width=817'>
+  <!-- load style sheets for this lab  -->
+  <link rel="stylesheet" href="css/index.css">
 
-<!-- load CSS style sheets for this lab  -->
-<link rel="stylesheet" href="css/index.css">
+  <!-- load main JAVASCRIPT for this lab -->
+    <script language="javascript" src="js/process_main.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_interface.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_units.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_plot_info.js" type="text/javascript"></script>
+    <script language="javascript" src="js/process_plotter.js" type="text/javascript"></script>
 
-<!-- load JAVASCRIPT files for this lab  -->
-<!-- e.g., <script language='javascript' src='js/process_main.js' type='text/javascript'></script> -->
+    <!-- load flot PLOTTING LIBRARY -->
+    <!-- need full jquery.js for flot.js to work -->
+    <!-- <script language="javascript" src="js/jquery.js" type="text/javascript"></script>
+    <script language="javascript" src="js/flot_library/jquery.flot.js" type="text/javascript"></script>
+    <script language="javascript" src="js/flot_library/jquery.flot.axislabels.js" type="text/javascript"></script> -->
 
-</head>
-<body>
-<!-- <p><a href="http://reactorlab.net/web-labs/">Web Labs</a> > Reactor temperature control - controller manipulates jacket inlet T</p>
+    <!-- load flot PLOTTING LIBRARY -->
+    <!-- need full jquery.js for flot.js to work -->
+    <script language="javascript" src="js/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script language="javascript" src="js/jquery/jquery.flot.min-0.8.3.js" type="text/javascript"></script>
+    <script language="javascript" src="js/jquery/jquery.flot.axislabels-20141122.js" type="text/javascript"></script>
+
+<!-- SAVE BELOW FOR TEXT TO ADD TOP OF PAGE -->
+<!-- <p><a href="http://reactorlab.net/web-labs/">Back to Web test</a></p>
+  <p>Web app experiment 3 - HTML5</p>
   <p>A 1st-order, essentially irreversible reaction in a continuous stirred tank reactor (CSTR).
   The controller varies the jacket inlet T to control reactor T.
   Reactor volume = 0.1 m<sup>3</sup>, jacket volume = 0.02 m<sup>3</sup>, density = 1000 kg/m<sup>3</sup>, heat capacity = 2.0 kJ/kg/K.
-  <font color="blue">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font> 
-  Copy data button displays plot data in popup window.</p>
-  <p>At default values in manual mode with <b>constant inputs</b>, the system <b>oscillates</b>.
+  <font color="blue">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+  </p><p>
+  At default values in manual mode with <b>constant inputs</b>, the system <b>oscillates</b>.
+  Then put into Auto Control.</p> -->
+<!-- units: (1) reactor feed, (2) reactor, (3) feed to jacket, (4) jacket, (5) controller
+  Values set by inputs below:
+  (1) enterFeedConc, enterFeedTTemp, enterFeedFlowRate
+  (2) enterdelH, enterEa, enterk300
+  (3) enterJacketFlowRate
+  (4) enterJacketUA
+  (5) enterResetTime, enterGain, enterSetpoint
+  Alternatives: in input tag onchange, invoke either updateUIparams() in main.js or
+  invoke specific unit_#.updateUIparams() for relevant unit #
+  -->
+
+</head>
+<body>
+<!-- <p><a href="../index.html">Back to Web test</a></p>
+  <p>Web app experiment 3 - HTML5</p>
+  <p>A 1st-order, essentially irreversible reaction in a continuous stirred tank reactor (CSTR).
+  The controller varies the jacket inlet T to control reactor T.
+  Reactor volume = 0.1 m<sup>3</sup>, jacket volume = 0.02 m<sup>3</sup>, density = 1000 kg/m<sup>3</sup>, heat capacity = 2.0 kJ/kg/K.
+  <font color="blue">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font>
+  </p><p>
+  At default values in manual mode with <b>constant inputs</b>, the system <b>oscillates</b>.
   Then put into Auto Control.</p> -->
 <!-- units: (1) reactor feed, (2) reactor, (3) feed to jacket, (4) jacket, (5) controller
   Values set by inputs below:

@@ -257,20 +257,48 @@ on exportWebPage
    set the itemDelimiter to comma
    
    -- start building the html
-   if the cHeaderData of this card is not empty then
-      -- this would have been set during import of an html file
-      put the cHeaderData of this card after tHTML
-      put "<body>" & LF after tHTML
+   put "new" into tHeaderFlag
+   if the cHeaderData of this card is empty then
+      -- do nothing
+      -- leave tHeaderFlag = "new"
    else
+      -- have text in cHeaderData of this card
+      -- this would have been set during previous import of an html file
+      -- without a CLEAR CARD before this export
+      
+      -- xxx maybe automatically edit cHeaderData to change meta viewport 
+      -- width for any current simFrame width & left
+      
+      answer "Old HTML head tag exists from last import - replace with new data?" with "yes" or "no"
+      
+      if it is "no" then
+         put "old" into tHeaderFlag
+         put the cHeaderData of this card after tHTML
+      else
+         -- leave tHeaderFlag = "new"
+      end if
+      
+   end if
+   
+   if tHeaderFlag is "new" then
       -- write new header data for a new html file
       put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF & LF after tHTML
       
-      put "<title>lcCardLayoutToWeb at GitHub</title>" & LF & LF after tHTML
+      put "<title>** EDIT TITLE **</title>" & LF & LF after tHTML
+      
+      -- NOTE can use double-quotes around text with single quotes vs. adding quote constants in string
+      put "<meta name='description' content='designed with lcCardLayoutToWeb project at GitHub'>" & LF & LF after tHTML
       
       put "<!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->" & LF after tHTML
       put "<!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->" & LF after tHTML
-      -- note can use double-quotes around text with single quotes vs. adding & quote & in string
-      put "<meta id='meta-viewport' name='viewport' content='width=device-width, initial-scale=1.0'>" & LF & LF after tHTML
+      
+      put "<!-- suggest use content width = div_simFrame width + 2 * div_simFrame left, and no scale -->" & LF after tHTML
+      if there is a group "simFrame" of this card then put the width of group "simFrame" of this card into tSimFrameWidth
+      if there is a group "simFrame" of this card then put the left of group "simFrame" of this card into tSimFrameLeft
+      -- note: special simFrame group will get css position: relative but left still affects placement
+      add 2*tSimFrameLeft to tSimFrameWidth
+      
+      put "<meta id='meta-viewport' name='viewport' content='width=" & tSimFrameWidth & "'>" & LF & LF after tHTML
       
       -- load CSS style sheets
       put "<!-- load CSS style sheets for this lab  -->" & LF after tHTML
@@ -278,11 +306,12 @@ on exportWebPage
       -- and NOT full path so that it works both on web and in LC project
       put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF & LF after tHTML
       -- need to add links for javascript files
-      put "<!-- load Javascript files for this lab  -->" & LF after tHTML
+      put "<!-- load JAVASCRIPT files for this lab  -->" & LF after tHTML
       put "<!-- e.g., <script language='javascript' src='js/process_main.js' type='text/javascript'></script> -->" & LF & LF after tHTML
-
-      put "</head>" & LF & "<body>" & LF after tHTML
-   end if
+      
+      put "</head>" & LF after tHTML
+   end if -- end check for old header data
+   put "<body>" & LF after tHTML
    
    -- start building the css
    -- sup - superscript - decrease text size
