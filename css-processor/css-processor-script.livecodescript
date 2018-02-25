@@ -1,11 +1,14 @@
 ﻿script "css-processor-script"
-on expandWidth
+-- R.K. Herz, www.reactorlab.net, 2017-2018
+
+on scaleWidth
    -- uses fields wfac, input, output
    -- uses function fStripOuterSpace
    
    if field "wfac" is empty then 
       put 1.0 into field wfac
-      exit expandWidth
+      answer "double-check scale factor - was empty"
+      exit to top
    end if
    put field "wfac" into wfac
    put empty into field "output"
@@ -34,7 +37,8 @@ on expandWidth
          next repeat
       end if
       
-      add 5 to tSkipChar -- 5 FOR EXPAND WIDTH
+      -- tSkipChar points to w of width:
+      add 5 to tSkipChar -- add 5 to move forward to : of width:
       put offset("px;",tOneLine,tSkipChar) into tHitChar
       add tSkipChar to tHitChar
       put char tSkipChar+1 to tHitChar-1 of tOneLine into tWidpx
@@ -43,20 +47,21 @@ on expandWidth
       put fStripOuterSpace(tWidpx) into tWidpx
       put wfac * tWidpx into tWidpx
       put round(tWidpx) into tWidpx
-      put space & "width:" & space before tWidpx
+      put space & space & "width:" & space before tWidpx
       put tEndString after tWidpx
       put tWidpx & LF after field "output"
    end repeat
    
-end expandWidth
+end scaleWidth
 
-on expandLeft
+on scaleLeft
    -- uses fields wfac, input, output
    -- uses function fStripOuterSpace
    
    if field "wfac" is empty then 
       put 1.0 into field wfac
-      exit expandLeft
+      answer "double-check scale factor - was empty"
+      exit to top
    end if
    put field "wfac" into wfac
    put empty into field "output"
@@ -83,12 +88,13 @@ on expandLeft
       if char tSkipChar -1 of tOneLine is "-" then
          -- handle margin-left
          -- xxx but are there other CSS -left ??
-         put space & "margin-left:" & space into tPreFix
+         put space & space & "margin-left:" & space into tPreFix
       else
-         put space & "left:" & space into tPreFix
+         put space & space & "left:" & space into tPreFix
       end if
       
-      add 4  to tSkipChar -- 4 for EXPAND LEFT
+      -- tSkipChar points to l of left:
+      add 4 to tSkipChar -- add 4 to move forward to : of left:
       put offset("px;",tOneLine,tSkipChar) into tHitChar
       add tSkipChar to tHitChar
       put char tSkipChar+1 to tHitChar-1 of tOneLine into tWidpx
@@ -102,15 +108,4 @@ on expandLeft
       put tWidpx & LF after field "output"
    end repeat
    
-end expandLeft
-
-function fStripOuterSpace tText
-   repeat while the last char of tText is space
-      delete the last char of tText
-   end repeat
-   repeat while the first char of tText is space
-      delete the first char of tText
-   end repeat
-   return tText
-end fStripOuterSpace
-
+end scaleLeft
