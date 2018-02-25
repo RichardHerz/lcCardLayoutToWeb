@@ -13,7 +13,7 @@ My use of this project is to develop web apps that are interactive simulations o
 
 Each LiveCode control is referenced in CSS by id only, thus cascading is limited. LiveCode controls supported include groups, standard buttons, menu buttons, checkboxes, radio buttons, locked fields, unlocked fields, and scrollbars (as range inputs). See the project wiki for other limitations.
 
-The files css-processor-stack.livecode and css-processor-script.livecodescript can be used to process CSS files in order to scale a card layout to other widths and (in the future) other heights.
+The css-processor files can be used to process CSS files in order to scale a card layout to other widths.
 
 SEE THIS PROJECT'S WIKI IN THE TAB ABOVE FOR MORE INFO. 
 
