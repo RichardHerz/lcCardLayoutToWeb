@@ -1,303 +1,318 @@
+sup {
+  font-size: smaller;
+}
+
+sub {
+  font-size: smaller;
+}
+
 input {
- display: block;
- position: absolute;
- text-align: center;
+  display: block;
+  position: absolute;
+  text-align: center;
 }
 
 input, button {
- text-align: center;
+  text-align: center;
 }
 
 /* do NOT write general style for div since interferes
     with plotting by jquery.flot.js */
 
 p {
- display: block;
- text-align: left;
+  display: block;
+  text-align: left;
+  border-style: dotted;
 }
 
 label {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 img {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 select {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 canvas {
- display: block;
- position: absolute;
- text-align: left;
+  display: block;
+  position: absolute;
+  text-align: left;
 }
 
 ::-ms-tooltip {
- display: none;
+  display: none;
 }
 
 #div_simulation_frame {
- display: block;
- position: absolute;
- left: 30px;
- top: 33px;
- width: 566px;
- height: 441px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 30px;
+  top: 33px;
+  width: 566px;
+  height: 441px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #div_OUTER_group {
- display: block;
- position: absolute;
- left: 33px;
- top: 65px;
- width: 262px;
- height: 93px;
- visibility: visible;
- border-width: 2px;
- background-color: rgb(0,255,255);
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 33px;
+  top: 65px;
+  width: 262px;
+  height: 93px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(0,255,255);
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #button_get_num_controls {
- position: absolute;
- left: 6px;
- top: 21px;
- width: 120px;
- height: 23px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 6px;
+  top: 21px;
+  width: 120px;
+  height: 23px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
 }
 
 #div_INNER_group_02 {
- display: block;
- position: absolute;
- left: 138px;
- top: 6px;
- width: 118px;
- height: 80px;
- visibility: visible;
- border-width: 2px;
- background-color: rgb(255,255,0);
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 138px;
+  top: 6px;
+  width: 118px;
+  height: 80px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(255,255,0);
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #button_list_groups {
- position: absolute;
- left: 11px;
- top: 6px;
- width: 82px;
- height: 23px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 11px;
+  top: 6px;
+  width: 82px;
+  height: 23px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
 }
 
 #field_locked_field {
- position: absolute;
- left: 6px;
- top: 37px;
- width: 100px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: dotted;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 6px;
+  top: 37px;
+  width: 100px;
+  height: 21px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
 #button_blank {
- position: absolute;
- left: 30px;
- top: 31px;
- width: 82px;
- height: 23px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 30px;
+  top: 29px;
+  width: 82px;
+  height: 23px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
 }
 
 #button_Button01-1 {
- position: absolute;
- left: 42px;
- top: 53px;
- width: 82px;
- height: 23px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 42px;
+  top: 53px;
+  width: 82px;
+  height: 23px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
 }
 
 #div_EMPTY_group {
- display: block;
- position: absolute;
- left: 40px;
- top: 79px;
- width: 8px;
- height: 8px;
- visibility: visible;
- border-width: 2px;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 40px;
+  top: 79px;
+  width: 8px;
+  height: 8px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #div_RADIO_group {
- display: block;
- position: absolute;
- left: 307px;
- top: 89px;
- width: 95px;
- height: 63px;
- visibility: visible;
- border-width: 2px;
- border-style: outset;
- opacity: 1;
- LCvScrollbar: false;
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 307px;
+  top: 89px;
+  width: 95px;
+  height: 63px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: dotted;
+  LCvScrollbar: false;
 }
 
 #radio_Radio2_LABEL {
- width: 82px;
- height: 23px;
- left: 6px;
- top: 34px;
+  display: block;
+  position: absolute;
+  width: 82px;
+  height: 23px;
+  left: 6px;
+  top: 34px;
 }
 
 #radio_Radio2_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 16px;
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 16px;
 }
 
 #radio_Radio1_LABEL {
- width: 82px;
- height: 23px;
- left: 7px;
- top: 6px;
+  display: block;
+  position: absolute;
+  width: 82px;
+  height: 23px;
+  left: 7px;
+  top: 6px;
 }
 
 #radio_Radio1_SPAN {
- margin-left: 22px;
- line-height: 22px;
- font-size: 16px;
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 16px;
 }
 
 #checkbox_Check1_LABEL {
- width: 82px;
- height: 23px;
- left: 180px;
- top: 172px;
+  width: 82px;
+  height: 23px;
+  left: 180px;
+  top: 172px;
 }
 
 #checkbox_Check1_SPAN {
- margin-left: 22px;
- line-height: 18px;
- font-size: 16px;
+  margin-left: 22px;
+  line-height: 18px;
+  font-size: 16px;
 }
 
 #image_robo_99_png {
- position: absolute;
- left: 6px;
- top: 225px;
- width: 178px;
- height: 193px;
- visibility: visible;
- border-style: outset;
- opacity: 1;
- border-width: 0px;
+  position: absolute;
+  left: 6px;
+  top: 225px;
+  width: 178px;
+  height: 193px;
+  visibility: visible;
+  border-style: dotted;
+  border-width: 0px;
 }
 
 #input_field_unlocked_field_1 {
- position: absolute;
- left: 250px;
- top: 275px;
- width: 100px;
- height: 21px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 250px;
+  top: 275px;
+  width: 100px;
+  height: 21px;
+border-width: 1px;
+  visibility: visible;
+border-style: solid;
+  LCvScrollbar: false;
 }
 
 #range_slider_horiz {
- left: 313px;
- top: 338px;
- width: 187px;
- height: 22px;
+  left: 313px;
+  top: 338px;
+  width: 187px;
+  height: 22px;
 }
 
 #select_Option_Menu {
- position: absolute;
- left: 358px;
- top: 238px;
- width: 102px;
- height: 22px;
- visibility: visible;
- border-width: 1px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 358px;
+  top: 238px;
+  width: 102px;
+  height: 22px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: outset;
 }
 
 #select_Pulldown_Menu {
- position: absolute;
- left: 445px;
- top: 283px;
- width: 102px;
- height: 22px;
- visibility: visible;
- border-width: 1px;
- border-style: outset;
- opacity: 1;
+  position: absolute;
+  left: 445px;
+  top: 283px;
+  width: 102px;
+  height: 22px;
+  visibility: visible;
+  border-width: 1px;
+  border-style: outset;
 }
 
 #range_slider_vert {
- transform: rotate(270deg);
- left: 186.5px;
- top: 343px;
- width: 120px;
- height: 22px;
+  transform: rotate(270deg);
+  left: 186.5px;
+  top: 343px;
+  width: 120px;
+  height: 22px;
 }
 
 #input_field_unlocked_field_2 {
- position: absolute;
- left: 251px;
- top: 414px;
- width: 100px;
- height: 21px;
- visibility: visible;
- opacity: 1;
- LCvScrollbar: false;
+  position: absolute;
+  left: 251px;
+  top: 414px;
+  width: 100px;
+  height: 21px;
+border-width: 1px;
+  visibility: visible;
+border-style: solid;
+  LCvScrollbar: false;
 }
 
 #field_instructions {
- position: absolute;
- left: 30px;
- top: -10px;
- width: 530px;
- height: 49px;
- border-width: 2px;
- visibility: visible;
- border-style: dotted;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 30px;
+  top: -10px;
+  width: 530px;
+  height: 53px;
+  border-width: 2px;
+  visibility: visible;
+  border-style: dotted;
+  LCvScrollbar: false;
+  font-size: 16px;
 }
 
+/* example @media for responsive design */
+/* requires meta viewport element in HTML head */
+@media(max-width: 640px) {
+  /* change the following when the screen width is <= 640px */
+  /* #div_controller {
+    top: 600px;
+    left: 20px;
+   } */
+}
