@@ -43,64 +43,48 @@
       <div id="div_PLOTDIV_reactorContents">
       </div> <!-- end of div div_PLOTDIV_reactorContents -->
    </div> <!-- end of div div_reactor -->
-   <input type="button" id="button_resetButton" value="Reset" value="Reset" onclick="resetThisLab()"></input>
-   <input type="button" id="button_runButton" value="Run" value="Run" onclick="runThisLab()"></input>
+   <input type="button" id="button_resetButton" value="Reset" value="Reset" onclick="resetThisLab()">
+   <input type="button" id="button_runButton" value="Run" value="Run" onclick="runThisLab()">
    <div id="div_reactionParams">
       <p id="field_enterdelHLABEL">
             Enter reaction &#8710;H (kJ/mol)
       </p>
-      <input id="input_field_enterdelH" value="-250" onchange="unit_2.updateUIparams()" value="-250">
-
-      </input>
+      <input id="input_field_enterdelH" value="tValue" onchange="unit_2.updateUIparams()" value="-250">
       <p id="field_enterEaLABEL">
             Enter reaction &#8710;Ea (kJ/mol)
       </p>
-      <input id="input_field_enterEa" value="200" onchange="unit_2.updateUIparams()" value="200">
-
-      </input>
+      <input id="input_field_enterEa" value="tValue" onchange="unit_2.updateUIparams()" value="200">
       <p id="field_control_5">
             Enter reaction k300 (1/s)
       </p>
-      <input id="input_field_enterk300" value="5e-6" onchange="unit_2.updateUIparams()" value="5e-6">
-
-      </input>
+      <input id="input_field_enterk300" value="tValue" onchange="unit_2.updateUIparams()" value="5e-6">
    </div> <!-- end of div div_reactionParams -->
    <div id="div_operatingParams">
       <p id="field_enterJacketUALABEL">
             Enter jacket UA (kJ/s/K)
       </p>
-      <input id="input_field_enterjacketUA" value="20" onchange="unit_4.updateUIparams()" value="20">
-
-      </input>
+      <input id="input_field_enterjacketUA" value="tValue" onchange="unit_4.updateUIparams()" value="20">
       <p id="field_enterJacketFlowRateLABEL">
             Enter jacket flow rate (m<sup shift="-4">3</sup>/s)
       </p>
-      <input id="input_field_enterJacketFlowRate" value="0.05" onchange="unit_3.updateUIparams()" value="0.05">
-
-      </input>
+      <input id="input_field_enterJacketFlowRate" value="tValue" onchange="unit_3.updateUIparams()" value="0.05">
       <p id="field_enterFeedConcLABEL">
             Enter feed conc. (mol/m<sup shift="-4">3</sup>)
       </p>
-      <input id="input_field_enterFeedConc" value="400" onchange="unit_1.updateUIparams()" value="400">
-
-      </input>
+      <input id="input_field_enterFeedConc" value="tValue" onchange="unit_1.updateUIparams()" value="400">
       <p id="field_enterFeedTTempLABEL">
             Enter feed T (K)
       </p>
-      <input id="input_field_enterFeedTTemp" value="300" onchange="unit_1.updateUIparams()" value="300">
-
-      </input>
+      <input id="input_field_enterFeedTTemp" value="tValue" onchange="unit_1.updateUIparams()" value="300">
       <p id="field_enterFeedFlowRateLABEL">
             Enter feed flow rate (m<sup shift="-4">3</sup>/s)
       </p>
-      <input id="input_field_enterFeedFlowRate" value="0.005" onchange="unit_1.updateUIparams()" value="0.005">
-
-      </input>
+      <input id="input_field_enterFeedFlowRate" value="tValue" onchange="unit_1.updateUIparams()" value="0.005">
    </div> <!-- end of div div_operatingParams -->
    <div id="div_controller">
       <div id="div_PLOTDIV_plotData">
       </div> <!-- end of div div_PLOTDIV_plotData -->
-      <input type="button" id="button_copyDataButton" value="Copy data" value="Copy data" onclick="copyData()"></input>
+      <input type="button" id="button_copyDataButton" value="Copy data" value="Copy data" onclick="copyData()">
       <!-- <p> id="field_enterJacketFeedTTempLABEL" MAY HAVE css visibility:hidden on open page; changed by unit_5.changeMode -->
       <p id="field_enterJacketFeedTTempLABEL">
             Enter jacket inlet T (K)
@@ -109,21 +93,15 @@
       <p id="field_enterResetTimeLABEL">
             Enter reset time (&gt; 0 s)
       </p>
-      <input id="input_field_enterResetTime" value="30" onchange="unit_5.updateUIparams()" value="30">
-
-      </input>
+      <input id="input_field_enterResetTime" value="tValue" onchange="unit_5.updateUIparams()" value="30">
       <p id="field_enterGainLABEL">
             Enter controller gain
       </p>
-      <input id="input_field_enterGain" value="2" onchange="unit_5.updateUIparams()" value="2">
-
-      </input>
+      <input id="input_field_enterGain" value="tValue" onchange="unit_5.updateUIparams()" value="2">
       <p id="field_enterSetpointLABEL">
             Enter reactor T set point (K)
       </p>
-      <input id="input_field_enterSetpoint" value="340" onchange="unit_5.updateUIparams()" value="340">
-
-      </input>
+      <input id="input_field_enterSetpoint" value="tValue" onchange="unit_5.updateUIparams()" value="340">
       <div id="div_RADIO_group_Controller">
          <label id="radio_controllerAUTO_LABEL" name="radio_of_group_RADIO_group_Controller">
                   <input type="radio" id="radio_controllerAUTO" name="radio_of_group_RADIO_group_Controller" onchange="unit_5.changeMode()">
@@ -135,9 +113,7 @@
          </label>
       </div> <!-- end of div div_RADIO_group_Controller -->
       <!-- end "div_RADIO_group_Controller" -->
-      <input id="input_field_enterJacketFeedTTemp" value="348" onchange="unit_5.updateUIparams()" value="348">
-
-      </input>
+      <input id="input_field_enterJacketFeedTTemp" value="tValue" onchange="unit_5.updateUIparams()" value="348">
    </div> <!-- end of div div_controller -->
    <!-- end "div_controller" -->
 </div> <!-- end of div div_simFrame -->

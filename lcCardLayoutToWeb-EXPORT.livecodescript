@@ -1012,7 +1012,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    
    -- conclude html
    put ">" & LF after tHTML
-   put tIndent & "</input>" & LF after tHTML
+   -- no </ or /> end of tag for <input> used in HTML
    -- END HTML
    
    -- CONTINUE WITH CSS
@@ -1299,8 +1299,8 @@ function fExportStandardButton tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    -- get and write any html event code
    get fReturnHtmlEvents(tControl_ID)
    put it after tHtml
-   put ">" after tHTML
-   put "</input>" & LF after tHTML
+   put ">" & LF after tHTML
+   -- no </ or /> end of tag for <input> used in HTML
    -- end html
    -- write css
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
@@ -1567,7 +1567,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put space & "id=" & quote & tIDname & quote after tHTML
    if tFieldType is "input" then
       -- unlocked field for user input
-      put the text of control id tControl_ID into tValue
+      put the text of control id tControl_ID into tValuetFieldType
       put space & "value=" & quote & tValue & quote after tHTML
    end if
    -- get and write any html event code
@@ -1593,7 +1593,11 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       replace "<br>" with tIndent & tIndent & "<br>" in tTempText
       put tTempText after tHTML
    end if
-   put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
+   
+   -- need </p> for tFieldType = "p" but no end of tag for <input> used in HTML
+   if tFieldType is "p" then
+      put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
+   end if
    
    -- write css
    
