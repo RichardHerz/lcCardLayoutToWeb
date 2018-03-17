@@ -726,9 +726,10 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   break
                case "showBorder"
                   -- LC true-false; CSS none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
+                  put word 1 of the long name of control id tControl_ID into tControlType
                   if aControlProps[tKey] is "true" then
                      -- was outset but looks bad (solid) on Win IE and Edge browsers?
-                     if the long name of control id tControl_ID contains "button" then
+                     if tControlType is "button" then
                         put "outset" into tValue -- try outset or none
                      else
                         put "dotted" into tValue
@@ -736,11 +737,16 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   else
                      put "none" into tValue
                   end if
+                  -- but LC property threeD overrides border for groups on LC card
+                  if tControlType is "group" then
+                     if the threeD of control id tControl_ID is true then
+                        put "none" into tValue
+                     end if
+                  end if
                   -- let development button override for groups and fields only
                   if there is a button "lcCardLayoutToWeb outlines" then
                      if the hilite of button "lcCardLayoutToWeb outlines" is true then
-                        put word 1 of the long name of control id tControl_ID into tType
-                        if tType is "group" or tType is "field" then
+                        if tControlType is "group" or tControlType is "field" then
                            put "dotted" into tValue
                         end if
                      end if

@@ -53,13 +53,13 @@ canvas {
   display: block;
   position: relative;
   border-color: DodgerBlue;
-  left: 30px;
-  top: 33px;
+  left: 1px;
+  top: 21px;
   width: 566px;
   height: 441px;
   visibility: visible;
   border-width: 2px;
-  border-style: none;
+  border-style: dotted;
   LCvScrollbar: false;
 }
 
@@ -100,7 +100,7 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(255,255,0);
-  border-style: none;
+  border-style: dotted;
   LCvScrollbar: false;
 }
 
@@ -121,7 +121,7 @@ canvas {
   top: 37px;
   width: 100px;
   height: 21px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: dotted;
   LCvScrollbar: false;
@@ -168,13 +168,13 @@ canvas {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 309px;
-  top: 91px;
-  width: 91px;
-  height: 59px;
+  left: 307px;
+  top: 89px;
+  width: 95px;
+  height: 63px;
   visibility: visible;
   border-width: 2px;
-  border-style: none;
+  border-style: dotted;
   LCvScrollbar: false;
 }
 
@@ -183,8 +183,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 4px;
-  top: 32px;
+  left: 6px;
+  top: 34px;
 }
 
 #radio_Radio2_SPAN {
@@ -198,8 +198,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 5px;
-  top: 4px;
+  left: 7px;
+  top: 6px;
 }
 
 #radio_Radio1_SPAN {
