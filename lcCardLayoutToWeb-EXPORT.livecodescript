@@ -22,6 +22,8 @@ constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script t
 constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
 -- make sure value of constant kCommentTagPrefix is the same in both script files 
 
+constant kDottedBorderColor = "DodgerBlue"
+
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
 constant kWebOutputFolder = "web output"
 -- images should be added to LiveCode stack only BY REFERENCE
@@ -157,27 +159,29 @@ on exportWebPage
    
    ---------- START INPUT DATA ------------
    
-   -- SET ARRAY WITH CONVERSION BETWEEN LIVECODE AND CSS PROPERTIES
+   -- SET ARRAY WITH EXPORT CONVERSION OF LIVECODE TO CSS PROPERTIES
    -- keys of array aCSSprops are LiveCode properties
    -- values are equivalent CSS properties
-   -- put value into aCSSprops["key"]
-   -- SOME DEACTIVATED BY COMMENT BELOW
+   -- put CSS value into aCSSprops[LC key]
+   -- SOME DEACTIVATED BY COMMENTS BELOW
    put empty into aCSSprops
-   -- use LC blendLevel instead of LC opaque
-   -- put "opacity" into aCSSprops["opaque"] -- LC true or false; CSS 1 or 0
-   -- xxx may not want to set opacity - blendlevel - for most things? 
-   -- put "opacity" into aCSSprops["blendLevel"] -- LC 100 > 0 (0 is opaque); CSS 0 > 1 (1 is opaque)
+   -- CSS opacity = 0 -> 1 (1 is opaque), LC blendLevel =100 -> 0 (0 is opaque)
+   -- opacity/blendLevel apply to div/group contents as well as area
+   put "opacity" into aCSSprops["blendLevel"]
+   -- visibility/visible apply to div/group contents as well as area
    put "visibility" into aCSSprops["visible"] -- LC true-false; CSS visible-hidden
+   -- LC showBorder is true-false
+   -- CSS border-style is none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
+   -- as of now, only one CSS style picked in fReturnCSSprops
    -- development button "outlines" overrides border-style
    put "border-style" into aCSSprops["showBorder"]
-   -- LC true-false; CSS none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
-   -- as of now, only one CSS style picked in fReturnCSSprops
+   -- LC borderWidth is pixel value; CSS border-width is thin, medium, thick or px
    put "border-width" into aCSSprops["borderWidth"]
-   -- LC is pixel value; CSS thin, medium, thick or px
-   -- stop using margin, interferes with location of some controls
-   -- put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
+   -- LC RGB values; CSS Valid color names, rgb(#,#,#), rgba(#,#,#,#), hexidecimal notation
+   -- also for LC backColor need to check LC opaque, which applies to group/div area only not contents
    put "background-color" into aCSSprops["backColor"]
-   -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
+   -- stop using LC margins, interferes with location of some controls
+   -- --       put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
    -- SPECIAL FOR GROUP SCROLLBAR - LCvScrollbar not a standard CSS property
    put "LCvScrollbar" into aCSSprops["vScrollbar"]
    
@@ -346,6 +350,7 @@ on exportWebPage
    if there is a button "lcCardLayoutToWeb outlines" then
       if the hilite of button "lcCardLayoutToWeb outlines" is true then
          put space & space & "border-style: dotted;" & LF after tCSS
+         put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
       end if
    end if
    put "}" & LF & LF after tCSS -- finish css for p, locked field
@@ -701,23 +706,39 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
             -- probably could set up this value correspondence in
             -- array(s) but use switch for now
             -- WARNING: some properties listed below have been deactivated
-            -- by comments at top of script at specification of aCSSprops array
+            -- by comments in exportWebPage where aCSSprops array is specified
+            put empty into tValue -- check below if switch sets a prop value to write to tCSS
             switch tKey
-               case "opaque"
-                  -- LC true or false; CSS 1 or 0
-                  if aControlProps[tKey] is "true" then
-                     put 1 into tValue
+               case "margins"
+                  -- LC is pixel value; CSS px
+                  put aControlProps[tKey] & "px" into tValue
+                  break
+               case "backColor"
+                  -- WARNING: will not get here if no backColor is set so
+                  --     need to check LC opaque below
+                  --     if LC opaque is false need to set rgba of CSS background-color even if no LC backColor
+                  -- LC RGB values; CSS Valid color names, rgb(#,#,#), rgba(#,#,#,#), hexidecimal notation
+                  if the opaque of control id tControl_ID is true then
+                     put "rgb(" & aControlProps[tKey] & ")" into tValue
                   else
-                     put 0 into tValue
+                     -- LC opaque is false, so need to set rgba color with alpha (a) = 0
+                     -- LC opaque applies to group/div area only not contents
+                     put "rgba(" & aControlProps[tKey] & ", 0)" into tValue
                   end if
                   break
+               case "vScrollbar"
+                  -- for special, non-standard CSS property LCvScrollbar
+                  put aControlProps[tKey] into tValue
+                  break
                case "blendLevel"
-                  -- LC 100 > 0 (0 is opaque); CSS 0 > 1 (1 is opaque)
+                  -- LC blendLevel 100 -> 0 (0 is opaque); CSS opacity 0 -> 1 (1 is opaque)
+                  -- opacity/blendLevel apply to div/group contents as well as area
                   put aControlProps[tKey] into ttemp
                   put 1 - ttemp/100 into tValue
                   break
                case "visible"
                   -- LC true-false; CSS visible-hidden
+                  -- visibility/visible apply to div/group contents as well as area
                   if aControlProps[tKey] is "true" then
                      put "visible" into tValue
                   else
@@ -726,23 +747,27 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   break
                case "showBorder"
                   -- LC true-false; CSS none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
+                  -- different types of LC control affected differently, get type of control
                   put word 1 of the long name of control id tControl_ID into tControlType
                   if aControlProps[tKey] is "true" then
+                     -- showBorder is true
                      -- was outset but looks bad (solid) on Win IE and Edge browsers?
                      if tControlType is "button" then
                         put "outset" into tValue -- try outset or none
                      else
                         put "dotted" into tValue
                      end if
+                     -- LC property threeD affects border for groups & fields on LC card
+                     -- light border if threeD true, solid border if threeD false
+                     -- xxx so maybe should set border-style to solid with 1px width??
+                     if tControlType is "group" or tControlType is "field" then
+                        if the threeD of control id tControl_ID is true then
+                           put "none" into tValue
+                        end if
+                     end if
                   else
                      put "none" into tValue
-                  end if
-                  -- but LC property threeD overrides border for groups on LC card
-                  if tControlType is "group" then
-                     if the threeD of control id tControl_ID is true then
-                        put "none" into tValue
-                     end if
-                  end if
+                  end if -- end if aControlProps[tKey] is "true" (tKey = showBorder)
                   -- let development button override for groups and fields only
                   if there is a button "lcCardLayoutToWeb outlines" then
                      if the hilite of button "lcCardLayoutToWeb outlines" is true then
@@ -770,25 +795,43 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                      end if
                   end if
                   break
-               case "margins"
-                  -- LC is pixel value; CSS px
-                  put aControlProps[tKey] & "px" into tValue
-                  break
-               case "backColor"
-                  -- LC RGB values; CSS Valid color names, rgb(#,#,#), hexidecimal notation
-                  put "rgb(" & aControlProps[tKey] & ")" into tValue
-                  break
-               case "vScrollbar"
-                  -- for special, non-standard CSS property LCvScrollbar
-                  put aControlProps[tKey] into tValue
-                  break
                default
                   put empty into tValue
             end switch
-            put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
-         end if
-      end if
+            if tValue is not empty then
+               put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
+            end if -- end if tValue is not empty 
+         end if -- end if aControlProps[tKey] is not empty
+      end if -- end if tKey is among the lines of tHitList
    end repeat  
+   
+   -- need to check LC opaque
+   -- if LC backColor not empty, then this is handled above
+   -- but if LC backColor is empty, then need to check here
+   -- if LC opaque is false need to set rgba of CSS background-color even if no LC backColor
+   -- last number of rgba is alpha, a = 0 is transparent, a = 1 is opaque
+   -- LC opaque applies to group/div area only, not contents
+   if the backColor of control id tControl_ID is empty then
+      if the opaque of control id tControl_ID is true then
+         put space & space & "background-color: rgba(255, 255, 255, 1);" & LF after tCSS
+      else
+         put space & space & "background-color: rgba(255, 255, 255, 0);" & LF after tCSS
+      end if
+   end if
+   
+   -- SPECIAL LC PROPERTIES
+   -- to get reversibility on export-import need to save special LC properties
+   -- these are ignored by CSS processor but used on import back into this project
+   if the threeD of control id tControl_ID is true then
+      put space & space & "LCthreeD: true;" & LF after tCSS
+   else
+      put space & space & "LCthreeD: false;" & LF after tCSS
+   end if
+   if the showBorder of control id tControl_ID is true then
+      put space & space & "LCshowBorder: true;" & LF after tCSS
+   else
+      put space & space & "LCshowBorder: false;" & LF after tCSS
+   end if
    
    return tCSS
 end fReturnCSSprops
@@ -1112,7 +1155,7 @@ function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    else
       put space & space & "position: absolute;" & LF after tCSS
    end if
-   put space & space & "border-color: DodgerBlue;" & LF after tCSS
+   put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
    put empty into tGrpLoc -- used in fReturnCSSprops for non group controls, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
@@ -1356,7 +1399,7 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put space & space & "visibility: visible;" & LF after tCSS
    put space & space & "border-width: 0px;" & LF after tCSS -- was 2px
    put space & space & "border-style: dotted;" & LF after tCSS
-   put space & space & "border-color: DodgerBlue;" & LF after tCSS 
+   put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS 
    put space & space & "opacity: 1;" & LF after tCSS
    put space & space & "LCvScrollbar: false;" & LF after tCSS
    -- conclude css
@@ -1656,17 +1699,21 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
                put space & space & "border-style: dotted;" into line tline of tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
             else
                -- was solid
                put space & space & "border-style: dotted;" into line tline of tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
             end if
          else
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
                put space & space & "border-style: dotted;" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
             else
                -- was solid
                put space & space & "border-style: dotted;" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
             end if
          end if
          

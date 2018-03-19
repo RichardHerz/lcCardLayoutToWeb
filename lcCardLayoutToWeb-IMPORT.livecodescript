@@ -742,6 +742,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
       -- assume top and bottom lines don't have data but the other lines do
       
       set the itemDelimiter to colon
+      put "false" into flagLCthreeD
+      put "false" into flagLCshowBorder
       
       repeat for each line n in tCssData
          if n contains "#" then next repeat
@@ -864,10 +866,33 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                set the borderWidth of tControlName to tValue
                break
             case "background-color"
-               -- EXAMPLE:  background-color: rgb(102,255,255);
-               replace "rgb(" with empty in tValue
-               delete the last char of tValue -- delete ) where ; already deleted from tValue
-               set the backColor of tControlName to tValue
+               -- color setting of rgba used on export to handle LC opaque
+               if "rgba(" is in tValue then
+                  -- EXAMPLE:  background-color: rgba(102,255,255,0);
+                  replace "rgba(" with empty in tValue
+                  delete the last char of tValue -- delete ) where ; already deleted from tValue
+                  put the last item of tValue into tAlpha
+                  delete the last item of tValue
+                  set the backColor of tControlName to tValue
+                  -- now handle tAlpha - set by this project to 0 (transparent) or 1 (opaque)
+                  if tAlpha is 0 then
+                     set the opaque of tControlName to false
+                  else
+                     -- should only get here with tAlpha = 1 when backColor of LC control was empty
+                     -- and the opaque of LC control was true
+                     set the opaque of tControlName to true
+                  end if
+               else if "rgb(" is in tValue then
+                  -- EXAMPLE:  background-color: rgb(102,255,255);
+                  -- should only get here if backColor of LC control not empty and opaque was true
+                  replace "rgb(" with empty in tValue
+                  delete the last char of tValue -- delete ) where ; already deleted from tValue
+                  set the backColor of tControlName to tValue
+                  set the opaque of tControlName to true
+               else 
+                  -- color value set some other way
+                  -- can't handle yet
+               end if
                break
             case "transform"
                -- used when rotate horizontal range to vertical in CSS
@@ -885,6 +910,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                   if kReporter is "true" then put LF & "in case transform, tTransformFlag = " & tTransformFlag after msg
                end if
                break
+               -- BELOW ARE SPECIAL PROPERTIES
+               -- ignored by CSS processor but used to get better export-import to this project
             case "LCvScrollbar"
                -- this is for vScrollbar property of scrolling groups, not for scrollbar controls
                -- special property added on export - not a standard CSS property
@@ -897,8 +924,23 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                put tControlName & "$" & tValue & LF after oScrollbarList  -- need delimiter that does not appear in a file name
                -- xxx set the vScrollbar of tControlName to tValue
                break
+            case "LCthreeD"
+               put "true" into flagLCthreeD
+               break
+            case "LCshowBorder"
+               put "true" into flagLCshowBorder
+               break
          end switch
       end repeat
+   end if
+   
+   -- BELOW ARE SPECIAL PROPERTIES - FLAGS SET ABOVE
+   -- ignored by CSS processor but used to get better export-import to this project
+   if flagLCthreeD is "true" then
+      set the threeD of tControlName to true 
+   end if
+   if flagLCshowBorder is "true" then
+      set the showBorder of tControlName to true
    end if
    
    -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
