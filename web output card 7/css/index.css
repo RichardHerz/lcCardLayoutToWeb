@@ -53,18 +53,14 @@ canvas {
   display: block;
   position: relative;
   border-color: DodgerBlue;
-  left: 2px;
+  left: 1px;
   top: 21px;
   width: 566px;
   height: 441px;
   visibility: visible;
   border-width: 2px;
-  background-color: rgb(255,255,255);
-  border-style: none;
-  opacity: 1;
+  border-style: dotted;
   LCvScrollbar: false;
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #div_OUTER_group {
@@ -79,10 +75,7 @@ canvas {
   border-width: 2px;
   background-color: rgb(0,255,255);
   border-style: none;
-  opacity: 1;
   LCvScrollbar: false;
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #button_get_num_controls {
@@ -93,11 +86,7 @@ canvas {
   height: 23px;
   visibility: visible;
   border-width: 2px;
-  background-color: rgb(255,147,0);
   border-style: outset;
-  opacity: 1;
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #div_INNER_group_02 {
@@ -111,11 +100,8 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(255,255,0);
-  border-style: none;
-  opacity: 1;
+  border-style: dotted;
   LCvScrollbar: false;
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #button_list_groups {
@@ -127,10 +113,6 @@ canvas {
   visibility: visible;
   border-width: 2px;
   border-style: outset;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #field_locked_field {
@@ -139,16 +121,11 @@ canvas {
   top: 37px;
   width: 100px;
   height: 21px;
-  border-width: 2px;
+  border-width: 1px;
   visibility: visible;
   border-style: dotted;
-  opacity: 1;
   LCvScrollbar: false;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
   font-size: 16px;
-  border-color: DodgerBlue;
 }
 
 #button_blank {
@@ -160,10 +137,6 @@ canvas {
   visibility: visible;
   border-width: 2px;
   border-style: outset;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #button_Button01-1 {
@@ -175,10 +148,6 @@ canvas {
   visibility: visible;
   border-width: 2px;
   border-style: outset;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #div_EMPTY_group {
@@ -192,29 +161,21 @@ canvas {
   visibility: visible;
   border-width: 2px;
   border-style: none;
-  opacity: 1;
   LCvScrollbar: false;
-  background-color: rgba(255, 255, 255, 0);
-  LCthreeD: true;
-  LCshowBorder: false;
 }
 
 #div_RADIO_group {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 309px;
-  top: 91px;
-  width: 91px;
-  height: 59px;
+  left: 307px;
+  top: 89px;
+  width: 95px;
+  height: 63px;
   visibility: visible;
   border-width: 2px;
-  background-color: rgb(115,253,214);
-  border-style: none;
-  opacity: 1;
+  border-style: dotted;
   LCvScrollbar: false;
-  LCthreeD: true;
-  LCshowBorder: false;
 }
 
 #radio_Radio2_LABEL {
@@ -222,8 +183,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 4px;
-  top: 32px;
+  left: 6px;
+  top: 34px;
 }
 
 #radio_Radio2_SPAN {
@@ -237,8 +198,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 5px;
-  top: 4px;
+  left: 7px;
+  top: 6px;
 }
 
 #radio_Radio1_SPAN {
@@ -268,11 +229,7 @@ canvas {
   height: 193px;
   visibility: visible;
   border-style: dotted;
-  opacity: 1;
   border-width: 0px;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: false;
-  LCshowBorder: true;
 }
 
 #input_field_unlocked_field_1 {
@@ -284,11 +241,7 @@ canvas {
 border-width: 1px;
   visibility: visible;
 border-style: solid;
-  opacity: 1;
   LCvScrollbar: false;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #range_slider_horiz {
@@ -307,10 +260,6 @@ border-style: solid;
   visibility: visible;
   border-width: 1px;
   border-style: outset;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #select_Pulldown_Menu {
@@ -322,10 +271,6 @@ border-style: solid;
   visibility: visible;
   border-width: 1px;
   border-style: outset;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #range_slider_vert {
@@ -345,11 +290,7 @@ border-style: solid;
 border-width: 1px;
   visibility: visible;
 border-style: solid;
-  opacity: 1;
   LCvScrollbar: false;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
 }
 
 #field_instructions {
@@ -361,13 +302,8 @@ border-style: solid;
   border-width: 2px;
   visibility: visible;
   border-style: dotted;
-  opacity: 1;
   LCvScrollbar: false;
-  background-color: rgba(255, 255, 255, 1);
-  LCthreeD: true;
-  LCshowBorder: true;
   font-size: 16px;
-  border-color: DodgerBlue;
 }
 
 /* example @media for responsive design */
