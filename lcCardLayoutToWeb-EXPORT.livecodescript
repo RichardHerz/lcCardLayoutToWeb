@@ -1616,7 +1616,7 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put space & "id=" & quote & tIDname & quote after tHTML
    if tFieldType is "input" then
       -- unlocked field for user input
-      put the text of control id tControl_ID into tValuetFieldType
+      put the text of control id tControl_ID into tValue
       put space & "value=" & quote & tValue & quote after tHTML
    end if
    -- get and write any html event code
