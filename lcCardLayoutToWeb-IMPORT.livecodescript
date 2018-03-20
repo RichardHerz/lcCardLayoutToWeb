@@ -7,8 +7,8 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
-constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
--- make sure value of constant kKillWord is the same in both script files
+constant kProjectName = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+-- make sure value of constant kProjectName is the same in both script files
 
 constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
@@ -62,7 +62,7 @@ on deleteNonDevControls
    answer "WARNING: DELETE ALL GROUPS AND CONTROLS OTHER THAN DEVELOPMENT CONTROLS?" with "yes" or "NO!"
    if it is "NO!" then exit to top
    repeat with tControlNumber = the number of controls down to 1
-      if the short name of control tControlNumber contains kKillWord then
+      if the short name of control tControlNumber contains kProjectName then
          -- skip these development controls
          next repeat
       end if
@@ -77,12 +77,12 @@ on importWebPage
    
    -- calls function fMakeLiveCodeCard
    
-   set the defaultStack to "lcCardLayoutToWeb"
+   set the defaultStack to kProjectName
    
    -- CHECK IF CARD HAS NO CONTROLS OTHER THAN DEVELOPMENT CONTROLS
    put "true" into tCleanOfControls
    repeat with tControlNumber = 1 to the number of controls
-      if the short name of control tControlNumber contains kKillWord then
+      if the short name of control tControlNumber contains kProjectName then
          -- skip these development controls
          next repeat
       end if
@@ -153,7 +153,7 @@ end importWebPage
 
 function fMakeLiveCodeCard pHtmlFileData, pCssFileData
    
-   -- uses constant kKillWord
+   -- uses constant kProjectName
    -- is called by command importWebPage
    
    put empty into tGrpList
@@ -849,6 +849,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                -- css border styles include: none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
                -- EXPORT has a checkbox to add CSS dotted when LC showBorder false
                -- EXPORT otherwise saves LC showBorder true as CSS outset
+               -- EXPORT has special property LCshowBorder - see case below
                if tValue is "none" or tValue is "hidden" then
                   set the showBorder of tControlName to false
                else
@@ -857,8 +858,8 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                if tValue is "solid" then
                   set the threeD of tControlName to false
                else
-                  -- xxx new for dotted frames around divs
-                  -- xxx but need to set threeD true for buttons elsewhere
+                  -- new for dotted frames around divs
+                  -- but need to set threeD true for buttons elsewhere
                   set the threeD of tControlName to false
                end if
                break
@@ -871,8 +872,13 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                   -- EXAMPLE:  background-color: rgba(102,255,255,0);
                   replace "rgba(" with empty in tValue
                   delete the last char of tValue -- delete ) where ; already deleted from tValue
+                  -- itemDelimiter before this case is colon, not comma, need to save and reset below
+                  put the itemDelimiter into tSavedItemDelimiter
+                  set the itemDelimiter to comma
                   put the last item of tValue into tAlpha
                   delete the last item of tValue
+                  -- original itemDelimiter before this case was not comma, need to reset to saved
+                  set the itemDelimiter to tSavedItemDelimiter
                   set the backColor of tControlName to tValue
                   -- now handle tAlpha - set by this project to 0 (transparent) or 1 (opaque)
                   if tAlpha is 0 then
@@ -911,7 +917,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                end if
                break
                -- BELOW ARE SPECIAL PROPERTIES
-               -- ignored by CSS processor but used to get better export-import to this project
+               -- ignored by CSS processor but used for better reversibility of export-import to this project
             case "LCvScrollbar"
                -- this is for vScrollbar property of scrolling groups, not for scrollbar controls
                -- special property added on export - not a standard CSS property
@@ -925,28 +931,28 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                -- xxx set the vScrollbar of tControlName to tValue
                break
             case "LCthreeD"
-               put "true" into flagLCthreeD
+               if tValue is true then
+                  set the threeD of tControlName to true
+               else
+                  set the threeD of tControlName to false
+               end if
                break
             case "LCshowBorder"
-               put "true" into flagLCshowBorder
+               if tValue is true then
+                  set the showBorder of tControlName to true
+               else
+                  set the showBorder of tControlName to false
+               end if
                break
          end switch
-      end repeat
-   end if
+      end repeat -- end repeat for each line n in tCssData
+   end if -- end if tCssData is not empty
    
-   -- BELOW ARE SPECIAL PROPERTIES - FLAGS SET ABOVE
-   -- ignored by CSS processor but used to get better export-import to this project
-   if flagLCthreeD is "true" then
-      set the threeD of tControlName to true 
-   end if
-   if flagLCshowBorder is "true" then
-      set the showBorder of tControlName to true
-   end if
+   -- itemDelimiter was set to colon inside IF structure immediately above, reset to default
+   set the itemDelimiter to comma
    
    -- only want to set font-size/textSize in  _SPAN for radio buttons and checkboxes
    if pSpanFlag is "true" then exit fGetSetControlProps
-   
-   set the itemDelimiter to comma
    
    if kReporter is "true" then put LF & "---||" & tGrpLocList & "||---" after msg
    

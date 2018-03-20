@@ -7,8 +7,8 @@ Licensed for use under the GNU General Public License v3.0
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
-constant kKillWord = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
--- make sure value of constant kKillWord is the same in both script files
+constant kProjectName = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
+-- make sure value of constant kProjectName is the same in both script files
 
 constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
 -- make sure value of constant kFieldShift is the same in both script files
@@ -55,52 +55,19 @@ WARNING - use LF line endings when constructing text and write to file with file
 so that you can view source in all browsers with lines broken at line endings
 */
 
-/*
-WARNING - RESPONSIVE DESIGN
-BETTER TO KEEP SAME CARD BUT RENAME IT AND HAVE FOLDERS NAMED AFTER CURRENT CARD NAME 
->> If clone a card in the stack to reposition controls for smaller width screens, realize that 
-the CONTROL ID NUMBERS CHANGE and, thus, the CSS ID -#### CHANGE. So just make sure to change
-the -#### in the @media section to match those above and in the html. 
-
-For responsive web page, to rearrange some groups/divisions for smaller screens, add an example like this 
-to bottom of CSS, making sure ID numbers _#### match original elements above
-(and found max-width: didn't work with this script):
-
-@media (orientation: portrait) {
-#div_simulation_3_frame_1154 {
-width: 620px;
-height: 940px;
-}
-
-I ADDED LIGHT BLUE VERTICAL LINE TO PAGE AT 640px AS MOBILE LAYOUT GUIDE
-*/
-
-/* 
-HOW TO CREATE EMPTY GROUP FOR A PLOT DIVISION 
-
-BEST WAY: Add one button the size of the group and add the word "lcCardLayoutToWeb" to the button name, 
-then select and group the button and name the group. When saved to web, the button will not appear in the output. 
-
-ALTERNATIVE is to add two small buttons to fix two opposing corners of the group. 
-Add the word "lcCardLayoutToWeb" to the button names.When saved to web, the buttons will not appear in the output. 
-
-OLD WAY & WARNING: Lock location of EMPTY group or it will go to very small size when you stop editing. 
-Empty group made by adding a button to the card, select it, group it, adjust size of group and lock the location. 
-Then can delete the button to leave empty group.
-*/
-
 -----------------------------------------------
 
 on openCard
-   if the short name of the topStack is "lcCardLayoutToWeb" then
+   if the short name of the topStack is kProjectName then
       set the backgroundColor of this card to 255,255,255
-      if there is a field "lcCardLayoutToWeb card name" then
+      put kProjectName && "card name" into tCardName
+      if there is a field tCardName then
          put the name of the current card into tName
          if tName contains "card id" & space then
             put "card" && the number of the current card into tName
          end if
          replace quote with empty in tName
-         put tName into field "lcCardLayoutToWeb card name"
+         put tName into field tCardName
       end if
    end if
    pass openCard
@@ -111,7 +78,7 @@ end openCard
 on mouseEnter
    -- show borders of fields without borders during development
    put the name of this stack into tStack
-   if kKillWord is not in tStack then exit mouseEnter
+   if kProjectName is not in tStack then exit mouseEnter
    put the long name of the target into tLongName
    if there is tLongName then -- was getting errors when property panel open
       if word 1 of tLongName is "field" then
@@ -129,7 +96,7 @@ end mouseEnter
 
 on mouseLeave
    put the name of this stack into tStack
-   if kKillWord is not in tStack then exit mouseLeave
+   if kProjectName is not in tStack then exit mouseLeave
    put the long name of the target into tLongName
    if there is tLongName then -- was getting errors when property panel open
       if word 1 of tLongName is "field" then
@@ -155,7 +122,7 @@ on exportWebPage
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
    
-   set the defaultStack to "lcCardLayoutToWeb"
+   set the defaultStack to kProjectName
    
    ---------- START INPUT DATA ------------
    
@@ -187,7 +154,7 @@ on exportWebPage
    
    ---------- END INPUT DATA ------------
    
-   -- Controls with short name containing "lcCardLayoutToWeb"
+   -- Controls with short name containing kProjectName
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
    
@@ -222,8 +189,9 @@ on exportWebPage
    set the itemDelimiter to "/"
    delete the last item of tStack
    put the number of the current card into tCardNum
-   if there is a field "lcCardLayoutToWeb card name" then
-      put field "lcCardLayoutToWeb card name" into tName
+   put kProjectName && "card name" into tCardName
+   if there is a field tCardName then
+      put field tCardName into tName
    else
       put "card" && tCardNum into tName
    end if
@@ -347,8 +315,9 @@ on exportWebPage
    put "p {" & LF after tCSS
    put space & space & "display: block;" & LF after tCSS
    put space & space & "text-align: left;" & LF after tCSS
-   if there is a button "lcCardLayoutToWeb outlines" then
-      if the hilite of button "lcCardLayoutToWeb outlines" is true then
+   put kProjectName && "outlines" into tBtnName
+   if there is a button tBtnName then
+      if the hilite of button tBtnName is true then
          put space & space & "border-style: dotted;" & LF after tCSS
          put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
       end if
@@ -398,7 +367,7 @@ on exportWebPage
    
    repeat with tControlNumber = 1 to the number of controls
       
-      if the short name of control tControlNumber contains kKillWord then
+      if the short name of control tControlNumber contains kProjectName then
          -- skip these development controls
          next repeat
       end if
@@ -769,8 +738,9 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                      put "none" into tValue
                   end if -- end if aControlProps[tKey] is "true" (tKey = showBorder)
                   -- let development button override for groups and fields only
-                  if there is a button "lcCardLayoutToWeb outlines" then
-                     if the hilite of button "lcCardLayoutToWeb outlines" is true then
+                  put kProjectName && "outlines" into tBtnName
+                  if there is a button tBtnName then
+                     if the hilite of button tBtnName is true then
                         if tControlType is "group" or tControlType is "field" then
                            put "dotted" into tValue
                         end if
@@ -798,12 +768,15 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                default
                   put empty into tValue
             end switch
+            
+            -- write property and value to CSS
             if tValue is not empty then
                put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
             end if -- end if tValue is not empty 
+            
          end if -- end if aControlProps[tKey] is not empty
       end if -- end if tKey is among the lines of tHitList
-   end repeat  
+   end repeat -- repeat for each line tKey in tKeyList
    
    -- need to check LC opaque
    -- if LC backColor not empty, then this is handled above
@@ -822,16 +795,32 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    -- SPECIAL LC PROPERTIES
    -- to get reversibility on export-import need to save special LC properties
    -- these are ignored by CSS processor but used on import back into this project
+   
+   -- start handle LCthreeD
    if the threeD of control id tControl_ID is true then
       put space & space & "LCthreeD: true;" & LF after tCSS
    else
       put space & space & "LCthreeD: false;" & LF after tCSS
    end if
+   -- end handle LCthreeD
+   
+   -- start handle LCshowBorder  
    if the showBorder of control id tControl_ID is true then
-      put space & space & "LCshowBorder: true;" & LF after tCSS
+      put space & space & "LCshowBorder: true;" into tTempCSS
    else
-      put space & space & "LCshowBorder: false;" & LF after tCSS
+      put space & space & "LCshowBorder: false;" into tTempCSS
    end if
+   -- let development button override showBorder for groups and fields only
+   put kProjectName && "outlines" into tBtnName
+   if there is a button tBtnName then
+      if the hilite of button tBtnName is true then
+         if tControlType is "group" or tControlType is "field" then
+            put space & space & "LCshowBorder: true;" into tTempCSS
+         end if
+      end if
+   end if
+   put tTempCSS & LF after tCSS
+   -- end handle LCshowBorder  
    
    return tCSS
 end fReturnCSSprops

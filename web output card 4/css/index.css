@@ -1,130 +1,159 @@
+sup {
+  font-size: smaller;
+}
+
+sub {
+  font-size: smaller;
+}
+
 input {
- display: block;
- position: absolute;
- text-align: center;
+  display: block;
+  position: absolute;
+  text-align: center;
 }
 
 input, button {
- text-align: center;
+  text-align: center;
 }
 
 /* do NOT write general style for div since interferes
     with plotting by jquery.flot.js */
 
 p {
- display: block;
- text-align: left;
+  display: block;
+  text-align: left;
 }
 
 label {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 img {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 select {
- display: block;
- position: absolute;
+  display: block;
+  position: absolute;
 }
 
 canvas {
- display: block;
- position: absolute;
- text-align: left;
+  display: block;
+  position: absolute;
+  text-align: left;
 }
 
 ::-ms-tooltip {
- display: none;
+  display: none;
 }
 
 #range_Scrollbar01 {
- left: 155px;
- top: 113px;
- width: 200px;
- height: 26px;
+  left: 155px;
+  top: 113px;
+  width: 200px;
+  height: 26px;
 }
 
 #range_Scrollbar02 {
- transform: rotate(180deg);
- left: 143px;
- top: 212px;
- width: 200px;
- height: 27px;
+  transform: rotate(180deg);
+  left: 143px;
+  top: 212px;
+  width: 200px;
+  height: 27px;
 }
 
 #range_Scrollbar03 {
- transform: rotate(270deg);
- left: 44px;
- top: 404.5px;
- width: 207px;
- height: 22px;
+  transform: rotate(270deg);
+  left: 44px;
+  top: 404.5px;
+  width: 207px;
+  height: 22px;
 }
 
 #range_Scrollbar04 {
- transform: rotate(90deg);
- left: 232.5px;
- top: 396px;
- width: 190px;
- height: 26px;
+  transform: rotate(90deg);
+  left: 232.5px;
+  top: 396px;
+  width: 190px;
+  height: 26px;
 }
 
 #field_Label02 {
- position: absolute;
- left: 382px;
- top: 189px;
- width: 100px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 382px;
+  top: 189px;
+  width: 100px;
+  height: 21px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  LCvScrollbar: false;
+  background-color: rgba(255, 255, 255, 0);
+  LCthreeD: true;
+  LCshowBorder: false;
+  font-size: 16px;
 }
 
 #field_Label01 {
- position: absolute;
- left: 371px;
- top: 94px;
- width: 100px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 371px;
+  top: 94px;
+  width: 100px;
+  height: 21px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  LCvScrollbar: false;
+  background-color: rgba(255, 255, 255, 0);
+  LCthreeD: true;
+  LCshowBorder: false;
+  font-size: 16px;
 }
 
 #field_Label03 {
- position: absolute;
- left: 85px;
- top: 520px;
- width: 100px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 85px;
+  top: 520px;
+  width: 100px;
+  height: 21px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  LCvScrollbar: false;
+  background-color: rgba(255, 255, 255, 0);
+  LCthreeD: true;
+  LCshowBorder: false;
+  font-size: 16px;
 }
 
 #field_Label04 {
- position: absolute;
- left: 323px;
- top: 518px;
- width: 100px;
- height: 21px;
- border-width: 2px;
- visibility: visible;
- border-style: none;
- opacity: 1;
- LCvScrollbar: false;
- font-size: 16px;
+  position: absolute;
+  left: 323px;
+  top: 518px;
+  width: 100px;
+  height: 21px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  LCvScrollbar: false;
+  background-color: rgba(255, 255, 255, 0);
+  LCthreeD: true;
+  LCshowBorder: false;
+  font-size: 16px;
 }
 
+/* example @media for responsive design */
+/* requires meta viewport element in HTML head */
+@media(max-width: 640px) {
+  /* change the following when the screen width is <= 640px */
+  /* #div_controller {
+    top: 600px;
+    left: 20px;
+   } */
+}
