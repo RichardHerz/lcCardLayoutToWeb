@@ -149,8 +149,6 @@ on exportWebPage
    put "background-color" into aCSSprops["backColor"]
    -- stop using LC margins, interferes with location of some controls
    -- --       put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
-   -- SPECIAL FOR GROUP SCROLLBAR - LCvScrollbar not a standard CSS property
-   put "LCvScrollbar" into aCSSprops["vScrollbar"]
    
    ---------- END INPUT DATA ------------
    
@@ -664,20 +662,25 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put the height of control id tControl_ID into tHt
    put space & space & "width:" && tWd & "px;" & LF after tCSS
    put space & space & "height:" && tHt & "px;" & LF after tCSS
-   put the keys of aCSSprops into tHitList
+   put the keys of aCSSprops into tHitList -- key is LC prop name, value is CSS prop name 
    put the properties of control id tControl_ID into aControlProps
-   put the keys of aControlProps into tKeyList
+   put the keys of aControlProps into tKeyList -- key is LC prop name, value is LC prop value
    
    repeat for each line tKey in tKeyList
+      -- tKey is LC prop name
       if tKey is among the lines of tHitList then
+         -- LC prop name is a key of aCSSprops[LC prop name] = CSS prop name
          if aControlProps[tKey] is not empty then
-            -- get CSS value from LC value in aControlProps[tKey]
-            -- probably could set up this value correspondence in
-            -- array(s) but use switch for now
+            -- LC prop name has a value set
+            -- switch case sets CSS value from LC value in aControlProps[tKey]
+            --        but probably could set up this value correspondence in
+            --        array(s) but use switch for now
             -- WARNING: some properties listed below have been deactivated
             -- by comments in exportWebPage where aCSSprops array is specified
             put empty into tValue -- check below if switch sets a prop value to write to tCSS
             switch tKey
+               -- put CSS prop values into tValue variable,
+               -- then append CSS prop name: value to tCSS immediately after switch structure below
                case "margins"
                   -- LC is pixel value; CSS px
                   put aControlProps[tKey] & "px" into tValue
@@ -694,10 +697,6 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                      -- LC opaque applies to group/div area only not contents
                      put "rgba(" & aControlProps[tKey] & ", 0)" into tValue
                   end if
-                  break
-               case "vScrollbar"
-                  -- for special, non-standard CSS property LCvScrollbar
-                  put aControlProps[tKey] into tValue
                   break
                case "blendLevel"
                   -- LC blendLevel 100 -> 0 (0 is opaque); CSS opacity 0 -> 1 (1 is opaque)
@@ -772,13 +771,14 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
             -- write property and value to CSS
             if tValue is not empty then
                put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
+               -- e.g., CSS prop name: value;
             end if -- end if tValue is not empty 
             
          end if -- end if aControlProps[tKey] is not empty
       end if -- end if tKey is among the lines of tHitList
    end repeat -- repeat for each line tKey in tKeyList
    
-   -- need to check LC opaque
+   -- SPECIAL - need to check LC opaque
    -- if LC backColor not empty, then this is handled above
    -- but if LC backColor is empty, then need to check here
    -- if LC opaque is false need to set rgba of CSS background-color even if no LC backColor
@@ -795,6 +795,17 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    -- SPECIAL LC PROPERTIES
    -- to get reversibility on export-import need to save special LC properties
    -- these are ignored by CSS processor but used on import back into this project
+   
+   -- start handle LCvScrollbar
+   -- xxx for now, "try" for quick fix - should apply to groups and fields only?
+   try 
+      if the vScrollbar of control id tControl_ID is true then
+         put space & space & "LCvScrollbar: true;" & LF after tCSS
+      else
+         put space & space & "LCvScrollbar: false;" & LF after tCSS
+      end if
+   end try
+   -- endhandle LCvScrollbar
    
    -- start handle LCthreeD
    if the threeD of control id tControl_ID is true then

@@ -143,8 +143,8 @@ canvas {
   visibility: visible;
   border-style: dotted;
   opacity: 1;
-  LCvScrollbar: false;
   background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: true;
   font-size: 16px;
@@ -193,8 +193,8 @@ canvas {
   border-width: 2px;
   border-style: none;
   opacity: 1;
-  LCvScrollbar: false;
   background-color: rgba(255, 255, 255, 0);
+  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: false;
 }
@@ -285,8 +285,8 @@ border-width: 1px;
   visibility: visible;
 border-style: solid;
   opacity: 1;
-  LCvScrollbar: false;
   background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: true;
 }
@@ -346,8 +346,8 @@ border-width: 1px;
   visibility: visible;
 border-style: solid;
   opacity: 1;
-  LCvScrollbar: false;
   background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: true;
 }
@@ -362,8 +362,8 @@ border-style: solid;
   visibility: visible;
   border-style: dotted;
   opacity: 1;
-  LCvScrollbar: false;
   background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: true;
   font-size: 16px;

@@ -323,14 +323,16 @@ end if
 -- xxx in fGetSetControlProps changed in some unknown way the left value
 -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
 -- xxx saving the vScrollbar property value in fGetSetControlProps and then setting it now works
-if tScrollerList is not empty then
+-- oScrollbarList is set in case "LCvScrollbar" of switch in function fGetSetControlProps
+if oScrollbarList is not empty then
    set the itemDelimiter to "$" -- need delimiter that does not appear in a file name
    repeat for each line tLine in oScrollbarList
       put item 1 of tLine into tControlName
       put item 2 of tLine into tValue
       try 
          -- xxx for now, quick fix of plot div having LCvScrollBar but error on import to PLOTDIV button 
-         -- maybe check fGetSetControlProps and onlet add to list if name contains group (or not button?)
+         -- maybe check fGetSetControlProps and 
+         -- only add to list if name contains group or field or text input
          set the vScrollbar of tControlName to tValue
       end try
    end repeat
@@ -919,7 +921,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                -- BELOW ARE SPECIAL PROPERTIES
                -- ignored by CSS processor but used for better reversibility of export-import to this project
             case "LCvScrollbar"
-               -- this is for vScrollbar property of scrolling groups, not for scrollbar controls
+               -- this is for vScrollbar property of scrolling groups and fields, not for scrollbar controls
                -- special property added on export - not a standard CSS property
                -- usually used for scrolling parent groups used in making long web pages
                -- xxx for unknown reason, at least in LC 9(dp6), setting the vScrollbar property of a group
@@ -927,6 +929,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                -- xxx that was set in the topLeft of one of the groups inside the group with the vScrollbar
                -- xxx saving the vScrollbar property value in fGetSetControlProps and then
                -- xxx setting at the end of fMakeLiveCodeCard works
+               -- use oScrollbarList at end of function fMakeLiveCodeCard
                put tControlName & "$" & tValue & LF after oScrollbarList  -- need delimiter that does not appear in a file name
                -- xxx set the vScrollbar of tControlName to tValue
                break
