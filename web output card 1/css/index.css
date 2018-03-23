@@ -372,9 +372,6 @@ border-style: solid;
 
 #div_PLOTDIV_button_for_plot {
   display: block;
-  opacity: 1;
-  border-style: dotted;
-  border-color: DodgerBlue;
   position: absolute;
   left: 46px;
   top: 458px;
@@ -385,6 +382,8 @@ border-style: solid;
   background-color: rgb(118,214,255);
   border-style: outset;
   opacity: 1;
+  border-style: dotted;
+  border-color: DodgerBlue;
   LCthreeD: true;
   LCshowBorder: true;
   LCvScrollbar: false;

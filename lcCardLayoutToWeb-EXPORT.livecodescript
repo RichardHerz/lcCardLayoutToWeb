@@ -793,6 +793,14 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end if
    
+   -- SPECIAL for PLOTDIV button to be exported as div
+   -- need to override some border settings above after they are set
+   -- and do this before special LC properties below so special LC props will be set on import
+   if the first word of the short name of control id tControl_ID is "PLOTDIV" then
+      put space & space & "border-style: dotted;" & LF after tCSS
+      put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+   end if
+   
    -- SPECIAL LC PROPERTIES
    -- to get reversibility on export-import need to save special LC properties
    -- these are ignored by CSS processor but used on import back into this project
@@ -1391,29 +1399,11 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put "#" & tIDname && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & space & "display: block;" & LF after tCSS
-   --  xxx getting two of these, prob because button to div:  put space & space & "position: absolute;" & LF after tCSS
-   
-   -- this is an LC button being exported as a div
-   -- so need to add things and override things here for div
-   -- >>> BUT DO BEFORE fReturnCSSprops to prevent override of special LC props on IMPORT <<<
-   -- put space & space & "visibility: visible;" & LF after tCSS
-   -- put space & space & "border-width: 0px;" & LF after tCSS -- was 2px
-   --    put space & space & "border-style: dotted;" & LF after tCSS -- override
-   --    put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS -- override
-   put space & space & "opacity: 1;" & LF after tCSS -- override
-   put space & space & "border-style: dotted;" & LF after tCSS -- override
-   put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS -- override
-   
-   -- xxx problem still here
-   -- want dotted blue dotted border for web but original button border on import
-   -- but fReturnCSSprops adds special LC props for border to CSS but also reads regular CSS border props
-   -- so somehow need to move special LC props to end or....?
-   
+   put space & space & "display: block;" & LF after tCSS   
    put the last line of tGrpLocList into tGrpLoc
+   -- PLOTDIV gets some special handling in fReturnCSSprops
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    put space & space & "LCvScrollbar: false;" & LF after tCSS -- add, since will be a div 
-   
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css
