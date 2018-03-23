@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
 /*
-Design, text, images and code by Richard K. Herz, 2017-2018
+Design, text, images and code by  ichard K. Herz, 2017-2018
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
@@ -149,6 +149,8 @@ on exportWebPage
    put "background-color" into aCSSprops["backColor"]
    -- stop using LC margins, interferes with location of some controls
    -- --       put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
+   
+   --  answer "just set the keys of aCSSprops = " & the keys of aCSSprops -- xxx
    
    ---------- END INPUT DATA ------------
    
@@ -477,7 +479,7 @@ on exportWebPage
                   -- check for special button
                   if the first word of the short name of control tControlNumber is "PLOTDIV" then
                      -- button used to represent an empty html div tag in html body for x-y plotting
-                     get fExportPLOTDIV(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
+                     get fExportPLOTDIV(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
                   else if the first word of the short name of control tControlNumber is "CANVAS" then
                      -- button used to represent an html canvas tag in html body
                      get fExportCANVAS(tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops)
@@ -665,7 +667,6 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put the keys of aCSSprops into tHitList -- key is LC prop name, value is CSS prop name 
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList -- key is LC prop name, value is LC prop value
-   
    repeat for each line tKey in tKeyList
       -- tKey is LC prop name
       if tKey is among the lines of tHitList then
@@ -790,6 +791,14 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       else
          put space & space & "background-color: rgba(255, 255, 255, 0);" & LF after tCSS
       end if
+   end if
+   
+   -- SPECIAL for PLOTDIV button to be exported as div
+   -- need to override some border settings above after they are set
+   -- and do this before special LC properties below so special LC props will be set on import
+   if the first word of the short name of control id tControl_ID is "PLOTDIV" then
+      put space & space & "border-style: dotted;" & LF after tCSS
+      put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
    end if
    
    -- SPECIAL LC PROPERTIES
@@ -1366,7 +1375,7 @@ end fExportStandardButton
 
 -----------------------------------------------
 
-function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
+function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops   
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- these inputs are not modified: tControl_ID, tOneIndent
@@ -1390,18 +1399,11 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put "#" & tIDname && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & space & "display: block;" & LF after tCSS
-   --  xxx getting two of these, prob because button to div:  put space & space & "position: absolute;" & LF after tCSS
+   put space & space & "display: block;" & LF after tCSS   
    put the last line of tGrpLocList into tGrpLoc
+   -- PLOTDIV gets some special handling in fReturnCSSprops
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
-   -- this is an LC button being exported as a div
-   -- so need to add things here
-   put space & space & "visibility: visible;" & LF after tCSS
-   put space & space & "border-width: 0px;" & LF after tCSS -- was 2px
-   put space & space & "border-style: dotted;" & LF after tCSS
-   put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS 
-   put space & space & "opacity: 1;" & LF after tCSS
-   put space & space & "LCvScrollbar: false;" & LF after tCSS
+   put space & space & "LCvScrollbar: false;" & LF after tCSS -- add, since will be a div 
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css

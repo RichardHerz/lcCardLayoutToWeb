@@ -56,7 +56,7 @@ canvas {
   left: 1px;
   top: 21px;
   width: 566px;
-  height: 441px;
+  height: 553px;
   visibility: visible;
   border-width: 2px;
   background-color: rgb(255,255,255);
@@ -368,6 +368,39 @@ border-style: solid;
   LCshowBorder: true;
   font-size: 16px;
   border-color: DodgerBlue;
+}
+
+#div_PLOTDIV_button_for_plot {
+  display: block;
+  position: absolute;
+  left: 46px;
+  top: 458px;
+  width: 202px;
+  height: 89px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(118,214,255);
+  border-style: outset;
+  opacity: 1;
+  border-style: dotted;
+  border-color: DodgerBlue;
+  LCthreeD: true;
+  LCshowBorder: true;
+  LCvScrollbar: false;
+}
+
+#canvas_CANVAS_button_for_bitmap_canvas {
+  position: absolute;
+  left: 283px;
+  top: 458px;
+ /* canvas element width & height must be set in HTML and not in CSS */
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(115,251,121);
+  border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 /* example @media for responsive design */

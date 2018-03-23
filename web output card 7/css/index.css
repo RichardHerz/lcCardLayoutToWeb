@@ -56,11 +56,15 @@ canvas {
   left: 1px;
   top: 21px;
   width: 566px;
-  height: 441px;
+  height: 553px;
   visibility: visible;
   border-width: 2px;
-  border-style: dotted;
+  background-color: rgb(255,255,255);
+  border-style: none;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #div_OUTER_group {
@@ -75,7 +79,10 @@ canvas {
   border-width: 2px;
   background-color: rgb(0,255,255);
   border-style: none;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #button_get_num_controls {
@@ -86,7 +93,11 @@ canvas {
   height: 23px;
   visibility: visible;
   border-width: 2px;
+  background-color: rgb(255,147,0);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #div_INNER_group_02 {
@@ -100,8 +111,11 @@ canvas {
   visibility: visible;
   border-width: 2px;
   background-color: rgb(255,255,0);
-  border-style: dotted;
+  border-style: none;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #button_list_groups {
@@ -112,7 +126,11 @@ canvas {
   height: 23px;
   visibility: visible;
   border-width: 2px;
+  background-color: rgb(255,255,255);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #field_locked_field {
@@ -121,11 +139,16 @@ canvas {
   top: 37px;
   width: 100px;
   height: 21px;
-  border-width: 1px;
+  border-width: 2px;
   visibility: visible;
+  background-color: rgb(255,255,255);
   border-style: dotted;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
   font-size: 16px;
+  border-color: DodgerBlue;
 }
 
 #button_blank {
@@ -136,7 +159,11 @@ canvas {
   height: 23px;
   visibility: visible;
   border-width: 2px;
+  background-color: rgb(255,255,255);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #button_Button01-1 {
@@ -147,7 +174,11 @@ canvas {
   height: 23px;
   visibility: visible;
   border-width: 2px;
+  background-color: rgb(255,255,255);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #div_EMPTY_group {
@@ -160,22 +191,30 @@ canvas {
   height: 8px;
   visibility: visible;
   border-width: 2px;
+  background-color: rgba(255,255,255, 0);
   border-style: none;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: false;
 }
 
 #div_RADIO_group {
   display: block;
   position: absolute;
   border-color: DodgerBlue;
-  left: 307px;
-  top: 89px;
-  width: 95px;
-  height: 63px;
+  left: 309px;
+  top: 91px;
+  width: 91px;
+  height: 59px;
   visibility: visible;
   border-width: 2px;
-  border-style: dotted;
+  background-color: rgb(115,253,214);
+  border-style: none;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: false;
 }
 
 #radio_Radio2_LABEL {
@@ -183,8 +222,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 6px;
-  top: 34px;
+  left: 4px;
+  top: 32px;
 }
 
 #radio_Radio2_SPAN {
@@ -198,8 +237,8 @@ canvas {
   position: absolute;
   width: 82px;
   height: 23px;
-  left: 7px;
-  top: 6px;
+  left: 5px;
+  top: 4px;
 }
 
 #radio_Radio1_SPAN {
@@ -228,8 +267,12 @@ canvas {
   width: 178px;
   height: 193px;
   visibility: visible;
+  background-color: rgb(255,255,255);
   border-style: dotted;
+  opacity: 1;
   border-width: 0px;
+  LCthreeD: false;
+  LCshowBorder: true;
 }
 
 #input_field_unlocked_field_1 {
@@ -240,8 +283,12 @@ canvas {
   height: 21px;
 border-width: 1px;
   visibility: visible;
+  background-color: rgb(255,255,255);
 border-style: solid;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #range_slider_horiz {
@@ -259,7 +306,11 @@ border-style: solid;
   height: 22px;
   visibility: visible;
   border-width: 1px;
+  background-color: rgb(255,255,255);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #select_Pulldown_Menu {
@@ -270,7 +321,11 @@ border-style: solid;
   height: 22px;
   visibility: visible;
   border-width: 1px;
+  background-color: rgb(255,255,255);
   border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #range_slider_vert {
@@ -289,8 +344,12 @@ border-style: solid;
   height: 21px;
 border-width: 1px;
   visibility: visible;
+  background-color: rgb(255,255,255);
 border-style: solid;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 #field_instructions {
@@ -301,9 +360,47 @@ border-style: solid;
   height: 53px;
   border-width: 2px;
   visibility: visible;
+  background-color: rgb(255,255,255);
   border-style: dotted;
+  opacity: 1;
   LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: true;
   font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#div_PLOTDIV_button_for_plot {
+  display: block;
+  position: absolute;
+  left: 46px;
+  top: 458px;
+  width: 202px;
+  height: 89px;
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(118,214,255);
+  border-style: outset;
+  opacity: 1;
+  border-style: dotted;
+  border-color: DodgerBlue;
+  LCthreeD: true;
+  LCshowBorder: true;
+  LCvScrollbar: false;
+}
+
+#canvas_CANVAS_button_for_bitmap_canvas {
+  position: absolute;
+  left: 283px;
+  top: 458px;
+ /* canvas element width & height must be set in HTML and not in CSS */
+  visibility: visible;
+  border-width: 2px;
+  background-color: rgb(115,251,121);
+  border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
 }
 
 /* example @media for responsive design */

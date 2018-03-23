@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-IMPORT"
 /*
-Design, text, images and code by Richard K. Herz, 2017 
+Design, text, images and code by Richard K. Herz, 2017-2018
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0 
@@ -364,11 +364,14 @@ function fImportCANVAS tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- CREATE BUTTON TO REPRESENT HTML CANVAS
    create button
    set the name of it to tCanvas
+      
    -- below are special properties for the button
    set the style of button tCanvas to rectangle
-   set the showBorder of button tCanvas to true
-   set the borderWidth of button tCanvas to 2
-   set the backColor of button tCanvas to 0,255,0
+   set the showName of button tCanvas to true
+   set the label of button tCanvas to empty
+   --    set the showBorder of button tCanvas to true
+   --    set the borderWidth of button tCanvas to 2
+   --    set the backColor of button tCanvas to 0,255,0
    
    -- NOTE new button representing canvas will get LC default width & height since none 
    -- specified in CSS for canvas elements
@@ -862,7 +865,7 @@ function fGetSetControlProps pID, pControlLongName, pCssFileData, tGrpLocList, p
                else
                   -- new for dotted frames around divs
                   -- but need to set threeD true for buttons elsewhere
-                  set the threeD of tControlName to false
+                  set the threeD of tControlName to true
                end if
                break
             case "border-width"
@@ -1780,18 +1783,19 @@ function fImportPLOTDIV tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
       set the label of button tButton to tValue
    end if
    
+   set the style of button tButton to rectangle
+   set the showName of button tButton to true
+   set the label of button tButton to empty
+   
    -- GET CSS & SET CONTROL PROPERTIES
    
    put the long name of button tButton into tControlLongName -- NOTE button tButton
    get fGetSetControlProps(tID, tControlLongName, pCssFileData, tGrpLocList)
    
-   set the label of button tButton to empty -- xxx without this getting label set to "tValue" 
-   set the style of button tButton to "rectangle"
-   set the showName of button tButton to "true"
    -- maybe best to set colors of buttons representing plot divs and canvases
-   -- in LC card design rather than assigning them here? But don't currently export colors
+   -- in LC card design rather than assigning them here?
    -- also see fImportCANVAS for backColor
-   set the backColor of button tButton to "Cyan"
+   -- set the backColor of button tButton to "Cyan"
    
    if kReporter is "true" then put LF & "tSkipChar before update = " & tSkipChar after msg
    
