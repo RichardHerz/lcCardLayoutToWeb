@@ -49,52 +49,20 @@ canvas {
   display: none;
 }
 
-#div_my_radio_group {
-  display: block;
+#input_field_input {
   position: absolute;
-  border-color: DodgerBlue;
-  left: 42px;
-  top: 132px;
-  width: 93px;
-  height: 71px;
+  left: 104px;
+  top: 208px;
+  width: 100px;
+  height: 21px;
+border-width: 1px;
   visibility: visible;
-  border-width: 2px;
-  background-color: rgba(255,255,255, 0);
-  border-style: none;
+  background-color: rgb(255,255,255);
+border-style: solid;
   opacity: 1;
   LCvScrollbar: false;
   LCthreeD: true;
-  LCshowBorder: false;
-}
-
-#radio_Radio1_LABEL {
-  display: block;
-  position: absolute;
-  width: 82px;
-  height: 23px;
-  left: 4px;
-  top: 4px;
-}
-
-#radio_Radio1_SPAN {
-  margin-left: 22px;
-  line-height: 22px;
-  font-size: 16px;
-}
-
-#radio_Radio2_LABEL {
-  display: block;
-  position: absolute;
-  width: 82px;
-  height: 23px;
-  left: 7px;
-  top: 44px;
-}
-
-#radio_Radio2_SPAN {
-  margin-left: 22px;
-  line-height: 22px;
-  font-size: 16px;
+  LCshowBorder: true;
 }
 
 /* example @media for responsive design */
