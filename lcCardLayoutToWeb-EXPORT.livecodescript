@@ -1225,6 +1225,9 @@ function fExportRadioButton tControl_ID, tGrp, tGrpLoc, tIndent
    put "radio_" & tGrp into tRadioGroupName
    replace quote with empty in tRadioGroupName
    replace space with "_" in tRadioGroupName
+   if "radio_of_group_" is in tRadioGroupName then
+      replace "radio_of_group_" with "radio_of_div_" in tRadioGroupName
+   end if
    -- tRadioGroupName is used below in html for both the html button and the button label
    put fIDname(tControl_ID) into tIDname
    put the short name of control id tControl_ID into tRadioButtonName
