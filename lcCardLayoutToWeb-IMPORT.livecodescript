@@ -27,6 +27,7 @@ constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script
 
 -- item list of added html value and events that are saved on import
 -- value is text to be shown in unlocked input fields and as button labels
+-- in fGetHtmlEvents skip value for unlocked input fields or get two values written on subsequent export
 constant kEventList = "value,onchange,oninput,onclick,ondrag,onmouseup"
 
 -- use kReporter "true" to activate all reports below to msg box
@@ -554,12 +555,12 @@ end fImportLabelTag
 
 -----------------------------  
 
-function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
+function fGetHtmlAttribute pSkipChar, pFileData, pTargetName
    -- ASSUMES no spaces outside of quotes in, e.g., pTargetName="target value"
-   -- ASSUMES tSkipChar points to < of <parentTag
+   -- ASSUMES pSkipChar points to < of <parentTag
    
    if kReporter is "true" then put LF & LF & "=!=!=!=!=!= ENTER fGetHtmlAttribute =!=!=!=!=!=" after msg
-   if kReporter is "true" then put LF & "tSkipChar =" & tSkipChar after msg
+   if kReporter is "true" then put LF & "pSkipChar =" & pSkipChar after msg
    if kReporter is "true" then put LF & "-------------------------------" after msg
    --    if kReporter is "true" then put LF & "pFileData =" & LF & pFileData after msg
    --    if kReporter is "true" then put LF & "-------------------------------" after msg
@@ -570,10 +571,10 @@ function fGetHtmlAttribute tSkipChar, pFileData, pTargetName
    -- so revised original script to a more complex script below
    
    -- get end of parent tag to make sure this attribute inside this tag
-   put offset(">", pFileData, tSkipChar) into tTagEndChar
-   add tSkipChar to tTagEndChar
+   put offset(">", pFileData, pSkipChar) into tTagEndChar
+   add pSkipChar to tTagEndChar
    -- search below only in this tag
-   put char tSkipChar to tTagEndChar of pFileData into tTagData
+   put char pSkipChar to tTagEndChar of pFileData into tTagData
    
    if kReporter is "true" then put LF & "fGetHtmlAttribute, tTagData = " & tTagData after msg -- development field
    
@@ -622,7 +623,7 @@ end fGetHtmlAttribute
 
 -----------------------------
 
-function fGetHtmlEvents pSkipChar, pHtmlFileData
+function fGetHtmlEvents pTagType, pSkipChar, pHtmlFileData
    -- uses function fGetHtmlAttribute
    -- returns any html events and javascript functions they invoke
    -- input param pSkipChar points to "<" at start of tag in pHtmlFileData
@@ -631,6 +632,11 @@ function fGetHtmlEvents pSkipChar, pHtmlFileData
    
    put 0 into tCounter
    repeat for each item tEvent in kEventList -- kEventList is a constant of this script
+      if tEvent is "value" and pTagType is "unlocked field" then 
+         -- skip value for unlocked field so do not get additional value attributes on export after this import
+         -- since export takes field contents and writes them as value attribute 
+         next repeat
+      end if
       put fGetHtmlAttribute(pSkipChar, pHtmlFileData, tEvent) into tEventCode
       if tEventCode is not empty then
          add 1 to tCounter
@@ -1078,7 +1084,8 @@ function fImportCheckOrRadioButton tSkipChar, pStyle, pHtmlFileData, pCssFileDat
    
    -- GET ANY HTML EVENT CODE
    -- need to use tInputTagStart, not tSkipChar (start of label tag)
-   put fGetHtmlEvents(tInputTagStart, pHtmlFileData) into tEventCodeLines -- note tInputTagStart, use tEventCodeLines below
+   put "check or radio" into tTagType
+   put fGetHtmlEvents(tTagType, tInputTagStart, pHtmlFileData) into tEventCodeLines -- note tInputTagStart, use tEventCodeLines below
    
    -- GET TEXT BETWEEN <span AND </span>
    -- AND SET AS LABEL OF THE LC CONTROL
@@ -1301,7 +1308,8 @@ function fImportMenuButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- will have to do some work on both EXPORT script and this IMPORT script
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "menu button" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    -- GET CONTROL ID
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "id") into tID
@@ -1422,7 +1430,8 @@ function fImportImage tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    put fGetHtmlAttribute(tSkipChar, pHtmlFileData, "src") into tSRC
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "check or radio" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    -- SAVE ANY HTML EVENT CODE IN CUSTOM PROPS
    put the id of image tImage into tControl_ID -- note image tImage
@@ -1471,7 +1480,8 @@ function fImportLockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if kReporter is "true" then put LF & "JUST AFTER GET CONTROL ID, tID = " & tID after msg
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "locked field" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    if kReporter is "true" then put LF & "JUST AFTER GET ANY HTML EVENT CODE,  tEventCodeLines = " & LF & tEventCodeLines after msg
    
@@ -1643,7 +1653,8 @@ function fImportUnlockedField tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLis
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "unlocked field" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    put tID into tField -- will use both tID and tField below
    replace "_" with space in tField
@@ -1722,7 +1733,8 @@ function fImportStandardButton tSkipChar, pHtmlFileData, pCssFileData, tGrpLocLi
    if kReporter is "true" then put LF & "tValue= " & tValue after msg
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "standard button" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    -- CREATE BUTTON
    create button
@@ -1859,7 +1871,8 @@ function fImportScrollbar tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    if kReporter is "true" then put LF & "tStep = " & tStep after msg
    
    -- GET ANY HTML EVENT CODE
-   put fGetHtmlEvents(tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
+   put "scrollbar" into tTagType
+   put fGetHtmlEvents(tTagType, tSkipChar, pHtmlFileData) into tEventCodeLines -- use tEventCodeLines below
    
    create scrollbar tScrollbar
    set the style of scrollbar tScrollbar to scale
