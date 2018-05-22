@@ -28,6 +28,7 @@ constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script
 -- item list of added html value and events that are saved on import
 -- value is text to be shown in unlocked input fields and as button labels
 -- in fGetHtmlEvents skip value for unlocked input fields or get two values written on subsequent export
+-- in fGetHtmlEvents skip value for standard buttons or get two values written on subsequent export
 constant kEventList = "value,onchange,oninput,onclick,ondrag,onmouseup"
 
 -- use kReporter "true" to activate all reports below to msg box
@@ -635,6 +636,10 @@ function fGetHtmlEvents pTagType, pSkipChar, pHtmlFileData
       if tEvent is "value" and pTagType is "unlocked field" then 
          -- skip value for unlocked field so do not get additional value attributes on export after this import
          -- since export takes field contents and writes them as value attribute 
+         next repeat
+      end if
+      if tEvent is "value" and pTagType is "standard button" then 
+         -- skip value for standard button so do not get additional value attributes on export after this import
          next repeat
       end if
       put fGetHtmlAttribute(pSkipChar, pHtmlFileData, tEvent) into tEventCode
