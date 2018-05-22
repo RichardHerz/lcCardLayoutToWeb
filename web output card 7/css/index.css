@@ -49,18 +49,17 @@ canvas {
   display: none;
 }
 
-#input_field_input {
+#button_Button {
   position: absolute;
-  left: 104px;
-  top: 208px;
-  width: 100px;
-  height: 21px;
-border-width: 1px;
+  left: 124px;
+  top: 195px;
+  width: 82px;
+  height: 23px;
   visibility: visible;
+  border-width: 2px;
   background-color: rgb(255,255,255);
-border-style: solid;
+  border-style: outset;
   opacity: 1;
-  LCvScrollbar: false;
   LCthreeD: true;
   LCshowBorder: true;
 }
