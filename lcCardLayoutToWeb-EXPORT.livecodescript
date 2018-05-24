@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
 /*
-Design, text, images and code by  ichard K. Herz, 2017-2018
+Design, text, images and code by Richard K. Herz, 2017-2018
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
