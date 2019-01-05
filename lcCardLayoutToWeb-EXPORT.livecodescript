@@ -10,17 +10,17 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
 constant kProjectName = "lcCardLayoutToWeb" -- controls with this in name aren't written to html
 -- make sure value of constant kProjectName is the same in both script files
 
-constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import 
+constant kFieldShift = 16 -- was 16, subtract to shift locked fields when exporting <p> tags, add on import
 -- make sure value of constant kFieldShift is the same in both script files
 
 constant kTextFontExportAdd = 3 -- was 3, value to add to font size on export, subtract on import
--- make sure value of constant kTextFontExportAdd is the same in both script files 
+-- make sure value of constant kTextFontExportAdd is the same in both script files
 
 constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script tags in html body
--- make sure value of constant kScriptTagPrefix is the same in both script files 
+-- make sure value of constant kScriptTagPrefix is the same in both script files
 
 constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
--- make sure value of constant kCommentTagPrefix is the same in both script files 
+-- make sure value of constant kCommentTagPrefix is the same in both script files
 
 constant kDottedBorderColor = "DodgerBlue"
 
@@ -41,14 +41,14 @@ constant kIndentSpaces = 3
 
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
--- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all 
+-- EXAMPLE:  if kReporter is "true" then put LF & tData after msg -- true displays all
 -- EXAMPLE:  if kReporter is "TEST" then put LF & tData after msg -- only displays some
 constant kReporter = "false"
 
 local oBorderFlag -- used to show borders of fields on mouseEnter during development
 
-/* 
-WARNING - output files for same LiveCard card will be written over each time exportWebPage runs, 
+/*
+WARNING - output files for same LiveCard card will be written over each time exportWebPage runs,
 so save copies of the output files you want to keep
 
 WARNING - use LF line endings when constructing text and write to file with file opened for binary write,
@@ -118,14 +118,14 @@ end mouseLeave
 -----------------------------------------------
 
 on exportWebPage
-   
+
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
-   
+
    set the defaultStack to kProjectName
-   
+
    ---------- START INPUT DATA ------------
-   
+
    -- SET ARRAY WITH EXPORT CONVERSION OF LIVECODE TO CSS PROPERTIES
    -- keys of array aCSSprops are LiveCode properties
    -- values are equivalent CSS properties
@@ -149,15 +149,15 @@ on exportWebPage
    put "background-color" into aCSSprops["backColor"]
    -- stop using LC margins, interferes with location of some controls
    -- --       put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
-   
+
    --  answer "just set the keys of aCSSprops = " & the keys of aCSSprops -- xxx
-   
+
    ---------- END INPUT DATA ------------
-   
+
    -- Controls with short name containing kProjectName
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
-   
+
    -- uses function fExportGroup
    -- uses function fExportImage
    -- uses function fExportStandardButton
@@ -168,12 +168,12 @@ on exportWebPage
    -- uses function fExportScrollBar
    -- uses function fIDname
    -- uses function fReturnCSSprops
-   
+
    -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
    -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
    -- do not always put empty into msg here because will open msg box even if not used
-   if kReporter is not "false" then put empty into msg 
-   
+   if kReporter is not "false" then put empty into msg
+
    -- indents not only makes html look nice but text editors use indents to fold/unfold sections
    repeat kIndentSpaces times
       put space after tOneIndent
@@ -181,7 +181,7 @@ on exportWebPage
    put empty into tIndent -- indent for HTML
    put empty into tCSS -- holds CSS being built up
    put empty into tHTML -- holds HTML being built up
-   
+
    -- create output folders
    put the long name of this stack into tStack
    replace quote with empty in tStack
@@ -224,10 +224,10 @@ on exportWebPage
    else
       create folder tImagesFolderPath
    end if
-   
+
    -- reset the itemDelimiter to default, which is comma
    set the itemDelimiter to comma
-   
+
    -- start building the html
    put "new" into tHeaderFlag
    if the cHeaderData of this card is empty then
@@ -237,54 +237,54 @@ on exportWebPage
       -- have text in cHeaderData of this card
       -- this would have been set during previous import of an html file
       -- without a CLEAR CARD before this export
-      
-      -- xxx maybe automatically edit cHeaderData to change meta viewport 
+
+      -- xxx maybe automatically edit cHeaderData to change meta viewport
       -- width for any current simFrame width & left
-      
+
       answer "Old HTML head tag exists from last import - replace with new data?" with "yes" or "no"
-      
+
       if it is "no" then
          put "old" into tHeaderFlag
          put the cHeaderData of this card after tHTML
       else
          -- leave tHeaderFlag = "new"
       end if
-      
+
    end if
-   
+
    if tHeaderFlag is "new" then
       -- write new header data for a new html file
       put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF & LF after tHTML
-      
+
       put "<title>** EDIT TITLE **</title>" & LF & LF after tHTML
-      
+
       -- NOTE can use double-quotes around text with single quotes vs. adding quote constants in string
       put "<meta name='description' content='designed with lcCardLayoutToWeb project at GitHub'>" & LF & LF after tHTML
-      
+
       put "<!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->" & LF after tHTML
       put "<!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->" & LF after tHTML
-      
+
       put "<!-- suggest use content width = div_simFrame width + 2 * div_simFrame left, and no scale -->" & LF after tHTML
       if there is a group "simFrame" of this card then put the width of group "simFrame" of this card into tSimFrameWidth
       if there is a group "simFrame" of this card then put the left of group "simFrame" of this card into tSimFrameLeft
       -- note: special simFrame group will get css position: relative but left still affects placement
       add 2*tSimFrameLeft to tSimFrameWidth
-      
+
       put "<meta id='meta-viewport' name='viewport' content='width=" & tSimFrameWidth & "'>" & LF & LF after tHTML
-      
+
       -- load CSS style sheets
       put "<!-- load CSS style sheets for this lab  -->" & LF after tHTML
-      -- use relative path to css file here:  kCssFolder & "/" & kCssFileName 
+      -- use relative path to css file here:  kCssFolder & "/" & kCssFileName
       -- and NOT full path so that it works both on web and in LC project
       put "<link rel=" & quote & "stylesheet" & quote && "href=" & quote & kCssFolder & "/" & kCssFileName & quote & ">" & LF & LF after tHTML
       -- need to add links for javascript files
       put "<!-- load JAVASCRIPT files for this lab  -->" & LF after tHTML
       put "<!-- e.g., <script language='javascript' src='js/process_main.js' type='text/javascript'></script> -->" & LF & LF after tHTML
-      
+
       put "</head>" & LF after tHTML
    end if -- end check for old header data
    put "<body>" & LF after tHTML
-   
+
    -- start building the css
    -- sup - superscript - decrease text size
    put "sup {" & LF after tCSS
@@ -347,67 +347,67 @@ on exportWebPage
    -- special for Internet Explorer, remove tooltips, especially from range-slider inputs
    put "::-ms-tooltip {" & LF after tCSS
    put space & space & "display: none;" & LF after tCSS
-   put "}" & LF & LF after tCSS -- finish css for special for IE tooltip 
-   
+   put "}" & LF & LF after tCSS -- finish css for special for IE tooltip
+
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
    -- in which they appear, no matter in what time order they were added to card.
    -- So LiveCode does a lot of the work.
    -- Have do some work ourselves to find when a group ends,
    -- which is when reference to current group does not appear in next control
-   
+
    -- For css position: absolute; you need top and left to be relative to the parent group.
    -- The top and left of a nested group needs to be relative to its parent group, and
    -- the contents of the nested group need to be relative to the nested group.
-   
+
    -- tGrpList is list of active groups
    put empty into tGrpList
    -- tGrpLocList is list of left,top coordinates of active groups
    put empty into tGrpLocList
-   
+
    repeat with tControlNumber = 1 to the number of controls
-      
+
       if the short name of control tControlNumber contains kProjectName then
          -- skip these development controls
          next repeat
       end if
-      
+
       put the id of control tControlNumber into tControl_ID
       put the long name of control tControlNumber into tControlLongName
       -- warning: need id of control as main identifier because long name of control with a given
       -- name does not include the id and so could have confusion with two similar
       -- controls with same given name, e.g., Field, since they
       -- have the same long name and only the first long name would return correct ID for css ID's
-      
+
       put word 1 of tControlLongName into tType
-      
+
       -- lists of current groups and locations are in variables
       -- tGrpList and tGrpLocList, which are added to in
       -- function fExportGroup
-      
+
       -- when a group terminates, its group name in the
       -- last line of tGrpList will disappear from next control's long name
       -- when that happens, write </div> and delete last line from tGrpList
       -- groups can be nested, so repeat checking if have reached end of a
       -- group because other groups might end there
-      
+
       -- warning: do not have two nested groups with same short name
-      
+
       put true into tFlagEndGrp
       repeat while tFlagEndGrp is true
-         
+
          -- at start of each repeat, assume have NOT reached end of group
          -- if find below that have reached end of group, then flag set to true
          -- so repeat will check for end of another group at same place
          put false into tFlagEndGrp
-         
+
          if tGrpList is empty then
             put empty into tGrpCurrent
          else
             -- these "current" variables are used below in functions for group, button, field, etc.s
             put the last line of tGrpList into tGrpCurrent
          end if
-         
+
          if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
             -- have reached end of a group
             put true into tFlagEndGrp
@@ -428,13 +428,13 @@ on exportWebPage
             -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
             put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
             put tNewLine after tHTML
-            
+
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
-         
+
       end repeat -- end of: repeat while tFlagEndGrp is true
-      
+
       -- now handle the element in this new line
-      
+
       if tType = "group" then
          -- do nothing here
       else
@@ -447,7 +447,7 @@ on exportWebPage
             put the last line of tGrpLocList into tGrpLoc
          end if
       end if
-      
+
       switch tType
          case "group"
             -- start of a group
@@ -528,7 +528,7 @@ on exportWebPage
             put "<!-- *********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber && "-->" & LF after tHTML
       end switch
    end repeat
-   
+
    -- at the end of all controls
    -- BUT, if there are lines in tGrpList, then that means
    -- you need to end divs with </div> for each line
@@ -551,14 +551,14 @@ on exportWebPage
       put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
-   
+
    -- at end so no need to empty group lists but do so in case add stuff later
    put empty into tGrpList
    put empty into tGrpLocList
-   
+
    -- finish building the html
    put "</body>" & LF & "</html>" & LF after tHTML
-   
+
    -- WARNING: write output to files with BINARY WRITE and use all LF in CSS & HTML construction above
    -- ALL TESTED BROWSERS SHOW SOURCE OK WITH ALL line feed LF line endings
    -- when developing on a Mac, the following options for "open for write" do different things
@@ -566,7 +566,7 @@ on exportWebPage
    --      open for "text write" on Mac writes CR & LF line endings as CR, carraige returns
    --      open for "binary write" on Mac writes CR & LF line endings as LF, line feeds
    -- viewing html source in browser with line endings as CR carriage returns
-   -- shows lines broken OK in Mac Safari and Firefox, but NOT Mac Chrome (lines run together), 
+   -- shows lines broken OK in Mac Safari and Firefox, but NOT Mac Chrome (lines run together),
    -- source lines all broken OK on Win 7 IE Explorer, Chrome and Firefox
    -- all tested browsers work OK with line feed endings
    --
@@ -575,7 +575,7 @@ on exportWebPage
    open file tHtmlFilePath for binary write
    write tHTML to file tHtmlFilePath
    close file tHtmlFilePath
-   
+
    -- finish building the css with example @media
    put "/* example @media for responsive design */" & LF after tCSS
    put "/* requires meta viewport element in HTML head */" & LF after tCSS
@@ -586,18 +586,18 @@ on exportWebPage
    put "    left: 20px;" & LF after tCSS
    put "   } */" & LF after tCSS
    put "}" & LF after tCSS
-   
+
    -- write css text with binary write
    open file tCssFilePath for binary write
    write tCSS to file tCssFilePath
    close file tCssFilePath
-   
+
    beep
-   
+
    if tHTML contains "**UNKNOWN CONTROL**" then
       answer "Unknown controls were detected - see comments **UNKNOWN CONTROL** in HTML file for info"
    end if
-   
+
 end exportWebPage
 
 -----------------------------------------------
@@ -624,12 +624,12 @@ end fReturnHtmlEvents
 -----------------------------------------------
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
-   
+
    -- functions which do NOT use this function:
    -- fExportScrollBar
    -- fExportRadioButton
    -- fExportCheckBox
-   
+
    -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
@@ -664,7 +664,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    put the height of control id tControl_ID into tHt
    put space & space & "width:" && tWd & "px;" & LF after tCSS
    put space & space & "height:" && tHt & "px;" & LF after tCSS
-   put the keys of aCSSprops into tHitList -- key is LC prop name, value is CSS prop name 
+   put the keys of aCSSprops into tHitList -- key is LC prop name, value is CSS prop name
    put the properties of control id tControl_ID into aControlProps
    put the keys of aControlProps into tKeyList -- key is LC prop name, value is LC prop value
    repeat for each line tKey in tKeyList
@@ -768,17 +768,17 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                default
                   put empty into tValue
             end switch
-            
+
             -- write property and value to CSS
             if tValue is not empty then
                put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
                -- e.g., CSS prop name: value;
-            end if -- end if tValue is not empty 
-            
+            end if -- end if tValue is not empty
+
          end if -- end if aControlProps[tKey] is not empty
       end if -- end if tKey is among the lines of tHitList
    end repeat -- repeat for each line tKey in tKeyList
-   
+
    -- SPECIAL - need to check LC opaque
    -- if LC backColor not empty, then this is handled above
    -- but if LC backColor is empty, then need to check here
@@ -792,7 +792,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
          put space & space & "background-color: rgba(255, 255, 255, 0);" & LF after tCSS
       end if
    end if
-   
+
    -- SPECIAL for PLOTDIV button to be exported as div
    -- need to override some border settings above after they are set
    -- and do this before special LC properties below so special LC props will be set on import
@@ -800,14 +800,14 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       put space & space & "border-style: dotted;" & LF after tCSS
       put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
    end if
-   
+
    -- SPECIAL LC PROPERTIES
    -- to get reversibility on export-import need to save special LC properties
    -- these are ignored by CSS processor but used on import back into this project
-   
+
    -- start handle LCvScrollbar
    -- xxx for now, "try" for quick fix - should apply to groups and fields only?
-   try 
+   try
       if the vScrollbar of control id tControl_ID is true then
          put space & space & "LCvScrollbar: true;" & LF after tCSS
       else
@@ -815,7 +815,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end try
    -- endhandle LCvScrollbar
-   
+
    -- start handle LCthreeD
    if the threeD of control id tControl_ID is true then
       put space & space & "LCthreeD: true;" & LF after tCSS
@@ -823,8 +823,8 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       put space & space & "LCthreeD: false;" & LF after tCSS
    end if
    -- end handle LCthreeD
-   
-   -- start handle LCshowBorder  
+
+   -- start handle LCshowBorder
    if the showBorder of control id tControl_ID is true then
       put space & space & "LCshowBorder: true;" into tTempCSS
    else
@@ -840,8 +840,8 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end if
    put tTempCSS & LF after tCSS
-   -- end handle LCshowBorder  
-   
+   -- end handle LCshowBorder
+
    return tCSS
 end fReturnCSSprops
 
@@ -852,10 +852,10 @@ function fIDname tControl_ID
    --   which is why input here is LC control id = tControl_ID and get long names from that
    -- CSS ID of a control is to be unique on a page
    --    this happens automatically when control has no name and here use LC control id number of control
-   --    but for controls with names ALSO add here LC id number of control
-   -- returns, e.g., button_2222 or button_Run_2222
-   --    with spaces and "." in control names replaced by "_"
-   --    with quotes in control names replaced by empty
+   --    but for controls with names the designer must ensure unique names
+   --    (a earlier version added LC id numbers but this was deemed unnecessary)
+   --  spaces and "." in control names replaced by "_"
+   --  quotes in control names replaced by empty
    put word 1 of the long name of control id tControl_ID into t1 -- control type: group, field, button, etc.
    switch t1
       case "group"
@@ -978,25 +978,25 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    put tIndent & "<input type=" & quote & tType & quote into tHTML
    put fIDname(tControl_ID) into tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
-   
+
    put the startValue of control id tControl_ID into tStartValue
-   
+
    if kReporter is "true" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
-   
+
    -- at least in LC 9(dp 7) getting empty for startValue even when property inspector
    -- shows 0 but if manually increment and decrement value in prop inspec then
    -- will get 0 here....
    if tStartValue is empty then put 0 into tStartValue
-   
+
    if kReporter is "true" then put LF & "fExportScrollBar, tStartValue = " & tStartValue after msg -- development field
-   
+
    put the endValue of control id tControl_ID into tEndValue
-   
+
    if kReporter is "true" then put LF & "fExportScrollBar, tEndValue = " & tEndValue after msg -- development field
-   
+
    -- WILL WRITE SOME MORE HTML BELOW
-   
-   -- WRITE CSS (AND SOME MORE HTML) 
+
+   -- WRITE CSS (AND SOME MORE HTML)
    -- THIS IS SPECIAL and does NOT use fReturnCSSprops
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put the rect of control id tControl_ID into tRect
@@ -1014,7 +1014,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    put the width of control id tControl_ID into tWd
    put the height of control id tControl_ID into tHt
-   
+
    -- THERE ARE 4 POSSIBLE ARRANGEMENTS CONSIDERED HERE FOR RANGE, SCROLLBAR, SCALE, SLIDER
    -- FOR ALL, HTML "min" value must < "max" value & change orientation by css transform rotation
    -- LC startValue is always on left of horizontal, top of vertical & change orientation by startValue < or > endValue
@@ -1023,12 +1023,12 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    -- 3) vertical with larger value on top, smaller on bottom (css transform rotation 270 deg)
    -- 4) vertical with smaller value on top, larger on bottom (css transform rotation 90 deg)
    -- DETECT WHICH CASE IN LC by width vs. height, startValue vs. endValue
-   
+
    if tHt < tWd and tStartValue < tEndValue then put 1 into tScrollCase
    if tHt < tWd and tStartValue > tEndValue then put 2 into tScrollCase
    if tHt > tWd and tStartValue > tEndValue then put 3 into tScrollCase
    if tHt > tWd and tStartValue < tEndValue then put 4 into tScrollCase
-   
+
    -- set html range min and max values
    switch tScrollCase
       case 1
@@ -1054,25 +1054,25 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
       default
          answer "bad scrollbar orientation!"
    end switch
-   
+
    -- LC pageInc and HTML range step not equivalent
    -- pageInc is where thumb jumps when click away in LC
    -- step is precision of value during drag in HTML, whereas click away thumb jumps to click
    put abs(tEndValue-tStartValue)/100 into tStep
    put space & "step=" & quote & tStep & quote after tHTML
-   
+
    put the thumbPosition of control id tControl_ID into tThumbPosition
    put space & "value=" & quote & tThumbPosition & quote after tHTML
-   
+
    -- get and write any html event code
    get fReturnHtmlEvents(tControl_ID)
    put it after tHtml
-   
+
    -- conclude html
    put ">" & LF after tHTML
    -- no </ or /> end of tag for <input> used in HTML
    -- END HTML
-   
+
    -- CONTINUE WITH CSS
    -- set css values
    switch tScrollCase
@@ -1123,7 +1123,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
       default
          -- do nothing here, already alerted above
    end switch
-   
+
    put space & space & "left:" && tLeft & "px;" & LF after tCSS
    put space & space & "top:" && tTop & "px;" & LF after tCSS
    put space & space & "width:" && tWd & "px;" & LF after tCSS
@@ -1131,7 +1131,7 @@ function fExportScrollBar tControl_ID, tGrp, tGrpLoc, tIndent
    -- conclude css
    put "}" & LF & LF after tCSS
    -- END CSS
-   
+
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
@@ -1311,7 +1311,7 @@ end fExportRadioButton
 
 function fExportScriptTag tControl_ID, tIndent
    -- this is for <script> tags that appear in the html body (those in header get saved with header)
-   -- button custom prop cScriptTagCode holds <script> to </script> 
+   -- button custom prop cScriptTagCode holds <script> to </script>
    -- cScriptTagCode must match name used in both IMPORT and EXPORT scripts
    put the cScriptTagCode of control id tControl_ID into tScriptCode
    put tIndent before tScriptCode
@@ -1327,7 +1327,7 @@ end fExportScriptTag
 
 function fExportCommentTag tControl_ID, tIndent
    -- this is for <!-- comment tags that appear in the html body (those in header get saved with header)
-   -- button custom prop cCommentTagCode holds <!-- to --> 
+   -- button custom prop cCommentTagCode holds <!-- to -->
    -- cCommentTagCode must match name used in both IMPORT and EXPORT scripts
    put the cCommentTagCode of control id tControl_ID into tCommentCode
    put tIndent before tCommentCode
@@ -1378,7 +1378,7 @@ end fExportStandardButton
 
 -----------------------------------------------
 
-function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops   
+function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops
    -- uses function fReturnCSSprops
    -- uses function fIDname
    -- these inputs are not modified: tControl_ID, tOneIndent
@@ -1402,11 +1402,11 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put "#" & tIDname && "{" & LF after tCSS
    -- WARNING: need to write display and position here for each separate div
    -- because doing so for all div interferes with plotting with jquery.flot.js
-   put space & space & "display: block;" & LF after tCSS   
+   put space & space & "display: block;" & LF after tCSS
    put the last line of tGrpLocList into tGrpLoc
    -- PLOTDIV gets some special handling in fReturnCSSprops
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
-   put space & space & "LCvScrollbar: false;" & LF after tCSS -- add, since will be a div 
+   put space & space & "LCvScrollbar: false;" & LF after tCSS -- add, since will be a div
    -- conclude css
    put "}" & LF & LF after tCSS
    -- end of css
@@ -1449,7 +1449,7 @@ function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    put tTempCSS after tCSS
    -- conclude css
    put "}" & LF & LF after tCSS
-   -- end of css 
+   -- end of css
    -- now extract width and height from tTempWd and tTempHt
    -- 300 w x 150 h is default for canvas element unless specify otherwise in HTML
    put 300 into tWidth
@@ -1466,7 +1466,7 @@ function fExportCANVAS tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
    end repeat
    put tIndent & "<canvas" into tHTML
    put fIDname(tControl_ID) into tIDname
-   put space & "id=" & quote & tIDname & quote after tHTML 
+   put space & "id=" & quote & tIDname & quote after tHTML
    -- add width and height here in HTML for canvas elements
    -- NOTE must use quotes (width="400") and not apostrophes (width='400') nor neither (width=400)
    -- and no spaces for later import by this project - see function fGetHtmlAttribute in IMPORT script stack
@@ -1544,7 +1544,7 @@ function fExportCheckBox tControl_ID, tGrp, tGrpLoc, tIndent
    end if
    -- get and write any html event code
    get fReturnHtmlEvents(tControl_ID)
-   put it after tHtml 
+   put it after tHtml
    put ">" & LF after tHTML
    -- end of html for input tag
    -- write html for span tag with checkbox name
@@ -1647,22 +1647,22 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       replace "<br>" with tIndent & tIndent & "<br>" in tTempText
       put tTempText after tHTML
    end if
-   
+
    -- need </p> for tFieldType = "p" but no end of tag for <input> used in HTML
    if tFieldType is "p" then
       put LF & tIndent & "</" & tFieldType & ">" & LF after tHTML
    end if
-   
+
    -- write css
-   
+
    put "#" & fIDname(tControl_ID) && "{" & LF into tCSS
    put empty into tGrpLocList -- used in fReturnCSSprops for groups, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
-   
-   -- there are some special properties of "p" and "input" fields so search for the lines involved 
-   
+
+   -- there are some special properties of "p" and "input" fields so search for the lines involved
+
    if tFieldType is "p" then
-      
+
       -- top location is special for "p" fields - need to shift to get same loc in LC card and web page
       -- do not use top from the topLeft of control here because it may be in a group
       -- group location taken care of in fReturnCSSprops above
@@ -1679,10 +1679,10 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          put tprop into line tline of tCSS
          set the itemDelimiter to comma
       end if
-      
+
       -- set LC textSize as font-size for locked fields
       put the textSize of control id tControl_ID into tTextSize
-      -- xxx at least in LC 9 (dp7) the textSize of fields is coming up empty 
+      -- xxx at least in LC 9 (dp7) the textSize of fields is coming up empty
       -- xxx even though property palette shows  default of 12 unless user purposely sets the value
       if tTextSize is empty then put 13 into tTextSize -- will get incremented below by kTextFontExportAdd
       add kTextFontExportAdd to tTextSize
@@ -1692,13 +1692,13 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
       else
          put space & space & "font-size:" && tTextSize & "px;" & LF after tCSS
       end if
-      
+
       put the showBorder of control id tControl_ID into tShowBorder
       put the borderWidth of control id tControl_ID into tBorderWidth
       put the threeD of control id tControl_ID into tThreeD
-      
+
       if tShowBorder is true then
-         
+
          put lineoffset("border-style:", tCSS) into tline
          if tline > 0 then
             if tThreeD is true then
@@ -1721,20 +1721,20 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
                put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
             end if
          end if
-         
+
          put lineoffset("border-width:", tCSS) into tline
          if tline > 0 then
             put space & space & "border-width:" && tBorderWidth & "px;" into line tline of tCSS
          else
             put space & space & "border-width:" && tBorderWidth & "px;" & LF after tCSS
          end if
-         
+
       end if -- end of if tShowBorder is true
-      
-   end if -- end of if tFieldType is "p" 
-   
+
+   end if -- end of if tFieldType is "p"
+
    if tFieldType is "input" then
-      
+
       -- let unlocked input fields get default html font size
       put lineoffset("font-size:", tCSS) into tline
       if tline > 0 then
@@ -1751,13 +1751,13 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
          -- delete line tline of tCSS -- for default style
          put "border-width: 1px;" into line tline of tCSS
       end if
-      
+
    end if -- end of if tFieldType is "input"
-   
+
    -- conclude css
-   put "}" & LF & LF after tCSS   
-   -- end of css   
-   
+   put "}" & LF & LF after tCSS
+   -- end of css
+
    -- finally return the result
    put tHTML into tResult["html"]
    put tCSS into tResult["css"]
