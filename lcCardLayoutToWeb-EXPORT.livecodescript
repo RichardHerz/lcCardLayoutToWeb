@@ -118,14 +118,14 @@ end mouseLeave
 -----------------------------------------------
 
 on exportWebPage
-
+   
    -- WARNING - output files for same LiveCard card will be written over
    -- each time this runs, so save ones you want to keep
-
+   
    set the defaultStack to kProjectName
-
+   
    ---------- START INPUT DATA ------------
-
+   
    -- SET ARRAY WITH EXPORT CONVERSION OF LIVECODE TO CSS PROPERTIES
    -- keys of array aCSSprops are LiveCode properties
    -- values are equivalent CSS properties
@@ -149,15 +149,15 @@ on exportWebPage
    put "background-color" into aCSSprops["backColor"]
    -- stop using LC margins, interferes with location of some controls
    -- --       put "margin" into aCSSprops["margins"] -- LC is pixel value; CSS px
-
+   
    --  answer "just set the keys of aCSSprops = " & the keys of aCSSprops -- xxx
-
+   
    ---------- END INPUT DATA ------------
-
+   
    -- Controls with short name containing kProjectName
    --      will NOT be saved to web page, since
    --      that name is reserved for development controls
-
+   
    -- uses function fExportGroup
    -- uses function fExportImage
    -- uses function fExportStandardButton
@@ -168,12 +168,12 @@ on exportWebPage
    -- uses function fExportScrollBar
    -- uses function fIDname
    -- uses function fReturnCSSprops
-
+   
    -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
    -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
    -- do not always put empty into msg here because will open msg box even if not used
    if kReporter is not "false" then put empty into msg
-
+   
    -- indents not only makes html look nice but text editors use indents to fold/unfold sections
    repeat kIndentSpaces times
       put space after tOneIndent
@@ -181,7 +181,7 @@ on exportWebPage
    put empty into tIndent -- indent for HTML
    put empty into tCSS -- holds CSS being built up
    put empty into tHTML -- holds HTML being built up
-
+   
    -- create output folders
    put the long name of this stack into tStack
    replace quote with empty in tStack
@@ -224,10 +224,10 @@ on exportWebPage
    else
       create folder tImagesFolderPath
    end if
-
+   
    -- reset the itemDelimiter to default, which is comma
    set the itemDelimiter to comma
-
+   
    -- start building the html
    put "new" into tHeaderFlag
    if the cHeaderData of this card is empty then
@@ -237,41 +237,41 @@ on exportWebPage
       -- have text in cHeaderData of this card
       -- this would have been set during previous import of an html file
       -- without a CLEAR CARD before this export
-
+      
       -- xxx maybe automatically edit cHeaderData to change meta viewport
       -- width for any current simFrame width & left
-
+      
       answer "Old HTML head tag exists from last import - replace with new data?" with "yes" or "no"
-
+      
       if it is "no" then
          put "old" into tHeaderFlag
          put the cHeaderData of this card after tHTML
       else
          -- leave tHeaderFlag = "new"
       end if
-
+      
    end if
-
+   
    if tHeaderFlag is "new" then
       -- write new header data for a new html file
       put "<!doctype html>" & LF & "<html>" & LF & "<head>" & LF & LF after tHTML
-
+      
       put "<title>** EDIT TITLE **</title>" & LF & LF after tHTML
-
+      
       -- NOTE can use double-quotes around text with single quotes vs. adding quote constants in string
       put "<meta name='description' content='designed with lcCardLayoutToWeb project at GitHub'>" & LF & LF after tHTML
-
+      
       put "<!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->" & LF after tHTML
       put "<!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->" & LF after tHTML
-
+      
       put "<!-- suggest use content width = div_simFrame width + 2 * div_simFrame left, and no scale -->" & LF after tHTML
       if there is a group "simFrame" of this card then put the width of group "simFrame" of this card into tSimFrameWidth
       if there is a group "simFrame" of this card then put the left of group "simFrame" of this card into tSimFrameLeft
       -- note: special simFrame group will get css position: relative but left still affects placement
       add 2*tSimFrameLeft to tSimFrameWidth
-
+      
       put "<meta id='meta-viewport' name='viewport' content='width=" & tSimFrameWidth & "'>" & LF & LF after tHTML
-
+      
       -- load CSS style sheets
       put "<!-- load CSS style sheets for this lab  -->" & LF after tHTML
       -- use relative path to css file here:  kCssFolder & "/" & kCssFileName
@@ -280,11 +280,11 @@ on exportWebPage
       -- need to add links for javascript files
       put "<!-- load JAVASCRIPT files for this lab  -->" & LF after tHTML
       put "<!-- e.g., <script language='javascript' src='js/process_main.js' type='text/javascript'></script> -->" & LF & LF after tHTML
-
+      
       put "</head>" & LF after tHTML
    end if -- end check for old header data
    put "<body>" & LF after tHTML
-
+   
    -- start building the css
    -- sup - superscript - decrease text size
    put "sup {" & LF after tCSS
@@ -304,6 +304,10 @@ on exportWebPage
    put "input, button {" & LF after tCSS
    put space & space & "text-align: center;" & LF after tCSS -- override LC textAlign setting for buttons
    put "}" & LF & LF after tCSS -- finish css for input, button
+   -- suppress Microsoft tool tip, especially for range sliders
+   put "::-ms-tooltip {" & LF after tCSS
+   put "  display: none;" & LF after tCSS
+   put "}" & LF & LF after tCSS
    -- WARNING: write notice NOT to make general div style since
    -- interferes with plotting by flot.js
    put "/* do NOT write general style for div since interferes" & LF  after tCSS
@@ -348,66 +352,66 @@ on exportWebPage
    put "::-ms-tooltip {" & LF after tCSS
    put space & space & "display: none;" & LF after tCSS
    put "}" & LF & LF after tCSS -- finish css for special for IE tooltip
-
+   
    -- When you repeat down the list of control numbers
    -- LiveCode groups them together in the LC groups
    -- in which they appear, no matter in what time order they were added to card.
    -- So LiveCode does a lot of the work.
    -- Have do some work ourselves to find when a group ends,
    -- which is when reference to current group does not appear in next control
-
+   
    -- For css position: absolute; you need top and left to be relative to the parent group.
    -- The top and left of a nested group needs to be relative to its parent group, and
    -- the contents of the nested group need to be relative to the nested group.
-
+   
    -- tGrpList is list of active groups
    put empty into tGrpList
    -- tGrpLocList is list of left,top coordinates of active groups
    put empty into tGrpLocList
-
+   
    repeat with tControlNumber = 1 to the number of controls
-
+      
       if the short name of control tControlNumber contains kProjectName then
          -- skip these development controls
          next repeat
       end if
-
+      
       put the id of control tControlNumber into tControl_ID
       put the long name of control tControlNumber into tControlLongName
       -- warning: need id of control as main identifier because long name of control with a given
       -- name does not include the id and so could have confusion with two similar
       -- controls with same given name, e.g., Field, since they
       -- have the same long name and only the first long name would return correct ID for css ID's
-
+      
       put word 1 of tControlLongName into tType
-
+      
       -- lists of current groups and locations are in variables
       -- tGrpList and tGrpLocList, which are added to in
       -- function fExportGroup
-
+      
       -- when a group terminates, its group name in the
       -- last line of tGrpList will disappear from next control's long name
       -- when that happens, write </div> and delete last line from tGrpList
       -- groups can be nested, so repeat checking if have reached end of a
       -- group because other groups might end there
-
+      
       -- warning: do not have two nested groups with same short name
-
+      
       put true into tFlagEndGrp
       repeat while tFlagEndGrp is true
-
+         
          -- at start of each repeat, assume have NOT reached end of group
          -- if find below that have reached end of group, then flag set to true
          -- so repeat will check for end of another group at same place
          put false into tFlagEndGrp
-
+         
          if tGrpList is empty then
             put empty into tGrpCurrent
          else
             -- these "current" variables are used below in functions for group, button, field, etc.s
             put the last line of tGrpList into tGrpCurrent
          end if
-
+         
          if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
             -- have reached end of a group
             put true into tFlagEndGrp
@@ -428,13 +432,13 @@ on exportWebPage
             -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
             put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
             put tNewLine after tHTML
-
+            
          end if -- end of: if tGrpList is not empty and tGrpCurrent is not in tControlLongName then
-
+         
       end repeat -- end of: repeat while tFlagEndGrp is true
-
+      
       -- now handle the element in this new line
-
+      
       if tType = "group" then
          -- do nothing here
       else
@@ -447,7 +451,7 @@ on exportWebPage
             put the last line of tGrpLocList into tGrpLoc
          end if
       end if
-
+      
       switch tType
          case "group"
             -- start of a group
@@ -528,7 +532,7 @@ on exportWebPage
             put "<!-- *********UNKNOWN CONTROL**" && "LC id =" && the long name of control tControlNumber && "-->" & LF after tHTML
       end switch
    end repeat
-
+   
    -- at the end of all controls
    -- BUT, if there are lines in tGrpList, then that means
    -- you need to end divs with </div> for each line
@@ -551,14 +555,14 @@ on exportWebPage
       put tIndent & "</div>" && "<!-- end of div" && it && "-->" & LF into tNewLine
       put tNewLine after tHTML
    end repeat
-
+   
    -- at end so no need to empty group lists but do so in case add stuff later
    put empty into tGrpList
    put empty into tGrpLocList
-
+   
    -- finish building the html
    put "</body>" & LF & "</html>" & LF after tHTML
-
+   
    -- WARNING: write output to files with BINARY WRITE and use all LF in CSS & HTML construction above
    -- ALL TESTED BROWSERS SHOW SOURCE OK WITH ALL line feed LF line endings
    -- when developing on a Mac, the following options for "open for write" do different things
@@ -575,7 +579,7 @@ on exportWebPage
    open file tHtmlFilePath for binary write
    write tHTML to file tHtmlFilePath
    close file tHtmlFilePath
-
+   
    -- finish building the css with example @media
    put "/* example @media for responsive design */" & LF after tCSS
    put "/* requires meta viewport element in HTML head */" & LF after tCSS
@@ -586,18 +590,18 @@ on exportWebPage
    put "    left: 20px;" & LF after tCSS
    put "   } */" & LF after tCSS
    put "}" & LF after tCSS
-
+   
    -- write css text with binary write
    open file tCssFilePath for binary write
    write tCSS to file tCssFilePath
    close file tCssFilePath
-
+   
    beep
-
+   
    if tHTML contains "**UNKNOWN CONTROL**" then
       answer "Unknown controls were detected - see comments **UNKNOWN CONTROL** in HTML file for info"
    end if
-
+   
 end exportWebPage
 
 -----------------------------------------------
