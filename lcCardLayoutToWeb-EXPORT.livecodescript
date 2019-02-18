@@ -624,12 +624,12 @@ end fReturnHtmlEvents
 -----------------------------------------------
 
 function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
-
+   
    -- functions which do NOT use this function:
    -- fExportScrollBar
    -- fExportRadioButton
    -- fExportCheckBox
-
+   
    -- groups and some controls use this, other controls are special
    put empty into tCSS -- tCSS is local to this function, build it up, then return it
    put the rect of control id tControl_ID into tRect
@@ -691,7 +691,10 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                   --     need to check LC opaque below
                   --     if LC opaque is false need to set rgba of CSS background-color even if no LC backColor
                   -- LC RGB values; CSS Valid color names, rgb(#,#,#), rgba(#,#,#,#), hexidecimal notation
-                  if the opaque of control id tControl_ID is true then
+                  if word 1 of the long name of control id tControl_ID is "button" then
+                     -- do not set backColor for standard buttons so that we can apply rollover effect color in web_labs_CSS
+                     put empty into tValue
+                  else  if the opaque of control id tControl_ID is true then
                      put "rgb(" & aControlProps[tKey] & ")" into tValue
                   else
                      -- LC opaque is false, so need to set rgba color with alpha (a) = 0
@@ -768,17 +771,17 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
                default
                   put empty into tValue
             end switch
-
+            
             -- write property and value to CSS
             if tValue is not empty then
                put space & space & aCSSprops[tKey] & ":" && tValue & ";" & LF after tCSS
                -- e.g., CSS prop name: value;
             end if -- end if tValue is not empty
-
+            
          end if -- end if aControlProps[tKey] is not empty
       end if -- end if tKey is among the lines of tHitList
    end repeat -- repeat for each line tKey in tKeyList
-
+   
    -- SPECIAL - need to check LC opaque
    -- if LC backColor not empty, then this is handled above
    -- but if LC backColor is empty, then need to check here
@@ -792,7 +795,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
          put space & space & "background-color: rgba(255, 255, 255, 0);" & LF after tCSS
       end if
    end if
-
+   
    -- SPECIAL for PLOTDIV button to be exported as div
    -- need to override some border settings above after they are set
    -- and do this before special LC properties below so special LC props will be set on import
@@ -800,11 +803,11 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       put space & space & "border-style: dotted;" & LF after tCSS
       put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
    end if
-
+   
    -- SPECIAL LC PROPERTIES
    -- to get reversibility on export-import need to save special LC properties
    -- these are ignored by CSS processor but used on import back into this project
-
+   
    -- start handle LCvScrollbar
    -- xxx for now, "try" for quick fix - should apply to groups and fields only?
    try
@@ -815,7 +818,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end try
    -- endhandle LCvScrollbar
-
+   
    -- start handle LCthreeD
    if the threeD of control id tControl_ID is true then
       put space & space & "LCthreeD: true;" & LF after tCSS
@@ -823,7 +826,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       put space & space & "LCthreeD: false;" & LF after tCSS
    end if
    -- end handle LCthreeD
-
+   
    -- start handle LCshowBorder
    if the showBorder of control id tControl_ID is true then
       put space & space & "LCshowBorder: true;" into tTempCSS
@@ -841,7 +844,7 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
    end if
    put tTempCSS & LF after tCSS
    -- end handle LCshowBorder
-
+   
    return tCSS
 end fReturnCSSprops
 
