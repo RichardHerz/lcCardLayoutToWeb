@@ -49,19 +49,624 @@ canvas {
   display: none;
 }
 
-#button_Button {
-  position: absolute;
-  left: 124px;
-  top: 195px;
-  width: 82px;
-  height: 23px;
+#div_simFrame {
+  display: block;
+  position: relative;
+  border-color: DodgerBlue;
+  left: 2px;
+  top: 20px;
+  width: 984px;
+  height: 588px;
   visibility: visible;
   border-width: 2px;
-  background-color: rgb(255,255,255);
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0);
+  LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: false;
+}
+
+#image_pot_still_image {
+  position: absolute;
+  left: 17px;
+  top: 58px;
+  width: 506px;
+  height: 357px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  border-width: 1px;
+  background-color: rgba(255, 255, 255, 1);
+  LCthreeD: false;
+  LCshowBorder: false;
+}
+
+#button_runButton {
+  position: absolute;
+  left: 13px;
+  top: 4px;
+  width: 70px;
+  height: 24px;
+  visibility: visible;
+  border-width: 2px;
   border-style: outset;
   opacity: 1;
   LCthreeD: true;
   LCshowBorder: true;
+}
+
+#button_resetButton {
+  position: absolute;
+  left: 93px;
+  top: 4px;
+  width: 70px;
+  height: 24px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: outset;
+  opacity: 1;
+  LCthreeD: true;
+  LCshowBorder: true;
+}
+
+#div_PLOTDIV_plotData {
+  display: block;
+  position: absolute;
+  left: 550px;
+  top: 59px;
+  width: 430px;
+  height: 248px;
+  visibility: visible;
+  border-width: 0px;
+  border-style: outset;
+  opacity: 1;
+  border-style: dotted;
+  border-color: DodgerBlue;
+  LCthreeD: false;
+  LCshowBorder: true;
+  LCvScrollbar: false;
+}
+
+#range_steamSLIDER {
+  left: 53px;
+  top: 470px;
+  width: 233px;
+  height: 17px;
+}
+
+#field_enterSteamLABEL {
+  position: absolute;
+  left: 102px;
+  top: 418px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#input_field_enterSteam {
+  position: absolute;
+  left: 214px;
+  top: 434px;
+  width: 72px;
+  height: 22px;
+border-width: 1px;
+  visibility: visible;
+border-style: solid;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+}
+
+#div_spirit_switch {
+  display: block;
+  position: absolute;
+  border-color: DodgerBlue;
+  left: 387px;
+  top: 360px;
+  width: 187px;
+  height: 37px;
+  visibility: visible;
+  border-width: 2px;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0);
+  LCvScrollbar: false;
+  LCthreeD: true;
+  LCshowBorder: false;
+}
+
+#radio_mid_cut_LABEL {
+  display: block;
+  position: absolute;
+  width: 71px;
+  height: 28px;
+  left: 58px;
+  top: 4px;
+}
+
+#radio_mid_cut_SPAN {
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 15px;
+}
+
+#radio_low_cut_LABEL {
+  display: block;
+  position: absolute;
+  width: 71px;
+  height: 28px;
+  left: 4px;
+  top: 5px;
+}
+
+#radio_low_cut_SPAN {
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 15px;
+}
+
+#radio_high_cut_LABEL {
+  display: block;
+  position: absolute;
+  width: 71px;
+  height: 28px;
+  left: 112px;
+  top: 4px;
+}
+
+#radio_high_cut_SPAN {
+  margin-left: 22px;
+  line-height: 22px;
+  font-size: 15px;
+}
+
+#field_highPercentLABEL {
+  position: absolute;
+  left: 358px;
+  top: 386px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_highPercent {
+  position: absolute;
+  left: 471px;
+  top: 386px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_highAmt {
+  position: absolute;
+  left: 470px;
+  top: 418px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_highAmtLABEL {
+  position: absolute;
+  left: 358px;
+  top: 419px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_midAmt {
+  position: absolute;
+  left: 436px;
+  top: 480px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_midPercentLABEL {
+  position: absolute;
+  left: 324px;
+  top: 449px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_midPercent {
+  position: absolute;
+  left: 436px;
+  top: 448px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_midAmtLABEL {
+  position: absolute;
+  left: 324px;
+  top: 481px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_lowAmt {
+  position: absolute;
+  left: 402px;
+  top: 542px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_lowPercentLABEL {
+  position: absolute;
+  left: 290px;
+  top: 512px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_lowPercent {
+  position: absolute;
+  left: 402px;
+  top: 510px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_lowAmtLABEL {
+  position: absolute;
+  left: 290px;
+  top: 543px;
+  width: 106px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_productPercentLABEL {
+  position: absolute;
+  left: 333px;
+  top: 263px;
+  width: 98px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_productPercent {
+  position: absolute;
+  left: 438px;
+  top: 263px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_productRate {
+  position: absolute;
+  left: 437px;
+  top: 295px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_productRateLABEL {
+  position: absolute;
+  left: 333px;
+  top: 296px;
+  width: 98px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_neck_T {
+  position: absolute;
+  left: 145px;
+  top: 111px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_pot_T {
+  position: absolute;
+  left: 173px;
+  top: 278px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_neck_T_LABEL {
+  position: absolute;
+  left: 4px;
+  top: 111px;
+  width: 130px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_pot_Vol_LABEL {
+  position: absolute;
+  left: 92px;
+  top: 334px;
+  width: 73px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_neck_T {
+  position: absolute;
+  left: 145px;
+  top: 111px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_pot_ABV {
+  position: absolute;
+  left: 173px;
+  top: 306px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_pot_T_LABEL {
+  position: absolute;
+  left: 37px;
+  top: 278px;
+  width: 130px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
+}
+
+#field_pot_Vol {
+  position: absolute;
+  left: 173px;
+  top: 334px;
+  width: 72px;
+  height: 22px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: dotted;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: true;
+  font-size: 16px;
+  border-color: DodgerBlue;
+}
+
+#field_pot_ABV_LABEL {
+  position: absolute;
+  left: 68px;
+  top: 306px;
+  width: 99px;
+  height: 25px;
+  border-width: 1px;
+  visibility: visible;
+  border-style: none;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  LCvScrollbar: false;
+  LCthreeD: false;
+  LCshowBorder: false;
+  font-size: 16px;
 }
 
 /* example @media for responsive design */

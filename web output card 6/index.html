@@ -19,104 +19,74 @@
 
 </head>
 <body>
-<!-- <p><a href="http://reactorlab.net/web-labs/">Web Labs</a> > Reactor temperature control - controller manipulates jacket inlet T</p>
-  <p>A 1st-order, essentially irreversible reaction in a continuous stirred tank reactor (CSTR).
-  The controller varies the jacket inlet T to control reactor T.
-  Reactor volume = 0.1 m<sup>3</sup>, jacket volume = 0.02 m<sup>3</sup>, density = 1000 kg/m<sup>3</sup>, heat capacity = 2.0 kJ/kg/K.
-  <font color="blue">Click the Run button to start. Hit the enter key or click out of field after changing inputs.</font> 
-  Copy data button displays plot data in popup window.</p>
-  <p>At default values in manual mode with <b>constant inputs</b>, the system <b>oscillates</b>.
-  Then put into Auto Control.</p> -->
-<!-- units: (1) reactor feed, (2) reactor, (3) feed to jacket, (4) jacket, (5) controller
-  Values set by inputs below:
-  (1) enterFeedConc, enterFeedTTemp, enterFeedFlowRate
-  (2) enterdelH, enterEa, enterk300
-  (3) enterJacketFlowRate
-  (4) enterJacketUA
-  (5) enterResetTime, enterGain, enterSetpoint
-  Alternatives: in input tag onchange, invoke either updateUIparams() in main.js or
-  invoke specific unit_#.updateUIparams() for relevant unit #
-  -->
 <div id="div_simFrame">
    <div id="div_reactor">
       <img id="image_reactorImage" src="images/reactor.png">
-      <div id="div_PLOTDIV_reactorContents">
-      </div> <!-- end of div div_PLOTDIV_reactorContents -->
+         <div id="div_PLOTDIV_reactorContents">
+         </div> <!-- end of div div_PLOTDIV_reactorContents -->
    </div> <!-- end of div div_reactor -->
    <input type="button" id="button_resetButton" value="Reset" value="Reset" onclick="resetThisLab()">
    <input type="button" id="button_runButton" value="Run" value="Run" onclick="runThisLab()">
-   <div id="div_reactionParams">
-      <p id="field_enterdelHLABEL">
-            Enter reaction &#8710;H (kJ/mol)
-      </p>
-      <input id="input_field_enterdelH" value="tValue" onchange="unit_2.updateUIparams()" value="-250">
-      <p id="field_enterEaLABEL">
-            Enter reaction &#8710;Ea (kJ/mol)
-      </p>
-      <input id="input_field_enterEa" value="tValue" onchange="unit_2.updateUIparams()" value="200">
-      <p id="field_control_5">
-            Enter reaction k300 (1/s)
-      </p>
-      <input id="input_field_enterk300" value="tValue" onchange="unit_2.updateUIparams()" value="5e-6">
-   </div> <!-- end of div div_reactionParams -->
    <div id="div_operatingParams">
-      <p id="field_enterJacketUALABEL">
-            Enter jacket UA (kJ/s/K)
+      <p id="field_enter_a_LABEL">
+            Enter a (m<sup shift="-4">3</sup>/kg)
       </p>
-      <input id="input_field_enterjacketUA" value="tValue" onchange="unit_4.updateUIparams()" value="20">
-      <p id="field_enterJacketFlowRateLABEL">
-            Enter jacket flow rate (m<sup shift="-4">3</sup>/s)
+      <p id="field_enter_p_LABEL">
+            Enter p
       </p>
-      <input id="input_field_enterJacketFlowRate" value="tValue" onchange="unit_3.updateUIparams()" value="0.05">
-      <p id="field_enterFeedConcLABEL">
-            Enter feed conc. (mol/m<sup shift="-4">3</sup>)
+      <input id="input_field_enter_p" value="0.6" onchange="unit_4.updateUIparams()" value="20">
+      <input id="input_field_enter_a" value="0.03" onchange="unit_4.updateUIparams()" value="20">
+      <p id="field_enterVminLABEL">
+            Enter Vmin
       </p>
-      <input id="input_field_enterFeedConc" value="tValue" onchange="unit_1.updateUIparams()" value="400">
-      <p id="field_enterFeedTTempLABEL">
-            Enter feed T (K)
+      <input id="input_field_enterVmin" value="0.01" onchange="unit_3.updateUIparams()" value="0.05">
+      <p id="field_enterKsLABEL">
+            Enter Ks (kg/m<sup shift="-4">3</sup>)
       </p>
-      <input id="input_field_enterFeedTTemp" value="tValue" onchange="unit_1.updateUIparams()" value="300">
+      <input id="input_field_enterKs" value="1.75" onchange="unit_1.updateUIparams()" value="400">
+      <p id="field_enterMUmaxLABEL">
+            Enter MUmax (1/hr)
+      </p>
+      <input id="input_field_enterMUmax" value="0.3" onchange="unit_1.updateUIparams()" value="300">
       <p id="field_enterFeedFlowRateLABEL">
-            Enter feed flow rate (m<sup shift="-4">3</sup>/s)
+            Enter feed flow rate (m<sup shift="-4">3</sup>/hr)
       </p>
-      <input id="input_field_enterFeedFlowRate" value="tValue" onchange="unit_1.updateUIparams()" value="0.005">
+      <input id="input_field_enterFeedFlowRate" value="0.02" onchange="unit_1.updateUIparams()" value="0.005">
    </div> <!-- end of div div_operatingParams -->
    <div id="div_controller">
-      <div id="div_PLOTDIV_plotData">
-      </div> <!-- end of div div_PLOTDIV_plotData -->
+         <div id="div_PLOTDIV_plotData">
+         </div> <!-- end of div div_PLOTDIV_plotData -->
       <input type="button" id="button_copyDataButton" value="Copy data" value="Copy data" onclick="copyData()">
       <!-- <p> id="field_enterJacketFeedTTempLABEL" MAY HAVE css visibility:hidden on open page; changed by unit_5.changeMode -->
-      <p id="field_enterJacketFeedTTempLABEL">
-            Enter jacket inlet T (K)
+      <p id="field_enterSubstrateFeedConcLABEL">
+            Substrate feed conc (kg/m<sup shift="-4">3</sup>) 
       </p>
       <!-- input id="input_field_enterJacketFeedTTemp" MAY BE type="hidden" on open page; changed by unit_5.changeMode -->
       <p id="field_enterResetTimeLABEL">
-            Enter reset time (&gt; 0 s)
+            Enter reset time (&gt; 0 hr)
       </p>
-      <input id="input_field_enterResetTime" value="tValue" onchange="unit_5.updateUIparams()" value="30">
+      <input id="input_field_enterResetTime" value="30" onchange="unit_5.updateUIparams()" value="30">
       <p id="field_enterGainLABEL">
             Enter controller gain
       </p>
-      <input id="input_field_enterGain" value="tValue" onchange="unit_5.updateUIparams()" value="2">
+      <input id="input_field_enterGain" value="0.25" onchange="unit_5.updateUIparams()" value="2">
       <p id="field_enterSetpointLABEL">
-            Enter reactor T set point (K)
+            Biomass set point (kg/m<sup shift="-4">3</sup>)
       </p>
-      <input id="input_field_enterSetpoint" value="tValue" onchange="unit_5.updateUIparams()" value="340">
+      <input id="input_field_enterSetpoint" value="4" onchange="unit_5.updateUIparams()" value="340">
       <div id="div_RADIO_group_Controller">
-         <label id="radio_controllerAUTO_LABEL" name="radio_of_group_RADIO_group_Controller">
-                  <input type="radio" id="radio_controllerAUTO" name="radio_of_group_RADIO_group_Controller" onchange="unit_5.changeMode()">
+         <label id="radio_controllerAUTO_LABEL" name="radio_of_div_RADIO_group_Controller">
+                  <input type="radio" id="radio_controllerAUTO" name="radio_of_div_RADIO_group_Controller" onchange="unit_5.changeMode()">
                   <span id="radio_controllerAUTO_SPAN">Auto Control</span>
          </label>
-         <label id="radio_controllerMANUAL_LABEL" name="radio_of_group_RADIO_group_Controller">
-                  <input type="radio" id="radio_controllerMANUAL" name="radio_of_group_RADIO_group_Controller" checked onchange="unit_5.changeMode()">
+         <label id="radio_controllerMANUAL_LABEL" name="radio_of_div_RADIO_group_Controller">
+                  <input type="radio" id="radio_controllerMANUAL" name="radio_of_div_RADIO_group_Controller" checked onchange="unit_5.changeMode()">
                   <span id="radio_controllerMANUAL_SPAN">Manual Control</span>
          </label>
       </div> <!-- end of div div_RADIO_group_Controller -->
       <!-- end "div_RADIO_group_Controller" -->
-      <input id="input_field_enterJacketFeedTTemp" value="tValue" onchange="unit_5.updateUIparams()" value="348">
+      <input id="input_field_enterSubstrateFeedConc" value="20" onchange="unit_5.updateUIparams()" value="348">
    </div> <!-- end of div div_controller -->
-   <!-- end "div_controller" -->
 </div> <!-- end of div div_simFrame -->
-<!-- end "div_simFrame" -->
 </body>
 </html>
