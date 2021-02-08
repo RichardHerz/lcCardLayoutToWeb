@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-IMPORT"
 /*
-Design, text, images and code by Richard K. Herz, 2017-2018
+Design, text, images and code by Richard K. Herz, 2017-2021
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
@@ -154,36 +154,36 @@ end importWebPage
 -----------------------------
 
 function fMakeLiveCodeCard pHtmlFileData, pCssFileData
-   
+
    -- uses constant kProjectName
    -- is called by command importWebPage
-   
+
    put empty into tGrpList
    put empty into tGrpLocList
    put empty into oScrollbarList
-   
+
    -- get all data above <body>
-   
+
    put offset("<body>",pHtmlFileData) into tBodyStartChar
    put char 1 to tBodyStartChar-1 of pHtmlFileData into tHeaderData
    set the cHeaderData of this card to tHeaderData
-   
+
    -- MUST USE MESSAGE BOX FOR DEVELOPMENT RECORD - NOT FIELD
    -- BECAUSE CAN'T ACCESS FIELD WHEN EDITING A GROUP easily at least
    -- do not always put empty into msg here because will open msg box even if not used
    if kReporter is not "false" then put empty into msg
    if kReporter is "true" then put LF & tHeaderData into msg -- NOTE "INTO" FOR FIRST ONE
-   
+
    put tBodyStartChar into tSkipChar
    add 5 to tSkipChar -- set to end > of <body>
    put empty into tCommentList
-   
+
    repeat
       put offset("<",pHtmlFileData,tSkipChar) into tNextTagStart
       if tNextTagStart is 0 then exit repeat
       add tNextTagStart to tSkipChar
       put tSkipChar into tNextTagStart
-      
+
       --       -- save comments in body which are outside of other tags
       --       if offset("!--",pHtmlFileData,tSkipChar) = 1 then
       --          -- tSkipChar points to < of <!-- comment
@@ -207,7 +207,7 @@ function fMakeLiveCodeCard pHtmlFileData, pCssFileData
       --          -- xxx see fImportScriptTag which creates a button for each script tag in body
       --          -- xxx this could be used for comments so they get put in (approx) place on export
       --       end if
-      
+
       if offset("/div>",pHtmlFileData,tSkipChar) = 1 then
          -- tSkipChar points to < of </div>
          if kReporter is "true" then put LF & "JUST BEFORE get fImportGroupEnd, tGrpList = " & "---||" & tGrpList & "||---" & LF after msg
@@ -1839,7 +1839,7 @@ end fImportPLOTDIV
 
 function fImportTEXTDIV tSkipChar, pHtmlFileData, pCssFileData, tGrpLocList
    -- this is to import to LC a BUTTON that represents the area of an HTML DIV element
-   --      used for multi-line text area 
+   --      used for multi-line text area
    -- tSkipChar points to < of parent <div
    -- need to return updated tSkipChar
    -- EXAMPLE: <div id="div_TEXTDIV_my_x-y_plot" ></div>

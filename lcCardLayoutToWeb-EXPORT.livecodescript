@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
 /*
-Design, text, images and code by Richard K. Herz, 2017-2018
+Design, text, images and code by Richard K. Herz, 2017-2021
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
@@ -37,7 +37,7 @@ constant kHtmlFileName = "index.html"
 -- set number of spaces to indent
 --      used to increase and decrease indents
 --      not only makes html look nice but text editors use indents to fold/unfold sections
-constant kIndentSpaces = 3
+constant kIndentSpaces = 2
 
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
@@ -480,7 +480,7 @@ on exportWebPage
                   if the first word of the short name of control tControlNumber is "PLOTDIV" then
                      -- button used to represent an empty html div tag in html body for x-y plotting
                      get fExportPLOTDIV(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
-                  if the first word of the short name of control tControlNumber is "PLOTDIV" then
+                  else if the first word of the short name of control tControlNumber is "TEXTDIV" then
                      -- button used to represent an empty html div tag in html body for multi-line text
                      get fExportTEXTDIV(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
                   else if the first word of the short name of control tControlNumber is "CANVAS" then
@@ -799,10 +799,18 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end if
 
-   -- SPECIAL for PLOTDIV button to be exported as div
+   --   -- SPECIAL for PLOTDIV button to be exported as div
+   --   -- need to override some border settings above after they are set
+   --   -- and do this before special LC properties below so special LC props will be set on import
+   if the first word of the short name of control id tControl_ID is "PLOTDIV" then
+      put space & space & "border-style: dotted;" & LF after tCSS
+      put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+   end if
+
+   -- SPECIAL for TEXTDIV button to be exported as div
    -- need to override some border settings above after they are set
    -- and do this before special LC properties below so special LC props will be set on import
-   if the first word of the short name of control id tControl_ID is "PLOTDIV" then
+   if the first word of the short name of control id tControl_ID is "TEXTDIV" then
       put space & space & "border-style: dotted;" & LF after tCSS
       put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
    end if
@@ -1391,8 +1399,7 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    -- these inputs are not modified: tControl_ID, tOneIndent
    -- PLOTDIV BUTTON in LC becomes an empty DIV in HTML
    -- add div tag
-   -- indent manually here without altering tIndent, since will be terminated immediately
-   put tIndent & tOneIndent & "<div" after tHTML
+   put tIndent & "<div" after tHTML
    put fIDname(tControl_ID) into tIDname
    delete char 1 to 7 of tIDname -- delete: button_
    put "div_" before tIDname
@@ -1400,7 +1407,7 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put ">" & LF after tHTML
    -- new for PLOTDIV - terminate the empty div immediately
    -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
-   put tIndent & tOneIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
+   put tIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
    -- end of html
    -- write css
    put fIDname(tControl_ID) into tIDname
@@ -1432,8 +1439,7 @@ function fExportTEXTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    -- these inputs are not modified: tControl_ID, tOneIndent
    -- TEXTDIV BUTTON in LC becomes an empty DIV in HTML
    -- add div tag
-   -- indent manually here without altering tIndent, since will be terminated immediately
-   put tIndent & tOneIndent & "<div" after tHTML
+  put tIndent & "<div" after tHTML
    put fIDname(tControl_ID) into tIDname
    delete char 1 to 7 of tIDname -- delete: button_
    put "div_" before tIDname
@@ -1441,7 +1447,7 @@ function fExportTEXTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    put ">" & LF after tHTML
    -- new for TEXTDIV - terminate the empty div immediately
    -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
-   put tIndent & tOneIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
+   put tIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
    -- end of html
    -- write css
    put fIDname(tControl_ID) into tIDname
