@@ -9,7 +9,7 @@
 <!-- A VIEWPORT META LINE IN HTML HEAD IS NECESSARY FOR CSS @MEDIA TO WORK -->
 <!-- ID used to modify with Javascript after initial loading - OR EDIT HERE -->
 <!-- suggest use content width = div_simFrame width + 2 * div_simFrame left, and no scale -->
-<meta id='meta-viewport' name='viewport' content='width=0'>
+<meta id='meta-viewport' name='viewport' content='width=988'>
 
 <!-- load CSS style sheets for this lab  -->
 <link rel="stylesheet" href="css/index.css">
@@ -19,6 +19,106 @@
 
 </head>
 <body>
-<input type="button" id="button_Button" value="Button">
+<div id="div_simFrame">
+   <img id="image_pot_still_image" src="web output card 7/images/scotch-pot-still.png">
+   <input type="button" id="button_runButton" value="Run" value="Run" onclick="runThisLab()">
+   <input type="button" id="button_resetButton" value="Reset" value="Reset" onclick="resetThisLab()">
+      <div id="div_PLOTDIV_plotData">
+      </div> <!-- end of div div_PLOTDIV_plotData -->
+   <input type="range" id="range_steamSLIDER" min="1" max="100" step="0.99" value="1">
+   <p id="field_enterSteamLABEL">
+      Steam
+   </p>
+   <input id="input_field_enterSteam" value="4" onchange="unit_5.updateUIparams()" value="340">
+   <div id="div_spirit_switch">
+      <label id="radio_mid_cut_LABEL" name="radio_of_div_spirit_switch">
+            <input type="radio" id="radio_mid_cut" name="radio_of_div_spirit_switch" onchange="unit_5.changeMode()">
+            <span id="radio_mid_cut_SPAN">mid</span>
+      </label>
+      <label id="radio_low_cut_LABEL" name="radio_of_div_spirit_switch">
+            <input type="radio" id="radio_low_cut" name="radio_of_div_spirit_switch" onchange="unit_5.changeMode()">
+            <span id="radio_low_cut_SPAN">low</span>
+      </label>
+      <label id="radio_high_cut_LABEL" name="radio_of_div_spirit_switch">
+            <input type="radio" id="radio_high_cut" name="radio_of_div_spirit_switch" checked onchange="unit_5.changeMode()">
+            <span id="radio_high_cut_SPAN">high</span>
+      </label>
+   </div> <!-- end of div div_spirit_switch -->
+   <p id="field_highPercentLABEL">
+      high %
+   </p>
+   <p id="field_highPercent" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_highAmt" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_highAmtLABEL">
+      high amt
+   </p>
+   <p id="field_midAmt" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_midPercentLABEL">
+      mid %
+   </p>
+   <p id="field_midPercent" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_midAmtLABEL">
+      mid amt
+   </p>
+   <p id="field_lowAmt" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_lowPercentLABEL">
+      low %
+   </p>
+   <p id="field_lowPercent" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_lowAmtLABEL">
+      low amt
+   </p>
+   <p id="field_productPercentLABEL">
+      %
+   </p>
+   <p id="field_productPercent" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_productRate" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_productRateLABEL">
+      rate
+   </p>
+   <p id="field_neck_T" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_pot_T" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_neck_T_LABEL">
+      Temperature (&deg;C)
+   </p>
+   <p id="field_pot_Vol_LABEL">
+      Liters
+   </p>
+   <p id="field_neck_T" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_pot_ABV" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_pot_T_LABEL">
+      Temperature (&deg;C)
+   </p>
+   <p id="field_pot_Vol" onchange="unit_5.updateUIparams()" value="340">
+      4
+   </p>
+   <p id="field_pot_ABV_LABEL">
+      ABV %
+   </p>
+</div> <!-- end of div div_simFrame -->
 </body>
 </html>
