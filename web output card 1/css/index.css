@@ -54,9 +54,9 @@ canvas {
   position: relative;
   border-color: DodgerBlue;
   left: 1px;
-  top: 19px;
-  width: 567px;
-  height: 653px;
+  top: 31px;
+  width: 611px;
+  height: 699px;
   visibility: visible;
   border-width: 2px;
   background-color: rgb(255,255,255);
@@ -72,7 +72,7 @@ canvas {
   position: absolute;
   border-color: DodgerBlue;
   left: 33px;
-  top: 67px;
+  top: 113px;
   width: 262px;
   height: 93px;
   visibility: visible;
@@ -203,7 +203,7 @@ canvas {
   position: absolute;
   border-color: DodgerBlue;
   left: 309px;
-  top: 93px;
+  top: 139px;
   width: 91px;
   height: 59px;
   visibility: visible;
@@ -250,7 +250,7 @@ canvas {
   width: 82px;
   height: 23px;
   left: 180px;
-  top: 174px;
+  top: 220px;
 }
 
 #checkbox_Check1_SPAN {
@@ -262,7 +262,7 @@ canvas {
 #image_robo_99_png {
   position: absolute;
   left: 6px;
-  top: 227px;
+  top: 273px;
   width: 178px;
   height: 193px;
   visibility: visible;
@@ -277,7 +277,7 @@ canvas {
 #input_field_unlocked_field_1 {
   position: absolute;
   left: 250px;
-  top: 277px;
+  top: 323px;
   width: 100px;
   height: 21px;
 border-width: 1px;
@@ -292,7 +292,7 @@ border-style: solid;
 
 #range_slider_horiz {
   left: 313px;
-  top: 340px;
+  top: 386px;
   width: 187px;
   height: 22px;
 }
@@ -300,7 +300,7 @@ border-style: solid;
 #select_Option_Menu {
   position: absolute;
   left: 358px;
-  top: 240px;
+  top: 286px;
   width: 102px;
   height: 22px;
   visibility: visible;
@@ -315,7 +315,7 @@ border-style: solid;
 #select_Pulldown_Menu {
   position: absolute;
   left: 445px;
-  top: 285px;
+  top: 331px;
   width: 102px;
   height: 22px;
   visibility: visible;
@@ -330,7 +330,7 @@ border-style: solid;
 #range_slider_vert {
   transform: rotate(270deg);
   left: 186.5px;
-  top: 345px;
+  top: 391px;
   width: 120px;
   height: 22px;
 }
@@ -338,7 +338,7 @@ border-style: solid;
 #input_field_unlocked_field_2 {
   position: absolute;
   left: 251px;
-  top: 416px;
+  top: 462px;
   width: 100px;
   height: 21px;
 border-width: 1px;
@@ -355,8 +355,8 @@ border-style: solid;
   position: absolute;
   left: 31px;
   top: -10px;
-  width: 530px;
-  height: 57px;
+  width: 574px;
+  height: 79px;
   border-width: 2px;
   visibility: visible;
   border-style: dotted;
@@ -373,7 +373,7 @@ border-style: solid;
   display: block;
   position: absolute;
   left: 121px;
-  top: 558px;
+  top: 604px;
   width: 240px;
   height: 89px;
   visibility: visible;
@@ -390,7 +390,7 @@ border-style: solid;
 #canvas_CANVAS_button_for_bitmap_canvas {
   position: absolute;
   left: 283px;
-  top: 460px;
+  top: 506px;
  /* canvas element width & height must be set in HTML and not in CSS */
   visibility: visible;
   border-width: 2px;
@@ -404,7 +404,7 @@ border-style: solid;
   display: block;
   position: absolute;
   left: 46px;
-  top: 460px;
+  top: 506px;
   width: 202px;
   height: 89px;
   visibility: visible;
@@ -412,7 +412,7 @@ border-style: solid;
   border-style: outset;
   opacity: 1;
   border-style: dotted;
-  border-color: DodgerBlue;
+  border-color: Tomato;
   LCthreeD: true;
   LCshowBorder: true;
   LCvScrollbar: false;
