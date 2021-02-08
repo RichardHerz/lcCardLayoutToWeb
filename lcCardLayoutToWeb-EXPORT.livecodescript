@@ -1,6 +1,6 @@
 ﻿script "lcCardLayoutToWeb-EXPORT"
 /*
-Design, text, images and code by Richard K. Herz, 2017-2018
+Design, text, images and code by Richard K. Herz, 2017-2021
 Copyrights held by Richard K. Herz
 https://github.com/RichardHerz
 Licensed for use under the GNU General Public License v3.0
@@ -22,7 +22,8 @@ constant kScriptTagPrefix = "scriptTag" -- used on IMPORT and EXPORT of script t
 constant kCommentTagPrefix = "commentTag" -- used on IMPORT and EXPORT of script tags in html body
 -- make sure value of constant kCommentTagPrefix is the same in both script files
 
-constant kDottedBorderColor = "DodgerBlue"
+constant kDottedBorderColor01 = "DodgerBlue"
+constant kDottedBorderColor02 = "Tomato"
 
 -- Writes to files in output folder kWebOutputFolder & "card" & LC stack card number
 constant kWebOutputFolder = "web output"
@@ -37,7 +38,7 @@ constant kHtmlFileName = "index.html"
 -- set number of spaces to indent
 --      used to increase and decrease indents
 --      not only makes html look nice but text editors use indents to fold/unfold sections
-constant kIndentSpaces = 3
+constant kIndentSpaces = 2
 
 -- use kReporter "true" to activate all reports below to msg box
 -- or use a special value to activate only selected reports below
@@ -319,7 +320,7 @@ on exportWebPage
    if there is a button tBtnName then
       if the hilite of button tBtnName is true then
          put space & space & "border-style: dotted;" & LF after tCSS
-         put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+         put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
       end if
    end if
    put "}" & LF & LF after tCSS -- finish css for p, locked field
@@ -480,7 +481,7 @@ on exportWebPage
                   if the first word of the short name of control tControlNumber is "PLOTDIV" then
                      -- button used to represent an empty html div tag in html body for x-y plotting
                      get fExportPLOTDIV(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
-                  if the first word of the short name of control tControlNumber is "PLOTDIV" then
+                  else if the first word of the short name of control tControlNumber is "TEXTDIV" then
                      -- button used to represent an empty html div tag in html body for multi-line text
                      get fExportTEXTDIV(tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, aCSSprops)
                   else if the first word of the short name of control tControlNumber is "CANVAS" then
@@ -799,12 +800,20 @@ function fReturnCSSprops tControl_ID, tGrpLoc, tGrpLocList, aCSSprops
       end if
    end if
 
-   -- SPECIAL for PLOTDIV button to be exported as div
-   -- need to override some border settings above after they are set
-   -- and do this before special LC properties below so special LC props will be set on import
+   --   -- SPECIAL for PLOTDIV button to be exported as div
+   --   -- need to override some border settings above after they are set
+   --   -- and do this before special LC properties below so special LC props will be set on import
    if the first word of the short name of control id tControl_ID is "PLOTDIV" then
       put space & space & "border-style: dotted;" & LF after tCSS
-      put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+      put space & space & "border-color:" &&  kDottedBorderColor02 & ";" & LF after tCSS
+   end if
+
+   -- SPECIAL for TEXTDIV button to be exported as div
+   -- need to override some border settings above after they are set
+   -- and do this before special LC properties below so special LC props will be set on import
+   if the first word of the short name of control id tControl_ID is "TEXTDIV" then
+      put space & space & "border-style: dotted;" & LF after tCSS
+      put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
    end if
 
    -- SPECIAL LC PROPERTIES
@@ -1170,7 +1179,7 @@ function fExportGroup tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent, a
    else
       put space & space & "position: absolute;" & LF after tCSS
    end if
-   put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+   put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
    put empty into tGrpLoc -- used in fReturnCSSprops for non group controls, this copy local to this function
    put fReturnCSSprops(tControl_ID, tGrpLoc, tGrpLocList, aCSSprops) after tCSS
    -- conclude css
@@ -1391,16 +1400,16 @@ function fExportPLOTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    -- these inputs are not modified: tControl_ID, tOneIndent
    -- PLOTDIV BUTTON in LC becomes an empty DIV in HTML
    -- add div tag
-   -- indent manually here without altering tIndent, since will be terminated immediately
-   put tIndent & tOneIndent & "<div" after tHTML
+   put tIndent & "<div" after tHTML
    put fIDname(tControl_ID) into tIDname
    delete char 1 to 7 of tIDname -- delete: button_
    put "div_" before tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
    put ">" & LF after tHTML
+   put tIndent & tOneIndent & "PLOTDIV" & LF after tHTML
    -- new for PLOTDIV - terminate the empty div immediately
    -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
-   put tIndent & tOneIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
+   put tIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
    -- end of html
    -- write css
    put fIDname(tControl_ID) into tIDname
@@ -1432,16 +1441,16 @@ function fExportTEXTDIV tControl_ID, tGrpList, tGrpLocList, tOneIndent, tIndent,
    -- these inputs are not modified: tControl_ID, tOneIndent
    -- TEXTDIV BUTTON in LC becomes an empty DIV in HTML
    -- add div tag
-   -- indent manually here without altering tIndent, since will be terminated immediately
-   put tIndent & tOneIndent & "<div" after tHTML
+   put tIndent & "<div" after tHTML
    put fIDname(tControl_ID) into tIDname
    delete char 1 to 7 of tIDname -- delete: button_
    put "div_" before tIDname
    put space & "id=" & quote & tIDname & quote after tHTML
    put ">" & LF after tHTML
+   put tIndent & tOneIndent & "TEXTDIV" & LF after tHTML
    -- new for TEXTDIV - terminate the empty div immediately
    -- "<!-- end of div" literal used on import to not duplicate comment - do not change here
-   put tIndent & tOneIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
+   put tIndent & "</div>" && "<!-- end of div" && tIDname && "-->" & LF after tHTML
    -- end of html
    -- write css
    put fIDname(tControl_ID) into tIDname
@@ -1752,21 +1761,21 @@ function fExportField tControl_ID, tGrp, tGrpLoc, tIndent, aCSSprops
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
                put space & space & "border-style: dotted;" into line tline of tCSS
-               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
             else
                -- was solid
                put space & space & "border-style: dotted;" into line tline of tCSS
-               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
             end if
          else
             if tThreeD is true then
                -- was outset but looks solid on Win IE & Edge, use dotted instead
                put space & space & "border-style: dotted;" & LF after tCSS
-               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
             else
                -- was solid
                put space & space & "border-style: dotted;" & LF after tCSS
-               put space & space & "border-color:" &&  kDottedBorderColor & ";" & LF after tCSS
+               put space & space & "border-color:" &&  kDottedBorderColor01 & ";" & LF after tCSS
             end if
          end if
 
