@@ -7,7 +7,7 @@ The project is "reversible" - an exported web page, which has changes such as ad
 
 ![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
 
-This project is being built with the open-source, Community Edition of LiveCode. Get it at www.LiveCode.org. You need to use the LiveCode IDE, version 8 or higher, in order to use this project.
+This project is being built with LiveCode. Get it at LiveCode.com. You need to use the LiveCode IDE, version 8 or higher, in order to use this project.
 
 My use of this project is to develop web apps that are interactive simulations of physical systems. Examples of web apps built with this project are posted at http://reactorlab.net/web-labs/ 
 
