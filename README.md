@@ -5,7 +5,7 @@ You can design a layout in LiveCode, then export the layout to HTML and CSS file
 
 The project is "reversible" - an exported web page, which has changes such as addition of file and event function references, can be imported back into to the project, edited (controls moved, added and deleted), and then exported back to a revised web page with the file and event references preserved.
 
-![parakeet still 20161006](http://reactorlab.net/graphics/github_media/parakeet_20161007a.png)
+![parakeet still 20161006](https://github.com/RichardHerz/lcCardLayoutToWeb/blob/master/images/parakeet_20161007a.png)
 
 This project is being built with LiveCode. Get it at LiveCode.com. You need to use the LiveCode IDE, version 8 or higher, in order to use this project.
 
